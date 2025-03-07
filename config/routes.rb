@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
   get "pages/pricing"
   get "pages/privacy"
   get "pages/documentation"
