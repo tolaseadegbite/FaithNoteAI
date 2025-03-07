@@ -1,9 +1,6 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
-  get "pages/pricing"
-  get "pages/privacy"
-  get "pages/documentation"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -16,4 +13,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "pages#home"
+
+  get "/pricing", to: "pages#pricing"
+  get "/privacy", to: "pages#privacy"
+  get "/documentation", to: "pages#documentation"
 end
