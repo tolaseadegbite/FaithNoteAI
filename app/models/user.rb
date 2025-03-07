@@ -25,4 +25,6 @@ class User < ApplicationRecord
   def email
     email_address
   end
+
+  has_many :talks, dependent: :destroy
 end
