@@ -2,7 +2,7 @@ class NotesController < ApplicationController
   before_action :find_note, only: [:show, :edit, :update, :destroy]
 
   def index
-    @notes = current_user.notes
+    @notes = current_user.notes.ordered
   end
 
   def show

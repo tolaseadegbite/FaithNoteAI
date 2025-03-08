@@ -21,10 +21,12 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Note < ApplicationRecord
-  validates :title, :transcription, :language, presence: true
+  validates :title, :transcription, presence: true
   belongs_to :user
   has_many :summaries, dependent: :destroy
 
   has_rich_text :body
   has_rich_text :summary
+
+  scope :ordered, -> { order(id: :asc) }
 end
