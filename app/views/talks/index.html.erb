@@ -1,0 +1,15 @@
+<% content_for :title, "All Talks" %>
+<div class="max-w-screen-lg mx-auto">
+    <div class="p-4">
+        <h1 class="font-bold text-xl text-gray-800 dark:text-white">Talks</h1>
+    </div>
+
+    <% if @talks.any? %>
+        <%= render @talks %>
+    <% else %>
+        <p class="text-sm text-gray-600">There are no uploaded talks</p>
+    <% end %>
+</div>
+
+
+<div class="rounded-full border-5 border-white bg-red-700 w-17 h-17 absolute bottom-20 right-10 cursor-pointer shadow hover:bg-red-900"></div>
