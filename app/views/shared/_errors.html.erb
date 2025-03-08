@@ -1,0 +1,9 @@
+<% if form.object.errors.any? %>
+  <div class="text-red-600 mb-4 border border-red-300 bg-red-50 p-3 rounded-lg">
+    <ul>
+      <% form.object.errors.each do |error| %>
+        <li class="text-sm"><%= error.full_message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

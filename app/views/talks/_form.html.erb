@@ -1,0 +1,34 @@
+<div class="p-5">
+  <%= form_with(model: talk, class: "w-full") do |form| %>
+    <%= render 'shared/errors', form: form %>
+
+    <div class="mb-5">
+      <%= form.label :title, class: "block text-sm font-semibold" %>
+      <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": talk.errors[:title].none?, "border-red-400 focus:outline-red-600": talk.errors[:title].any?}] %>
+    </div>
+
+    <div class="mb-5">
+      <%= form.label :transcription, class: "block text-sm font-semibold" %>
+      <%= form.rich_text_area :transcription, rows: 4, placeholder: "Description", class: ["text-sm mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": talk.errors[:transcription].none?, "border-red-400 focus:outline-red-600": talk.errors[:transcription].any?}] %>
+    </div>
+
+    <div class="mb-5">
+        <div class="flex items-center justify-between mb-5">
+            <span>
+                <%= form.label "Summary (Bullet points)", class: "block text-sm font-semibold" %>
+            </span>
+            <span>
+                <%= link_to  root_path, class: "flex gap-1 items-center bg-white text-sm dark:bg-gray-200 text-gray-800 hover:bg-gray-300 p-2 rounded cursor-pointer" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                    Generate summary
+                <% end %>
+            </span>
+        </div>
+        <%= form.rich_text_area :summary, rows: 4, placeholder: "Summary", class: ["text-sm mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:bg-gray-900 dark:text-gray-100 dark:focus:bg-gray-800 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": talk.errors[:summary].none?, "border-red-400 focus:outline-red-600": talk.errors[:summary].any?}] %>
+    </div>
+
+    <%= form.submit "Upload", class: "w-full md:w-auto bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded cursor-pointer" %>
+  <% end %>
+</div>

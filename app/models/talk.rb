@@ -23,4 +23,7 @@
 class Talk < ApplicationRecord
   belongs_to :user
   has_many :summaries, dependent: :destroy
+
+  has_rich_text :body
+  has_rich_text :summary
 end

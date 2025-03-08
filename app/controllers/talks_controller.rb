@@ -10,7 +10,7 @@ class TalksController < ApplicationController
   end
 
   def new
-    @talk.new
+    @talk = Talk.new
   end
 
   def create

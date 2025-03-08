@@ -148,6 +148,9 @@ GEM
       zeitwerk
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     importmap-rails (2.1.0)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -190,6 +193,9 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     method_source (1.1.0)
+    mini_magick (5.1.2)
+      benchmark
+      logger
     mini_mime (1.1.5)
     minitest (5.25.4)
     minitest-reporters (1.7.1)
@@ -334,6 +340,9 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
+    ruby-vips (2.2.3)
+      ffi (~> 1.12)
+      logger
     rubyzip (2.4.1)
     securerandom (0.4.1)
     selenium-webdriver (4.29.1)
@@ -432,6 +441,7 @@ DEPENDENCIES
   guard (~> 2.19)
   guard-minitest (~> 2.4)
   hotwire-spark
+  image_processing (~> 1.2)
   importmap-rails
   jbuilder
   kamal
