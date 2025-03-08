@@ -45,6 +45,23 @@ class NotesController < ApplicationController
     end
   end
 
+  def generate_summary
+    transcription = params[:transcription]
+    
+    if transcription.blank?
+      render json: { error: "Transcription cannot be empty" }, status: :unprocessable_entity
+      return
+    end
+    
+    summary = GeminiService.new.generate_summary(transcription)
+    
+    if summary
+      render json: { summary: summary }
+    else
+      render json: { error: "Failed to generate summary" }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def notes_param

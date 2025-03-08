@@ -18,5 +18,9 @@ Rails.application.routes.draw do
   get "/privacy", to: "pages#privacy"
   get "/documentation", to: "pages#documentation"
 
-  resources :notes
+  resources :notes do
+    member do
+      post :generate_summary
+    end
+  end
 end

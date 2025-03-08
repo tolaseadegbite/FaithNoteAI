@@ -69,3 +69,5 @@ group :test do
   gem "minitest", "~> 5.25"
   gem "minitest-reporters", "~> 1.7"
 end
+
+gem "redcarpet", "~> 3.6"
