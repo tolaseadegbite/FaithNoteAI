@@ -22,9 +22,14 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-white dark:bg-black">
+    <%= render 'layouts/navbar' %>
+    <%= render 'layouts/sidebar' %>
+    <div class="p-4 sm:ml-64 bg-white dark:border-black dark:bg-black">
+      <div class="py-4 mt-14">
+        <%= yield %>
+        <%= render partial: "layouts/flash" %>
+      </div>
+    </div>
   </body>
 </html>
