@@ -1,0 +1,16 @@
+<% content_for :title, "All notes" %>
+<div class="max-w-screen-lg mx-auto">
+    <div class="py-4">
+        <h1 class="font-bold text-xl text-gray-800 dark:text-white">Notes</h1>
+    </div>
+
+    <% if @notes.any? %>
+        <%= render @notes %>
+    <% else %>
+        <p class="text-sm text-gray-600">There are no uploaded notes</p>
+    <% end %>
+</div>
+
+<div class="absolute bottom-20 right-10 cursor-pointer p-1 border border-gray-400 rounded-full">
+    <div class="rounded-full bg-red-700 w-13 h-13 hover:bg-red-900"></div>
+</div>

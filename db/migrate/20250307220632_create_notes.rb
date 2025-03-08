@@ -1,6 +1,6 @@
-class CreateTalks < ActiveRecord::Migration[8.0]
+class CreateNotes < ActiveRecord::Migration[8.0]
   def change
-    create_table :talks do |t|
+    create_table :notes do |t|
       t.references :user, null: false, foreign_key: true
       t.string :title, null: false
       t.text :transcription

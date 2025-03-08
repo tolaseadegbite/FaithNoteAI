@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: talks
+# Table name: notes
 #
 #  id            :bigint           not null, primary key
 #  audio_url     :string
@@ -14,7 +14,7 @@
 #
 # Indexes
 #
-#  index_talks_on_user_id  (user_id)
+#  index_notes_on_user_id  (user_id)
 #
 # Foreign Keys
 #
@@ -22,7 +22,7 @@
 #
 require "test_helper"
 
-class TalkTest < ActiveSupport::TestCase
+class NoteTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

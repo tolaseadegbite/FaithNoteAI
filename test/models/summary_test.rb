@@ -7,15 +7,15 @@
 #  format     :string           default("bullet_point"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  talk_id    :bigint           not null
+#  note_id    :bigint           not null
 #
 # Indexes
 #
-#  index_summaries_on_talk_id  (talk_id)
+#  index_summaries_on_note_id  (note_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (talk_id => talks.id)
+#  fk_rails_...  (note_id => notes.id)
 #
 require "test_helper"
 
