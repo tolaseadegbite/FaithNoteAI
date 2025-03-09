@@ -1,5 +1,7 @@
 <div class="p-5">
-  <%= form_with(model: note, data: { controller: "summary", summary_url: generate_summary_note_path(note) }, class: "w-full") do |form| %>
+  <%= form_with(model: note, data: { controller: "summary", summary_url: note.persisted? ? generate_summary_note_path(note) : generate_summary_notes_path 
+      }, 
+      class: "w-full") do |form| %>
     <%= render 'shared/errors', form: form %>
 
     <div class="mb-5">

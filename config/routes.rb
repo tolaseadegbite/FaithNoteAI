@@ -22,5 +22,8 @@ Rails.application.routes.draw do
     member do
       post :generate_summary
     end
+    collection do
+      post :generate_summary
+    end
   end
 end
