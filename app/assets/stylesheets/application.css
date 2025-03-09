@@ -9,6 +9,23 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Open+Sans:ital@0;1&display=swap');
+
+ body {
+  font-family: "Open Sans", serif;
+  font-weight: 400;
+}
+
+h1,h2,h3,h4,h5,h6,.logo-text,.nav-ul,.nav-btn {
+  font-family: "Poppins", serif;
+  font-weight: 600;
+}
+
+p {
+  font-family: "Open Sans", serif;
+  font-weight: 400;
+}
+
  trix-toolbar .trix-button-group button {
   background-color: white;
 }
