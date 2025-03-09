@@ -28,5 +28,5 @@ class Note < ApplicationRecord
   has_rich_text :body
   has_rich_text :summary
 
-  scope :ordered, -> { order(id: :asc) }
+  scope :ordered, -> { order(id: :desc) }
 end
