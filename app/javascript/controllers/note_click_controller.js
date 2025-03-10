@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   visit(event) {
@@ -7,6 +8,7 @@ export default class extends Controller {
       return
     }
     
-    window.location.href = this.element.querySelector('[data-action="click->note-click#visit"]').dataset.noteClickUrl
+    const url = this.element.querySelector('[data-action="click->note-click#visit"]').dataset.noteClickUrl
+    Turbo.visit(url)
   }
 }
