@@ -30,25 +30,6 @@ class GeminiService
     
     prompt = "You are an expert assistant trained in biblical teachings and christian theology and summarizing spoken content into clear, structured, and engaging text. Given the following transcript of a Christian-related talk (sermon, lecture, workshop, or discussion), generate a well-organized and comprehensive summary. Focus on key points, main ideas, and practical takeaways, ensuring readability and logical flow. You should highlight and provide full reference. Maintain accuracy while condensing information. Avoid unnecessary repetition and include relevant Bible references where applicable. Format in markdown for clarity. Here's the transcript:\n\n#{text}"
     
-    # prompt = "You are an expert assistant trained in biblical teachings and christian theology. Summarize the following dermon transcript in a faith-based format with these sections: 
-    
-    # 1. Sermon title and theme
-    # 2. Main points and takeaways (structured and bullet points)
-    # 3. Faith application (how should a christian apply this message?)
-    # 4. Suggested prayer (A short prayer based on the sermon theme)
-
-    # prompt = "You are an expert assistant trained in biblical teachings and Christian theology. Analyze the following sermon transcript and create a structured summary with these sections:
-
-    # 1. Main Theme: One sentence capturing the core message
-    # 2. Key Biblical References: List and briefly explain relevant scripture passages
-    # 3. Core Theological Topics: Identify and explain 2-3 main theological themes
-    # 4. Key Points: 3-5 bullet points of essential takeaways
-    # 5. Application: 2-3 practical ways to apply this message
-
-    # Format in markdown for clarity. Here's the transcript:
-    
-    # :\n\n#{text}"
-    
     request.body = {
       contents: [
         {
@@ -80,5 +61,71 @@ class GeminiService
   rescue StandardError => e
     Rails.logger.error("Gemini API error: #{e.message}")
     "Error generating summary. Please try again later."
+  end
+
+
+
+
+
+  def chat_with_note_context(question, context)
+    return "No context provided" if context.blank?
+    
+    uri = URI("#{BASE_URL}?key=#{@api_key}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    
+    request = Net::HTTP::Post.new(uri)
+    request["Content-Type"] = "application/json"
+    
+    prompt = <<~PROMPT
+      ou are an AI assistant designed to answer questions based on a transcribed Christian-related talk (sermon, lecture, workshop, or discussion).
+      
+      Context:
+      #{context}
+      
+      User question: #{question}
+      
+      Answer concisely and accurately using only the provided context. If the question relates to biblical concepts, reference the Bible where applicable. Do not make assumptions beyond the given content. Structure answers clearly, ensuring theological accuracy and relevance.
+      If the question cannot be answered based on the context, politely say so.
+      
+      Format your response using Markdown for better readability:
+      - Use bullet points for lists
+      - Use **bold** for emphasis
+      - Use > for quotes
+      - Use ### for headings
+      - Use proper formatting for Bible verses (e.g., **John 3:16**)
+    PROMPT
+    
+    request.body = {
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt
+            }
+          ]
+        }
+      ]
+    }.to_json
+    
+    response = http.request(request)
+    
+    if response.is_a?(Net::HTTPSuccess)
+      result = JSON.parse(response.body)
+      if result["candidates"] && !result["candidates"].empty?
+        markdown_text = result["candidates"][0]["content"]["parts"][0]["text"]
+        # Convert markdown to HTML for proper formatting
+        html_content = @markdown.render(markdown_text)
+        return html_content
+      else
+        return "I couldn't find an answer to your question in the provided context."
+      end
+    else
+      Rails.logger.error("Gemini API error: #{response.body}")
+      return "I'm sorry, I encountered an error processing your request. Please try again."
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error in Gemini chat: #{e.message}")
+    "I'm sorry, I encountered an error processing your request. Please try again."
   end
 end

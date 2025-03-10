@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_08_103523) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_10_111132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,11 +62,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_08_103523) do
     t.index ["book", "chapter", "verse"], name: "index_bible_verses_on_book_and_chapter_and_verse", unique: true
   end
 
+  create_table "note_chats", force: :cascade do |t|
+    t.bigint "note_id", null: false
+    t.bigint "user_id", null: false
+    t.text "content", null: false
+    t.string "role", null: false
+    t.boolean "processing", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["note_id"], name: "index_note_chats_on_note_id"
+    t.index ["user_id"], name: "index_note_chats_on_user_id"
+  end
+
   create_table "notes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", null: false
-    t.text "transcription"
-    t.text "summary"
     t.string "language", default: "en"
     t.string "audio_url"
     t.datetime "created_at", null: false
@@ -102,6 +112,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_08_103523) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "note_chats", "notes"
+  add_foreign_key "note_chats", "users"
   add_foreign_key "notes", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "summaries", "notes"

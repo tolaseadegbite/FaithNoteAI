@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get "/documentation", to: "pages#documentation"
 
   resources :notes do
+    resources :note_chats, only: [:create]
     member do
       post :generate_summary
     end
