@@ -6,7 +6,7 @@
     <%= render 'notes/components/note_meta', note: @note %>
   </div>
 
-  <div class="border-b border-gray-200 dark:border-gray-700">
+  <div class="sticky top-0 md:top-14 z-10 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-700">
     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center justify-between md:justify-start px-4">
       <li class="mr-1">
         <%= link_to note_path(@note, tab: 'transcription'), 
