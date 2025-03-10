@@ -4,6 +4,13 @@
   <div class="px-4 py-2">
     <h1 class="font-bold text-xl mb-3"><%= @note.title %></h1>
     <%= render 'notes/components/note_meta', note: @note %>
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      <% if @note.updated_at > @note.created_at + 1.minute %>
+        Updated <%= time_ago_in_words(@note.updated_at) %> ago
+      <% else %>
+        Created <%= time_ago_in_words(@note.created_at) %> ago
+      <% end %>
+    </div>
   </div>
 
   <div class="sticky top-0 md:top-14 z-10 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-700">
