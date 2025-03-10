@@ -1,4 +1,4 @@
-<div data-controller="note-click" class="text-gray-800 dark:text-white border-t border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 hover:rounded-lg group cursor-pointer">
+<div data-controller="note-click" class="text-gray-800 dark:text-white border-t border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 group cursor-pointer">
     <div class="p-4" data-action="click->note-click#visit" data-note-click-url="<%= note_path(note) %>">
         <%= render 'notes/components/note_meta', note: note %>
 

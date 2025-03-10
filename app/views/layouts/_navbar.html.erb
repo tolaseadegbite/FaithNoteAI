@@ -48,7 +48,7 @@
               <img class="w-8 h-8 rounded-full cursor-pointer" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
             </button>
             
-            <div data-dropdown-target="menu" class="absolute right-0 top-full mt-3 z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-black border border-gray-500 dark:border-gray-100">
+            <div data-dropdown-target="menu" class="absolute right-0 top-full mt-3 z-50 hidden bg-white rounded-lg shadow-sm w-44 dark:bg-black border border-gray-200 dark:border-gray-700">
               <div class="px-4 py-3" role="none">
                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                   Neil Sims
@@ -59,14 +59,14 @@
               </div>
               <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" role="none">
                 <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500" role="menuitem">Dashboard</a>
+                  <a href="#" class="block px-4 py-2 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500 border-t border-gray-200 dark:border-gray-700" role="menuitem">Dashboard</a>
                 </li>
                 <li>
                   <a href="#" class="block px-4 py-2 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500" role="menuitem">Settings</a>
                 </li>
                 <li>
                   <%= link_to 'Sign out', session_path, method: :delete, 
-                    class: "block px-4 py-2 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500 border-t dark:border-gray-300" %>
+                    class: "block px-4 py-2 hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500 border-t border-gray-200 dark:border-gray-700" %>
                 </li>
               </ul>
             </div>
