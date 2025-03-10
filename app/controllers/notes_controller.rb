@@ -6,7 +6,7 @@ class NotesController < ApplicationController
   end
 
   def show
-    
+    @current_tab = params[:tab] || 'transcription'
   end
 
   def new

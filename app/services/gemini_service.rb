@@ -28,16 +28,26 @@ class GeminiService
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     
-    # prompt = "You are an expert assistant skilled in summarizing spoken content into clear, structured, and engaging text. Given the following transcript of a Christian-related talk (sermon, lecture, workshop, or discussion), generate a well-organized and comprehensive summary. Focus on key points, main ideas, and practical takeaways, ensuring readability and logical flow. Maintain accuracy while condensing information. Avoid unnecessary repetition and include relevant Bible references where applicable. Format your response in markdown with headings, bullet points, and bold text for emphasis:\n\n#{text}"
+    prompt = "You are an expert assistant trained in biblical teachings and christian theology and summarizing spoken content into clear, structured, and engaging text. Given the following transcript of a Christian-related talk (sermon, lecture, workshop, or discussion), generate a well-organized and comprehensive summary. Focus on key points, main ideas, and practical takeaways, ensuring readability and logical flow. You should highlight and provide full reference. Maintain accuracy while condensing information. Avoid unnecessary repetition and include relevant Bible references where applicable. Format in markdown for clarity. Here's the transcript:\n\n#{text}"
     
-    prompt = "You are an expert assistant trained in biblical teachings and christian theology. Summarize the following dermon transcript in a faith-based format with these sections: 
+    # prompt = "You are an expert assistant trained in biblical teachings and christian theology. Summarize the following dermon transcript in a faith-based format with these sections: 
     
-    1. Sermon title and theme
-    3. Main points and takeaways (structured and bullet points)
-    4. Faith application (how should a christian apply this message?)
-    5. Suggested prayer (A short prayer based on the sermon theme)
+    # 1. Sermon title and theme
+    # 2. Main points and takeaways (structured and bullet points)
+    # 3. Faith application (how should a christian apply this message?)
+    # 4. Suggested prayer (A short prayer based on the sermon theme)
+
+    # prompt = "You are an expert assistant trained in biblical teachings and Christian theology. Analyze the following sermon transcript and create a structured summary with these sections:
+
+    # 1. Main Theme: One sentence capturing the core message
+    # 2. Key Biblical References: List and briefly explain relevant scripture passages
+    # 3. Core Theological Topics: Identify and explain 2-3 main theological themes
+    # 4. Key Points: 3-5 bullet points of essential takeaways
+    # 5. Application: 2-3 practical ways to apply this message
+
+    # Format in markdown for clarity. Here's the transcript:
     
-    :\n\n#{text}"
+    # :\n\n#{text}"
     
     request.body = {
       contents: [

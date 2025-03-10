@@ -1,10 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["transcription", "summary", "button"]
+  static targets = ["transcription", "summary", "button", "progress", "spinner"]
   
   connect() {
     console.log("Summary controller connected")
+    this.progress = 0
   }
   
   async generate(event) {
@@ -13,14 +14,15 @@ export default class extends Controller {
     const button = this.buttonTarget
     const originalText = button.innerHTML
     button.disabled = true
-    button.innerHTML = "Generating..."
+    this.spinnerTarget.classList.remove("hidden")
+    this.progressTarget.classList.remove("hidden")
+    this.startProgressSimulation()
     
     const transcription = this.transcriptionTarget.value
     
     if (!transcription) {
       alert("Please enter a transcription first")
-      button.disabled = false
-      button.innerHTML = originalText
+      this.resetUI(originalText)
       return
     }
     
@@ -37,15 +39,13 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json()
         
-        // For Action Text editor
         if (this.summaryTarget.querySelector("trix-editor")) {
           const trixEditor = this.summaryTarget.querySelector("trix-editor")
-          // The summary is already HTML, so we can load it directly
           trixEditor.editor.loadHTML(data.summary)
         } else {
-          // For regular textarea
           this.summaryTarget.value = data.summary
         }
+        this.completeProgress()
       } else {
         const error = await response.json()
         alert(`Error: ${error.error || "Failed to generate summary"}`)
@@ -54,8 +54,36 @@ export default class extends Controller {
       console.error("Error generating summary:", error)
       alert("An error occurred while generating the summary")
     } finally {
-      button.disabled = false
-      button.innerHTML = originalText
+      setTimeout(() => this.resetUI(originalText), 500)
     }
+  }
+
+  startProgressSimulation() {
+    this.progressInterval = setInterval(() => {
+      if (this.progress < 90) {
+        this.progress += Math.random() * 15
+        this.updateProgressBar()
+      }
+    }, 500)
+  }
+
+  completeProgress() {
+    clearInterval(this.progressInterval)
+    this.progress = 100
+    this.updateProgressBar()
+  }
+
+  updateProgressBar() {
+    this.progressTarget.style.width = `${Math.min(this.progress, 100)}%`
+  }
+
+  resetUI(originalText) {
+    clearInterval(this.progressInterval)
+    this.progress = 0
+    this.updateProgressBar()
+    this.buttonTarget.disabled = false
+    this.buttonTarget.innerHTML = originalText
+    this.spinnerTarget.classList.add("hidden")
+    this.progressTarget.classList.add("hidden")
   }
 }
