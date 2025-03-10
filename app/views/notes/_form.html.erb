@@ -9,7 +9,7 @@
       <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:title].none?, "border-red-400 focus:outline-red-600": note.errors[:title].any?}] %>
     </div>
 
-    <div class="mb-5">
+    <div class="mb-8">
       <%= form.label :transcription, class: "block text-sm font-semibold mb-2" %>
       <%= form.rich_text_area :transcription, placeholder: "Description", class: ["text-sm h-100 mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:transcription].none?, "border-red-400 focus:outline-red-600": note.errors[:transcription].any?}], data: { summary_target: "transcription" } %>
     </div>
@@ -21,10 +21,10 @@
         </span>
       </div>
       <div data-summary-target="summary">
-        <%= form.rich_text_area :summary, placeholder: "Summary", class: ["h-50 text-sm mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:summary].none?, "border-red-400 focus:outline-red-600": note.errors[:summary].any?}] %>
+        <%= form.rich_text_area :summary, placeholder: "Summary", class: ["h-100 text-sm mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:summary].none?, "border-red-400 focus:outline-red-600": note.errors[:summary].any?}] %>
       </div>
 
-      <div class="mt-5 relative pt-1">
+      <div class="mt-7 mb-3 relative pt-1">
         <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-200">
           <div data-summary-target="progress" class="hidden transition-all duration-300 ease-out bg-yellow-500 w-0"></div>
         </div>
