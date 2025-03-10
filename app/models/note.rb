@@ -25,7 +25,7 @@ class Note < ApplicationRecord
   belongs_to :user
   has_many :summaries, dependent: :destroy
 
-  has_rich_text :body
+  has_rich_text :transcription
   has_rich_text :summary
 
   scope :ordered, -> { order(id: :desc) }

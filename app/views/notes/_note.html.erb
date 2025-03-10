@@ -3,6 +3,6 @@
         <%= render 'notes/components/note_meta', note: note %>
 
         <h2 class="text-lg font-semibold"><%= link_to note.title, note %></h2>
-        <p class="text-sm mt-2"><%= link_to sanitize(note.transcription.truncate(170)), note %></p>
+        <p class="text-sm mt-2"><%= link_to sanitize(truncate(note.transcription.to_plain_text, length: 170)), note %></p>
     </div>
 </div>
