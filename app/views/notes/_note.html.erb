@@ -1,8 +1,12 @@
-<div class="text-gray-800 dark:text-white border-t border-gray-200 dark:border-gray-700 dark:hover:bg-gray-950 hover:rounded-lg hover:bg-gray-100">
+<div class="text-gray-800 dark:text-white border-t border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 hover:rounded-lg group">
     <div class="p-4">
         <%= render 'notes/components/note_meta', note: note %>
 
-        <h2 class="text-lg font-semibold"><%= link_to note.title, note %></h2>
-        <p class="text-sm mt-2"><%= link_to sanitize(truncate(note.transcription.to_plain_text, length: 170)), note %></p>
+        <h2 class="text-lg font-semibold group-hover:text-green-600 dark:group-hover:text-green-500">
+            <%= link_to note.title, note %>
+        </h2>
+        <p class="text-sm mt-2 text-gray-600 dark:text-gray-300">
+            <%= link_to sanitize(truncate(note.transcription.to_plain_text, length: 170)), note %>
+        </p>
     </div>
 </div>
