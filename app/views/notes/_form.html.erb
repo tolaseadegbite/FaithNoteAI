@@ -1,4 +1,4 @@
-<div class="p-5">
+<div class="">
   <%= form_with(model: note, data: { controller: "summary", summary_url: note.persisted? ? generate_summary_note_path(note) : generate_summary_notes_path 
       }, 
       class: "w-full") do |form| %>
@@ -6,12 +6,12 @@
 
     <div class="mb-5">
       <%= form.label :title, class: "block text-sm font-semibold" %>
-      <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:title].none?, "border-red-400 focus:outline-red-600": note.errors[:title].any?}] %>
+      <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-[#121212] dark:text-gray-100 border-gray-300 dark:border-[#121212] text-gray-700", {"": note.errors[:title].none?, "border-red-400 focus:outline-red-600": note.errors[:title].any?}] %>
     </div>
 
     <div class="mb-8">
       <%= form.label :transcription, class: "block text-sm font-semibold mb-2" %>
-      <%= form.rich_text_area :transcription, placeholder: "Description", class: ["text-sm h-100 mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:transcription].none?, "border-red-400 focus:outline-red-600": note.errors[:transcription].any?}], data: { summary_target: "transcription" } %>
+      <%= form.rich_text_area :transcription, placeholder: "Transcription", class: ["text-sm h-100 mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:transcription].none?, "border-red-400 focus:outline-red-600": note.errors[:transcription].any?}], data: { summary_target: "transcription" } %>
     </div>
 
     <div class="mb-5">

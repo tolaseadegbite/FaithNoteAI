@@ -62,6 +62,27 @@ class NotesController < ApplicationController
     end
   end
 
+  # Add this method to your NotesController
+  def quick_record
+    @note = current_user.notes.build(
+      title: "Quick Recording - #{Time.current.strftime('%b %d, %Y')}"
+    )
+    
+    if params[:note] && params[:note][:audio_file].present?
+      # Process the audio file
+      # This would involve saving the file and potentially starting a background job for transcription
+      
+      if @note.save
+        # Return JSON response for the AJAX request
+        render json: { id: @note.id, status: 'success' }, status: :created
+      else
+        render json: { errors: @note.errors.full_messages, status: 'error' }, status: :unprocessable_entity
+      end
+    else
+      render json: { errors: ['No audio file provided'], status: 'error' }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def notes_param

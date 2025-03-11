@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     end
     collection do
       post :generate_summary
+      post :quick_record
     end
   end
 end

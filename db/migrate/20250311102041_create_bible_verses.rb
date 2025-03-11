@@ -5,10 +5,12 @@ class CreateBibleVerses < ActiveRecord::Migration[8.0]
       t.integer :chapter, null: false
       t.integer :verse, null: false
       t.text :content, null: false
+      t.string :translation, null: false, default: "KJV"
+      t.string :language, null: false, default: "en"
 
       t.timestamps
     end
 
-    add_index :bible_verses, [:book, :chapter, :verse], unique: true
+    add_index :bible_verses, [:book, :chapter, :verse, :translation, :language], unique: true, name: 'index_bible_verses_on_reference_and_translation'
   end
 end

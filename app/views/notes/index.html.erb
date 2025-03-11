@@ -7,10 +7,36 @@
     <% if @notes.any? %>
         <%= render @notes %>
     <% else %>
-        <p class="text-sm text-gray-600">There are no uploaded notes</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 px-4">There are no uploaded notes</p>
     <% end %>
 </div>
 
-<div class="fixed bottom-20 right-10 cursor-pointer bg-white p-1 border border-gray-400 rounded-full">
-    <div class="rounded-full bg-red-500 w-13 h-13 hover:bg-red-700"></div>
+<div data-controller="audio-recorder" class="fixed bottom-20 right-10 z-20">
+    <button data-action="click->audio-recorder#toggleRecording" 
+            data-audio-recorder-target="button"
+            class="flex items-center justify-center w-16 h-16 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-300 dark:border-gray-600 hover:shadow-xl transition-all duration-300 focus:outline-none cursor-pointer group">
+        <div data-audio-recorder-target="recordIcon" class="w-10 h-10 bg-red-500 group-hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+        </div>
+        <div data-audio-recorder-target="stopIcon" class="hidden w-10 h-10 bg-red-500 group-hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+            </svg>
+        </div>
+    </button>
+    
+    <div data-audio-recorder-target="recordingIndicator" class="hidden absolute -top-10 left-1/2 transform -translate-x-1/2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-3 py-1 rounded-full text-sm font-medium animate-pulse">
+        Recording...
+    </div>
+    
+    <div data-audio-recorder-target="timer" class="hidden absolute -top-10 right-0 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs">
+        00:00
+    </div>
+    
+    <div data-audio-recorder-target="tooltip" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        Quick Record
+    </div>
 </div>

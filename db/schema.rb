@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_10_111132) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_11_102041) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,9 +57,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_10_111132) do
     t.integer "chapter", null: false
     t.integer "verse", null: false
     t.text "content", null: false
+    t.string "translation", default: "KJV", null: false
+    t.string "language", default: "en", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["book", "chapter", "verse"], name: "index_bible_verses_on_book_and_chapter_and_verse", unique: true
+    t.index ["book", "chapter", "verse", "translation", "language"], name: "index_bible_verses_on_reference_and_translation", unique: true
   end
 
   create_table "note_chats", force: :cascade do |t|
