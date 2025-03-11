@@ -71,3 +71,5 @@ group :test do
 end
 
 gem "redcarpet", "~> 3.6"
+
+gem "csv", "~> 3.3"
