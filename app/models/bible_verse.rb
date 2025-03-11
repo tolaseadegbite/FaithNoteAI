@@ -77,6 +77,17 @@ class BibleVerse < ApplicationRecord
   def full_text
     "#{reference} - #{content}"
   end
+
+  def reference
+    base = "#{book} #{chapter}:#{verse}"
+    if translation == "KJV" && language == "en"
+      base
+    elsif ["NIV", "NASB"].include?(translation) && language == "en"
+      "#{base} (#{translation})"
+    else
+      "#{base} (#{translation}, #{language_name})"
+    end
+  end
   
   private
   
