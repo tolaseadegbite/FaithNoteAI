@@ -28,4 +28,13 @@ Rails.application.routes.draw do
       post :quick_record
     end
   end
+
+  resources :bible_verses, only: [:index], path: 'bible' do
+    collection do
+      get 'search'
+    end
+  end
+  
+  get 'bible/:book/:chapter/:verse', to: 'bible_verses#show', as: 'bible_verse'
+  get 'bible/:book/:chapter', to: 'bible_verses#chapter', as: 'bible_chapter'
 end

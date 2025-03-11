@@ -1,0 +1,101 @@
+class BibleVersesController < ApplicationController
+  before_action :set_bible_books, only: [:index, :show, :chapter]
+
+  def index
+    # Display all Bible books
+    @grouped_books = {
+      "Old Testament" => @bible_books.select { |book| old_testament_books.include?(book) },
+      "New Testament" => @bible_books.select { |book| new_testament_books.include?(book) }
+    }
+  end
+
+  def show
+    # Show a specific verse
+    @verse = BibleVerse.find_verse(params[:book], params[:chapter].to_i, params[:verse].to_i)
+    
+    if @verse.nil?
+      flash[:alert] = "Verse not found"
+      redirect_to bible_verses_path
+    end
+  end
+
+  def chapter
+    # Show all verses in a chapter
+    @book = params[:book]
+    @chapter = params[:chapter].to_i
+    @verses = BibleVerse.find_chapter(@book, @chapter)
+    
+    if @verses.empty?
+      flash[:alert] = "Chapter not found"
+      redirect_to bible_verses_path
+    end
+    
+    # Get chapter count for navigation
+    @chapter_count = BibleVerse.where(book: @book).select(:chapter).distinct.count
+  end
+
+  def search
+    @query = params[:q]
+    
+    if @query.present?
+      # Try to parse as a reference first (e.g., "John 3:16")
+      if @query.match?(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/)
+        book = $1.strip
+        chapter = $2.to_i
+        verse = $3.to_i if $3
+        
+        if verse
+          # Specific verse reference
+          @verse = BibleVerse.find_verse(book, chapter, verse)
+          if @verse
+            redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse)
+            return
+          end
+        else
+          # Chapter reference
+          @verses = BibleVerse.find_chapter(book, chapter)
+          if @verses.any?
+            redirect_to bible_chapter_path(book: book, chapter: chapter)
+            return
+          end
+        end
+      end
+      
+      # If not a valid reference or not found, search by content
+      @results = BibleVerse.where("content ILIKE ?", "%#{@query}%").limit(50)
+    else
+      @results = []
+    end
+  end
+
+  private
+
+  def set_bible_books
+    @bible_books = BibleVerse.select(:book).distinct.pluck(:book).sort
+  end
+
+  def old_testament_books
+    [
+      "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+      "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel",
+      "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles",
+      "Ezra", "Nehemiah", "Esther", "Job", "Psalms",
+      "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
+      "Jeremiah", "Lamentations", "Ezekiel", "Daniel",
+      "Hosea", "Joel", "Amos", "Obadiah", "Jonah",
+      "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
+      "Zechariah", "Malachi"
+    ]
+  end
+
+  def new_testament_books
+    [
+      "Matthew", "Mark", "Luke", "John", "Acts",
+      "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
+      "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
+      "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
+      "James", "1 Peter", "2 Peter", "1 John", "2 John",
+      "3 John", "Jude", "Revelation"
+    ]
+  end
+end

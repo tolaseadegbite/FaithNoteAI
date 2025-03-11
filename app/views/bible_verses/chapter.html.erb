@@ -1,0 +1,67 @@
+<% content_for :title, "#{@book} #{@chapter}" %>
+
+<div class="max-w-screen-lg mx-auto">
+  <div class="py-4 px-4 flex items-center justify-between">
+    <%= link_to bible_verses_path, class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Books
+    <% end %>
+    <h1 class="font-bold text-xl text-gray-800 dark:text-white"><%= @book %> <%= @chapter %></h1>
+    <div class="flex space-x-2">
+      <% if @chapter > 1 %>
+        <%= link_to bible_chapter_path(book: @book, chapter: @chapter - 1), 
+                  class: "px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        <% end %>
+      <% end %>
+      <% if @chapter < @chapter_count %>
+        <%= link_to bible_chapter_path(book: @book, chapter: @chapter + 1), 
+                  class: "px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  
+  <div class="px-4 mb-4">
+    <select id="chapter-select" class="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white" onchange="window.location.href=this.value">
+      <% (1..@chapter_count).each do |ch| %>
+        <option value="<%= bible_chapter_path(book: @book, chapter: ch) %>" <%= 'selected' if ch == @chapter %>>
+          Chapter <%= ch %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+  
+  <div class="px-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 bible-chapter-container">
+      <% @verses.each do |verse| %>
+        <div id="verse-<%= verse.verse %>" class="mb-4 group" data-controller="bible-verse">
+          <div class="flex">
+            <a href="<%= bible_verse_path(book: verse.book, chapter: verse.chapter, verse: verse.verse) %>" 
+               class="font-semibold text-green-600 dark:text-green-500 mr-2 hover:underline"
+               data-bible-verse-target="reference">
+              <%= verse.verse %>
+            </a>
+            <div class="flex-grow text-gray-800 dark:text-white" data-bible-verse-target="content">
+              <%= verse.content %>
+            </div>
+            <button data-action="bible-verse#copy" 
+                    class="opacity-0 group-hover:opacity-100 ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
