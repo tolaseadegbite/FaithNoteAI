@@ -3,10 +3,8 @@ class BibleVersesController < ApplicationController
 
   def index
     # Display all Bible books
-    @grouped_books = {
-      "Old Testament" => @bible_books.select { |book| old_testament_books.include?(book) },
-      "New Testament" => @bible_books.select { |book| new_testament_books.include?(book) }
-    }
+    @old_testament_books = old_testament_books
+    @new_testament_books = new_testament_books
   end
 
   def show
@@ -39,24 +37,29 @@ class BibleVersesController < ApplicationController
     
     if @query.present?
       # Try to parse as a reference first (e.g., "John 3:16")
-      if @query.match?(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/)
-        book = $1.strip
-        chapter = $2.to_i
-        verse = $3.to_i if $3
+      if @query.match?(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/i)
+        # Use match instead of match? to capture the groups
+        match_data = @query.match(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/i)
         
-        if verse
-          # Specific verse reference
-          @verse = BibleVerse.find_verse(book, chapter, verse)
-          if @verse
-            redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse)
-            return
-          end
-        else
-          # Chapter reference
-          @verses = BibleVerse.find_chapter(book, chapter)
-          if @verses.any?
-            redirect_to bible_chapter_path(book: book, chapter: chapter)
-            return
+        if match_data
+          book = match_data[1].strip
+          chapter = match_data[2].to_i
+          verse = match_data[3].to_i if match_data[3]
+          
+          if verse
+            # Specific verse reference
+            @verse = BibleVerse.find_verse(book, chapter, verse)
+            if @verse
+              redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse)
+              return
+            end
+          else
+            # Chapter reference
+            @verses = BibleVerse.find_chapter(book, chapter)
+            if @verses.any?
+              redirect_to bible_chapter_path(book: book, chapter: chapter)
+              return
+            end
           end
         end
       end

@@ -1,72 +1,87 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="mb-6">
-    <%= link_to "← Back to #{@verse.book} #{@verse.chapter}", 
-                bible_chapter_path(book: @verse.book, chapter: @verse.chapter), 
-                class: "text-blue-500 hover:underline" %>
+<% content_for :title, @verse.reference %>
+
+<div class="max-w-screen-lg mx-auto">
+  <div class="py-4 px-4 flex items-center">
+    <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter), 
+                class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to <%= @verse.book %> <%= @verse.chapter %>
+    <% end %>
   </div>
   
-  <div class="bg-white rounded-lg shadow p-6">
-    <h1 class="text-2xl font-bold mb-4"><%= @verse.reference %></h1>
-    
-    <div class="text-xl mb-6">
-      <%= @verse.content %>
-    </div>
-    
-    <div class="flex justify-between">
-      <div>
+  <div class="px-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6" data-controller="bible-verse">
+      <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white" data-bible-verse-target="reference"><%= @verse.reference %></h1>
+      
+      <div class="text-xl mb-6 text-gray-800 dark:text-white" data-bible-verse-target="content">
+        <%= @verse.content %>
+      </div>
+      
+      <div class="flex justify-between items-center">
         <% prev_verse = BibleVerse.where(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse - 1).first %>
         <% if prev_verse %>
-          <%= link_to "← Previous Verse", 
-                      bible_verse_path(book: prev_verse.book, chapter: prev_verse.chapter, verse: prev_verse.verse),
-                      class: "text-blue-500 hover:underline" %>
+          <%= link_to bible_verse_path(book: prev_verse.book, chapter: prev_verse.chapter, verse: prev_verse.verse),
+                    class: "flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous Verse
+          <% end %>
         <% elsif @verse.verse == 1 && @verse.chapter > 1 %>
           <% last_verse_of_prev_chapter = BibleVerse.where(book: @verse.book, chapter: @verse.chapter - 1)
                                                    .order(verse: :desc).first %>
           <% if last_verse_of_prev_chapter %>
-            <%= link_to "← Previous Chapter", 
-                        bible_verse_path(book: last_verse_of_prev_chapter.book, 
+            <%= link_to bible_verse_path(book: last_verse_of_prev_chapter.book, 
                                         chapter: last_verse_of_prev_chapter.chapter, 
                                         verse: last_verse_of_prev_chapter.verse),
-                        class: "text-blue-500 hover:underline" %>
+                      class: "flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous Verse
+            <% end %>
           <% end %>
+        <% else %>
+          <div class="invisible px-4 py-2">Placeholder</div>
         <% end %>
-      </div>
-      
-      <button onclick="copyVerse('<%= @verse.reference %>', '<%= @verse.content %>')" 
-              class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-        </svg>
-        Copy
-      </button>
-      
-      <div>
+        
+        <button data-action="bible-verse#copy" 
+                class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          Copy
+        </button>
+        
         <% next_verse = BibleVerse.where(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse + 1).first %>
         <% if next_verse %>
-          <%= link_to "Next Verse →", 
-                      bible_verse_path(book: next_verse.book, chapter: next_verse.chapter, verse: next_verse.verse),
-                      class: "text-blue-500 hover:underline" %>
+          <%= link_to bible_verse_path(book: next_verse.book, chapter: next_verse.chapter, verse: next_verse.verse),
+                    class: "flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+            Next Verse
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          <% end %>
         <% else %>
           <% first_verse_of_next_chapter = BibleVerse.where(book: @verse.book, chapter: @verse.chapter + 1, verse: 1).first %>
           <% if first_verse_of_next_chapter %>
-            <%= link_to "Next Chapter →", 
-                        bible_verse_path(book: first_verse_of_next_chapter.book, 
+            <%= link_to bible_verse_path(book: first_verse_of_next_chapter.book, 
                                         chapter: first_verse_of_next_chapter.chapter, 
                                         verse: first_verse_of_next_chapter.verse),
-                        class: "text-blue-500 hover:underline" %>
+                      class: "flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+              Next Verse
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            <% end %>
+          <% else %>
+            <div class="invisible px-4 py-2">Placeholder</div>
           <% end %>
         <% end %>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  function copyVerse(reference, content) {
-    const textToCopy = `${reference} - ${content}`;
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      // Show a temporary notification
-      const notification = document.createElement('div');
-      notification.textContent = 'Copied to clipboard!';
-      notification.className = 'fixe
