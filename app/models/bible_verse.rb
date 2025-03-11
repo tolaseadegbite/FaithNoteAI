@@ -39,17 +39,27 @@ class BibleVerse < ApplicationRecord
   
   # Class methods for lookup with caching
   def self.find_verse(book, chapter, verse, translation = "KJV", language = "en")
-    Rails.cache.fetch("bible_verse/#{language}/#{translation}/#{book}/#{chapter}/#{verse}", expires_in: 1.week) do
-      by_reference(book, chapter, verse)
+    # Normalize book name for case-insensitive search
+    normalized_book = book.is_a?(String) ? book.titleize : book
+    
+    Rails.cache.fetch("bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/#{verse}", expires_in: 1.week) do
+      # Use ILIKE for case-insensitive search on PostgreSQL
+      where("LOWER(book) = LOWER(?)", normalized_book)
+        .where(chapter: chapter, verse: verse)
         .with_translation(translation)
         .with_language(language)
         .first
     end
   end
-  
+
   def self.find_chapter(book, chapter, translation = "KJV", language = "en")
-    Rails.cache.fetch("bible_chapter/#{language}/#{translation}/#{book}/#{chapter}", expires_in: 1.week) do
-      by_reference(book, chapter)
+    # Normalize book name for case-insensitive search
+    normalized_book = book.is_a?(String) ? book.titleize : book
+    
+    Rails.cache.fetch("bible_chapter/#{language}/#{translation}/#{normalized_book}/#{chapter}", expires_in: 1.week) do
+      # Use ILIKE for case-insensitive search on PostgreSQL
+      where("LOWER(book) = LOWER(?)", normalized_book)
+        .where(chapter: chapter)
         .with_translation(translation)
         .with_language(language)
         .order(:verse)
