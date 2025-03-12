@@ -54,79 +54,79 @@
         </p>
         
         <div class="text-gray-800 dark:text-white max-w-none divide-y divide-gray-200 dark:divide-gray-700">
-            <% @results.each do |verse| %>
-                <div class="py-4 group relative" data-controller="bible-verse">
-                    <div class="pr-8">
-                        <h3 class="font-semibold text-green-600 dark:text-green-500 mb-1">
-                            <%= link_to "#{verse.book} #{verse.chapter}:#{verse.verse} (#{verse.translation})", 
-                                    bible_verse_path(book: verse.book, chapter: verse.chapter, verse: verse.verse, translation: verse.translation),
-                                    class: "hover:underline" %>
-                        </h3>
-                        <p data-bible-verse-target="content">
-                            <%= highlight(verse.content, @highlight_query, highlighter: '<span class="bg-yellow-100 dark:bg-yellow-900 font-medium">\1</span>', case_sensitive: false) %>
-                        </p>
-                        <span class="hidden" data-bible-verse-target="reference"><%= "#{verse.book} #{verse.chapter}:#{verse.verse}" %></span>
-                    </div>
-                    <button 
-                        data-action="bible-verse#copy" 
-                        class="absolute right-0 top-4 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500 cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                    </button>
-                </div>
-            <% end %>
-        </div>
+          <% @results.each do |verse| %>
+            <div class="py-4 group relative text-justify" data-controller="bible-verse">
+              <div class="pr-8">
+                <h3 class="font-semibold text-green-600 dark:text-green-500 mb-1">
+                  <%= link_to "#{verse.book} #{verse.chapter}:#{verse.verse} (#{verse.translation})", 
+                            bible_verse_path(book: verse.book, chapter: verse.chapter, verse: verse.verse, translation: verse.translation),
+                            class: "hover:underline" %>
+                </h3>
+                <p data-bible-verse-target="content">
+                  <%= highlight(verse.content, @highlight_query, highlighter: '<span class="bg-yellow-100 dark:bg-yellow-900 font-medium">\1</span>', case_sensitive: false) %>
+                </p>
+                <span class="hidden" data-bible-verse-target="reference"><%= "#{verse.book} #{verse.chapter}:#{verse.verse}" %></span>
+              </div>
+              <button 
+                data-action="bible-verse#copy" 
+                class="absolute right-0 top-4 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1 text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+              </button>
+            </div>
+          <% end %>
+      </div>
         
         <!-- Pagination -->
         <% if @pagy.pages > 1 %>
-            <div class="mt-6 flex justify-center">
-                <nav class="flex items-center space-x-1">
-                <% if @pagy.prev %>
-                    <%= link_to search_bible_verses_path(q: @query, translation: @translation, page: @pagy.prev), 
-                        class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" do %>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <% end %>
-                <% else %>
-                    <span class="px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    </span>
+          <div class="mt-6 flex justify-center">
+              <nav class="flex items-center space-x-1">
+              <% if @pagy.prev %>
+                <%= link_to search_bible_verses_path(q: @query, translation: @translation, page: @pagy.prev), 
+                  class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
                 <% end %>
+              <% else %>
+                <span class="px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </span>
+              <% end %>
 
-                <% @pagy.series.each do |item| %>
-                    <% if item.is_a?(Integer) %>
-                    <%= link_to item, search_bible_verses_path(q: @query, translation: @translation, page: item), 
-                        class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" %>
-                    <% elsif item.is_a?(String) && item == @pagy.page.to_s %>
-                    <span class="px-3 py-1 rounded-md bg-green-600 dark:bg-green-700 text-white font-medium">
-                        <%= item %>
-                    </span>
-                    <% elsif item == :gap %>
-                    <span class="px-3 py-1 text-gray-500 dark:text-gray-400">...</span>
-                    <% end %>
-                <% end %>
+              <% @pagy.series.each do |item| %>
+                  <% if item.is_a?(Integer) %>
+                  <%= link_to item, search_bible_verses_path(q: @query, translation: @translation, page: item), 
+                      class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" %>
+                  <% elsif item.is_a?(String) && item == @pagy.page.to_s %>
+                  <span class="px-3 py-1 rounded-md bg-green-600 dark:bg-green-700 text-white font-medium">
+                      <%= item %>
+                  </span>
+                  <% elsif item == :gap %>
+                  <span class="px-3 py-1 text-gray-500 dark:text-gray-400">...</span>
+                  <% end %>
+              <% end %>
 
-                <% if @pagy.next %>
-                    <%= link_to search_bible_verses_path(q: @query, translation: @translation, page: @pagy.next), 
-                        class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" do %>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                    <% end %>
-                <% else %>
-                    <span class="px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                    </span>
-                <% end %>
-                </nav>
-            </div>
+              <% if @pagy.next %>
+                  <%= link_to search_bible_verses_path(q: @query, translation: @translation, page: @pagy.next), 
+                      class: "px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  <% end %>
+              <% else %>
+                  <span class="px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  </span>
+              <% end %>
+              </nav>
+          </div>
         <% end %>
         
       <% else %>
