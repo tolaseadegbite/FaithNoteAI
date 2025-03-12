@@ -10,17 +10,10 @@ class BibleChatsController < ApplicationController
   def create
     @message = current_user.bible_chat_messages.build(message_params)
     @translation = params[:translation] || "KJV"
-
+  
     if @message.save
-      # Create a processing message from the assistant
-      @assistant_message = current_user.bible_chat_messages.create!(
-        content: "Searching the Bible...",
-        role: "assistant",
-        processing: true
-      )
-
       # Process the message in the background
-      BibleChatJob.perform_later(@message, @assistant_message, @translation)
+      BibleChatJob.perform_later(@message, @translation)
       
       respond_to do |format|
         format.turbo_stream

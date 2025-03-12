@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   resources :bible_chats, only: [:index, :create] do
     collection do
       delete :clear
+      patch :update_translation
     end
   end
   

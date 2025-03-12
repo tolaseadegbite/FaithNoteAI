@@ -128,4 +128,71 @@ class GeminiService
     Rails.logger.error("Error in Gemini chat: #{e.message}")
     "I'm sorry, I encountered an error processing your request. Please try again."
   end
+
+
+
+
+
+  def chat_with_bible(question, translation = "KJV")
+    return "No question provided" if question.blank?
+    
+    uri = URI("#{BASE_URL}?key=#{@api_key}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    
+    request = Net::HTTP::Post.new(uri)
+    request["Content-Type"] = "application/json"
+    
+    prompt = <<~PROMPT
+      You are a knowledgeable Bible assistant trained to answer questions about scripture, theology, and biblical concepts.
+      
+      User question: #{question}
+      
+      Preferred Bible translation: #{translation}
+      
+      Answer the question with biblical accuracy, citing relevant scripture verses with their references (e.g., John 3:16). 
+      When quoting scripture, use the #{translation} translation when possible.
+      
+      Format your response using Markdown for better readability:
+      - Use bullet points for lists
+      - Use **bold** for emphasis and scripture references
+      - Use > for quotes from scripture
+      - Use ### for headings
+      - Structure your answer clearly and concisely
+      
+      If you're unsure about an answer, acknowledge the limitations and suggest what scripture might be relevant.
+    PROMPT
+    
+    request.body = {
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt
+            }
+          ]
+        }
+      ]
+    }.to_json
+    
+    response = http.request(request)
+    
+    if response.is_a?(Net::HTTPSuccess)
+      result = JSON.parse(response.body)
+      if result["candidates"] && !result["candidates"].empty?
+        markdown_text = result["candidates"][0]["content"]["parts"][0]["text"]
+        # Convert markdown to HTML for proper formatting
+        html_content = @markdown.render(markdown_text)
+        return html_content
+      else
+        return "I couldn't generate an answer to your Bible question."
+      end
+    else
+      Rails.logger.error("Gemini API error: #{response.body}")
+      return "I'm sorry, I encountered an error processing your request. Please try again."
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error in Bible chat: #{e.message}")
+    "I'm sorry, I encountered an error processing your request. Please try again."
+  end
 end

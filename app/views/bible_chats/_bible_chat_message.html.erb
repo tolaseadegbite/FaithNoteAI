@@ -10,9 +10,18 @@
         <span><%= bible_chat_message.content %></span>
       </div>
     <% else %>
-      <div class="prose dark:prose-invert max-w-none">
-        <%= bible_chat_message.content %>
-      </div>
+      <% if bible_chat_message.role == 'assistant' %>
+        <div class="prose prose-sm dark:prose-invert max-w-none 
+          prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
+          prose-p:my-2 prose-ul:my-2 prose-li:my-1 
+          prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
+          prose-a:text-green-600 dark:prose-a:text-green-400
+          prose-strong:text-gray-800 dark:prose-strong:text-gray-200">
+          <%= sanitize(bible_chat_message.content) %>
+        </div>
+      <% else %>
+        <%= simple_format(bible_chat_message.content, class: "whitespace-pre-wrap") %>
+      <% end %>
     <% end %>
     <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
       <%= bible_chat_message.created_at.strftime("%I:%M %p") %>
