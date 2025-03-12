@@ -1,15 +1,18 @@
 class BibleVersesController < ApplicationController
   before_action :set_bible_books, only: [:index, :show, :chapter]
+  before_action :set_translations, only: [:index, :show, :chapter]
 
   def index
     # Display all Bible books
     @old_testament_books = old_testament_books
     @new_testament_books = new_testament_books
+    @translation = params[:translation] || "KJV"
   end
 
   def show
     # Show a specific verse
-    @verse = BibleVerse.find_verse(params[:book], params[:chapter].to_i, params[:verse].to_i)
+    @translation = params[:translation] || "KJV"
+    @verse = BibleVerse.find_verse(params[:book], params[:chapter].to_i, params[:verse].to_i, @translation)
     
     if @verse.nil?
       flash[:alert] = "Verse not found"
@@ -21,15 +24,19 @@ class BibleVersesController < ApplicationController
     # Show all verses in a chapter
     @book = params[:book]
     @chapter = params[:chapter].to_i
-    @verses = BibleVerse.find_chapter(@book, @chapter)
+    @translation = params[:translation] || "KJV"
+    
+    @verses = BibleVerse.find_chapter(@book, @chapter, @translation)
     
     if @verses.empty?
       flash[:alert] = "Chapter not found"
       redirect_to bible_verses_path
+      return
     end
     
-    # Get chapter count for navigation
-    @chapter_count = BibleVerse.where(book: @book).select(:chapter).distinct.count
+    # Get chapter count for the book
+    @chapter_count = BibleVerse.where(book: @book, translation: @translation)
+                              .select(:chapter).distinct.count
   end
 
   def search
@@ -74,7 +81,13 @@ class BibleVersesController < ApplicationController
   private
 
   def set_bible_books
-    @bible_books = BibleVerse.select(:book).distinct.pluck(:book).sort
+    @old_testament_books = old_testament_books
+    @new_testament_books = new_testament_books
+  end
+  
+  def set_translations
+    @translations = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"]
+    @translation = params[:translation] || "KJV"
   end
 
   def old_testament_books

@@ -2,16 +2,16 @@
 
 <div class="max-w-screen-lg mx-auto">
   <div class="py-4 px-4 flex items-center justify-between">
-    <%= link_to bible_verses_path, class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+    <%= link_to bible_verses_path(translation: @translation), class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
       Back to Books
     <% end %>
-    <h1 class="font-bold text-xl text-gray-800 dark:text-white"><%= @book %> <%= @chapter %></h1>
+    <h1 class="font-bold text-xl text-gray-800 dark:text-white"><%= @book %> <%= @chapter %> (<%= @translation %>)</h1>
     <div class="flex space-x-2">
       <% if @chapter > 1 %>
-        <%= link_to bible_chapter_path(book: @book, chapter: @chapter - 1), 
+        <%= link_to bible_chapter_path(book: @book, chapter: @chapter - 1, translation: @translation), 
                   class: "px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -19,7 +19,7 @@
         <% end %>
       <% end %>
       <% if @chapter < @chapter_count %>
-        <%= link_to bible_chapter_path(book: @book, chapter: @chapter + 1), 
+        <%= link_to bible_chapter_path(book: @book, chapter: @chapter + 1, translation: @translation), 
                   class: "px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -29,76 +29,83 @@
     </div>
   </div>
   
+  <!-- Translation selector -->
+  <div class="px-4 mb-4">
+    <div class="flex flex-wrap gap-2">
+      <% @translations.each do |translation| %>
+        <%= link_to translation, bible_chapter_path(book: @book, chapter: @chapter, translation: translation), 
+            class: "px-3 py-1 rounded-lg #{@translation == translation ? 
+            'bg-green-600 text-white' : 
+            'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'}" %>
+      <% end %>
+    </div>
+  </div>
+  
   <div class="px-4 mb-4">
     <select id="chapter-select" class="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white cursor-pointer" onchange="window.location.href=this.value">
       <% (1..@chapter_count).each do |ch| %>
-        <option value="<%= bible_chapter_path(book: @book, chapter: ch) %>" <%= 'selected' if ch == @chapter %>>
+        <option value="<%= bible_chapter_path(book: @book, chapter: ch, translation: @translation) %>" <%= 'selected' if ch == @chapter %>>
           Chapter <%= ch %>
         </option>
       <% end %>
     </select>
   </div>
-  
+
   <div class="px-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 bible-chapter-container">
-      <% @verses.each do |verse| %>
-        <div id="verse-<%= verse.verse %>" class="mb-4 group" data-controller="bible-verse">
-          <div class="flex">
-            <a href="<%= bible_verse_path(book: verse.book, chapter: verse.chapter, verse: verse.verse) %>" 
-               class="font-semibold text-green-600 dark:text-green-500 mr-2 hover:underline"
-               data-bible-verse-target="reference">
-              <%= verse.verse %>
-            </a>
-            <div class="flex-grow text-gray-800 dark:text-white" data-bible-verse-target="content">
-              <%= verse.content %>
-            </div>
-            <button data-action="bible-verse#copy" 
-                    class="opacity-0 group-hover:opacity-100 ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+      <div class="text-gray-800 dark:text-white max-w-none">
+        <% @verses.each do |verse| %>
+          <div class="mb-4 group relative text-justify" data-controller="bible-verse">
+            <p class="pr-8">
+              <span class="font-semibold text-green-600 dark:text-green-500 mr-2"><%= verse.verse %></span>
+              <span data-bible-verse-target="content"><%= link_to verse.content, bible_verse_path(book: verse.book, chapter: verse.chapter, verse: verse.verse, translation: @translation), class: "hover:text-green-600 dark:hover:text-green-500" %></span>
+              <span class="hidden" data-bible-verse-target="reference"><%= "#{verse.book} #{verse.chapter}:#{verse.verse}" %></span>
+            </p>
+            <button 
+              data-action="bible-verse#copy" 
+              class="absolute cursor-pointer right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
               </svg>
             </button>
           </div>
-        </div>
-      <% end %>
-      
-      <!-- Bottom navigation buttons - stacked on mobile -->
-      <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <% if @chapter > 1 %>
-          <%= link_to bible_chapter_path(book: @book, chapter: @chapter - 1), 
-                    class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Previous Chapter
-          <% end %>
-        <% else %>
-          <div class="hidden sm:block"></div> <!-- Empty div to maintain spacing on desktop only -->
-        <% end %>
-        
-        <div class="w-full flex justify-center sm:w-auto">
-          <select id="chapter-select-bottom" class="w-full sm:w-auto px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white cursor-pointer" onchange="window.location.href=this.value">
-            <% (1..@chapter_count).each do |ch| %>
-              <option value="<%= bible_chapter_path(book: @book, chapter: ch) %>" <%= 'selected' if ch == @chapter %>>
-                Chapter <%= ch %>
-              </option>
-            <% end %>
-          </select>
-        </div>
-        
-        <% if @chapter < @chapter_count %>
-          <%= link_to bible_chapter_path(book: @book, chapter: @chapter + 1), 
-                    class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
-            Next Chapter
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          <% end %>
-        <% else %>
-          <div class="hidden sm:block"></div> <!-- Empty div to maintain spacing on desktop only -->
         <% end %>
       </div>
     </div>
+  </div>
+  
+  <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <% if @chapter > 1 %>
+      <%= link_to bible_chapter_path(book: @book, chapter: @chapter - 1, translation: @translation), 
+                class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Previous Chapter
+      <% end %>
+    <% else %>
+      <div class="w-full sm:w-auto"></div>
+    <% end %>
+    
+    <%= link_to bible_verses_path(translation: @translation), 
+              class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+      All Books
+    <% end %>
+    
+    <% if @chapter < @chapter_count %>
+      <%= link_to bible_chapter_path(book: @book, chapter: @chapter + 1, translation: @translation), 
+                class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg text-gray-800 dark:text-white" do %>
+        Next Chapter
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      <% end %>
+    <% else %>
+      <div class="w-full sm:w-auto"></div>
+    <% end %>
   </div>
 </div>

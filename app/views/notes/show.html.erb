@@ -48,12 +48,12 @@
   <div class="tab-content">
     <% case @current_tab %>
     <% when 'transcription' %>
-      <div class="text-sm p-4 text-justify">
+      <div class="p-4 text-justify">
         <%= sanitize(@note.transcription) %>
       </div>
     <% when 'summary' %>
       <% if @note.summary.present? %>
-        <div class="text-sm p-4 text-justify">
+        <div class="p-4 text-justify">
           <%= sanitize(@note.summary) %>
         </div>
       <% else %>
