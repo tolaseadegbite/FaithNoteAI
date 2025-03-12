@@ -58,6 +58,15 @@
                Bible
             <% end %>
          </li>
+         <li>
+            <%= link_to bible_chats_path, 
+                class: "flex items-center p-2 gap-3 rounded-lg #{current_page?(bible_chats_path) ? 'text-green-600 bg-green-50 dark:bg-green-900/10 dark:text-green-500' : 'text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500'} group" do %>
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="shrink-0 w-5 h-5 transition duration-75 #{current_page?(bible_verses_path) ? 'text-green-600 dark:text-green-500' : 'text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-500'}">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+               </svg>
+               Chat with Bible
+            <% end %>
+         </li>
       </ul>
    </div>
 </aside>

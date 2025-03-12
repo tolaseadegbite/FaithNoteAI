@@ -1,0 +1,67 @@
+<% content_for :title, "Chat with Bible" %>
+
+<div class="max-w-screen-lg mx-auto">
+  <div class="py-4 px-4">
+    <h1 class="font-bold text-xl text-gray-800 dark:text-white">Chat with Bible</h1>
+  </div>
+
+  <!-- Translation selector -->
+  <div class="px-4 mb-6">
+    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Select Translation</h2>
+      <div class="flex flex-wrap gap-2">
+        <% @translations.each do |translation| %>
+          <%= link_to translation, bible_chats_path(translation: translation), 
+              class: "px-3 py-1 rounded-lg #{@translation == translation ? 
+              'bg-green-600 text-white' : 
+              'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'}" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat interface -->
+  <div class="px-4">
+    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <!-- Chat messages -->
+      <div class="p-4 bg-white dark:bg-gray-800 h-[60vh] overflow-y-auto" data-controller="bible-chat">
+        <div id="bible_chat_messages" class="space-y-4">
+          <% if @messages.empty? %>
+            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+              <p>Ask a question about the Bible to get started.</p>
+              <p class="text-sm mt-2">For example: "What does the Bible say about love?" or "Tell me about Noah's ark"</p>
+            </div>
+          <% else %>
+            <%= render partial: "bible_chat_message", collection: @messages %>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Message input -->
+      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <%= form_with model: @message, url: bible_chats_path(translation: @translation), class: "flex items-end gap-2", data: { turbo: true } do |form| %>
+          <div class="flex-grow">
+            <%= form.text_area :content, 
+                class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none",
+                placeholder: "Ask a question about the Bible...",
+                rows: 2,
+                data: { controller: "textarea-autogrow", action: "keydown->textarea-autogrow#resize input->textarea-autogrow#resize" } %>
+          </div>
+          
+          <%= form.submit "Send", 
+              class: "px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium" %>
+        <% end %>
+        
+        <!-- Clear chat button -->
+        <div class="mt-4 text-right">
+          <%= button_to "Clear Chat", clear_bible_chats_path, 
+              method: :delete, 
+              class: "text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 cursor-pointer",
+              data: { turbo_confirm: "Are you sure you want to clear the chat history?" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= turbo_stream_from "bible_chat_#{current_user.id}" %>

@@ -1,0 +1,21 @@
+<div id="<%= dom_id(bible_chat_message) %>" class="flex <%= bible_chat_message.role == 'user' ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-3/4 rounded-lg p-4 <%= bible_chat_message.role == 'user' ? 'bg-green-100 dark:bg-green-900/30 text-gray-800 dark:text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white' %>">
+    <% if bible_chat_message.processing? %>
+      <div class="flex items-center space-x-2">
+        <div class="animate-pulse flex space-x-1">
+          <div class="h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+          <div class="h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+          <div class="h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+        </div>
+        <span><%= bible_chat_message.content %></span>
+      </div>
+    <% else %>
+      <div class="prose dark:prose-invert max-w-none">
+        <%= bible_chat_message.content %>
+      </div>
+    <% end %>
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
+      <%= bible_chat_message.created_at.strftime("%I:%M %p") %>
+    </div>
+  </div>
+</div>

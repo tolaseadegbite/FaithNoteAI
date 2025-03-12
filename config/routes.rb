@@ -34,6 +34,12 @@ Rails.application.routes.draw do
       get 'search'
     end
   end
+
+  resources :bible_chats, only: [:index, :create] do
+    collection do
+      delete :clear
+    end
+  end
   
   get 'bible/:book/:chapter/:verse', to: 'bible_verses#show', as: 'bible_verse'
   get 'bible/:book/:chapter', to: 'bible_verses#chapter', as: 'bible_chapter'

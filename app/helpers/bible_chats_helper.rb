@@ -1,0 +1,2 @@
+module BibleChatsHelper
+end
