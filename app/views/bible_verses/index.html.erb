@@ -36,26 +36,25 @@
     </div>
   </div>
   
-  <!-- Old Testament -->
   <div class="px-4 mb-6">
     <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
       <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Old Testament</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         <% @old_testament_books.each do |book| %>
-          <%= link_to book, bible_chapter_path(book: book, chapter: 1), 
+          <%= link_to book, bible_chapter_path(book: book, chapter: 1, translation: @translation), 
                       class: "block p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors" %>
         <% end %>
       </div>
     </div>
   </div>
-  
+
   <!-- New Testament -->
   <div class="px-4 mb-6">
     <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
       <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">New Testament</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         <% @new_testament_books.each do |book| %>
-          <%= link_to book, bible_chapter_path(book: book, chapter: 1), 
+          <%= link_to book, bible_chapter_path(book: book, chapter: 1, translation: @translation), 
                       class: "block p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors" %>
         <% end %>
       </div>

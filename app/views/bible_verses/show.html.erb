@@ -2,8 +2,7 @@
 
 <div class="max-w-screen-lg mx-auto">
   <div class="py-4 px-4 flex items-center">
-    <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter), 
-                class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+    <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter, translation: @translation), class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
