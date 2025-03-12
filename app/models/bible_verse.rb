@@ -14,7 +14,10 @@
 #
 # Indexes
 #
-#  index_bible_verses_on_reference_and_translation  (book,chapter,verse,translation,language) UNIQUE
+#  index_bible_verses_on_book_and_chapter_and_translation  (book,chapter,translation)
+#  index_bible_verses_on_content_trigram                   (content) USING gin
+#  index_bible_verses_on_reference_and_translation         (book,chapter,verse,translation,language) UNIQUE
+#  index_bible_verses_on_translation                       (translation)
 #
 class BibleVerse < ApplicationRecord
   # Validations

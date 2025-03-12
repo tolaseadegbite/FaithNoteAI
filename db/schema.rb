@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_11_102041) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_12_015426) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -61,7 +62,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_11_102041) do
     t.string "language", default: "en", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["book", "chapter", "translation"], name: "index_bible_verses_on_book_and_chapter_and_translation"
     t.index ["book", "chapter", "verse", "translation", "language"], name: "index_bible_verses_on_reference_and_translation", unique: true
+    t.index ["content"], name: "index_bible_verses_on_content_trigram", opclass: :gin_trgm_ops, using: :gin
+    t.index ["translation"], name: "index_bible_verses_on_translation"
   end
 
   create_table "note_chats", force: :cascade do |t|
