@@ -41,6 +41,9 @@ class BibleVersesController < ApplicationController
 
   def search
     @query = params[:q]
+    @highlight_query = @query.downcase if @query.present?
+    @translation = params[:translation] || "KJV"
+    set_translations
     
     if @query.present?
       # Try to parse as a reference first (e.g., "John 3:16")
@@ -55,26 +58,31 @@ class BibleVersesController < ApplicationController
           
           if verse
             # Specific verse reference
-            @verse = BibleVerse.find_verse(book, chapter, verse)
+            @verse = BibleVerse.find_verse(book, chapter, verse, @translation)
             if @verse
-              redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse)
+              redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse, translation: @translation)
               return
             end
           else
             # Chapter reference
-            @verses = BibleVerse.find_chapter(book, chapter)
+            @verses = BibleVerse.find_chapter(book, chapter, @translation)
             if @verses.any?
-              redirect_to bible_chapter_path(book: book, chapter: chapter)
+              redirect_to bible_chapter_path(book: book, chapter: chapter, translation: @translation)
               return
             end
           end
         end
       end
       
-      # If not a valid reference or not found, search by content
-      @results = BibleVerse.where("content ILIKE ?", "%#{@query}%").limit(50)
+      # If not a valid reference or not found, search by content with pagination
+      @pagy, @results = pagy(
+        BibleVerse.where("content ILIKE ? AND translation = ?", "%#{@query}%", @translation)
+                .order(:book, :chapter, :verse),
+        items: 20
+      )
     else
       @results = []
+      @pagy = Pagy.new(count: 0)
     end
   end
 

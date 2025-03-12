@@ -73,3 +73,5 @@ end
 gem "redcarpet", "~> 3.6"
 
 gem "csv", "~> 3.3"
+
+gem "pagy", "~> 9.3"
