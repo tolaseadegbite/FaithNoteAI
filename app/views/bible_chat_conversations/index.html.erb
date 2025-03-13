@@ -1,41 +1,31 @@
 <% content_for :title, "Chat with Bible" %>
 
-<div class="h-screen flex flex-col">
+<div class="h-[calc(100vh-7.2vh)] flex flex-col">
   <!-- Header -->
-  <div class="border-b border-gray-200 dark:border-gray-700 p-4 flex items-center">
+  <!--<div class="border-b border-gray-200 dark:border-gray-700 p-4 flex items-center">
     <button type="button" class="lg:hidden mr-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
     <h1 class="font-bold text-xl text-gray-800 dark:text-white">Chat with Bible</h1>
-  </div>
+  </div>-->
 
   <!-- Main content -->
-  <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-800">
+  <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-black">
     <div class="max-w-3xl mx-auto">
       <!-- New Chat Button (visible on mobile) -->
-      <div class="lg:hidden mb-6">
+      <!--<div class="lg:hidden mb-6">
         <%= form_with url: bible_chat_conversations_path(translation: @translation), method: :post, class: "w-full" do |form| %>
           <%= form.hidden_field :message, value: "Hello, I'd like to learn about the Bible." %>
           <%= form.submit "New Chat", class: "w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg" %>
         <% end %>
-      </div>
+      </div>-->
 
       <!-- Translation selector -->
-      <div class="mb-6">
-        <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Select Translation</h2>
-          <div class="flex flex-wrap gap-2">
-            <% @translations.each do |translation| %>
-              <%= link_to translation, bible_chat_conversations_path(translation: translation), 
-                  class: "px-3 py-1 rounded-lg #{@translation == translation ? 
-                  'bg-green-600 text-white' : 
-                  'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'}" %>
-            <% end %>
-          </div>
-        </div>
-      </div>
+        <!--<div class="px-4 mb-6">
+            <%#= render 'bible_verses/components/translation_selector' %>
+        </div>-->
 
       <!-- Welcome message -->
       <div class="text-center py-8">
@@ -65,7 +55,7 @@
         
         <%= form_with url: bible_chat_conversations_path(translation: @translation), method: :post, class: "max-w-md mx-auto" do |form| %>
           <%= form.hidden_field :message, value: "Hello, I'd like to learn about the Bible." %>
-          <%= form.submit "Start a New Chat", class: "w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white text-lg font-medium rounded-lg shadow-md" %>
+          <%= form.submit "Start a New Chat", class: "w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white text-lg font-medium rounded-lg shadow-md cursor-pointer" %>
         <% end %>
       </div>
     </div>
