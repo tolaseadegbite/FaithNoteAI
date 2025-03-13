@@ -77,10 +77,7 @@ class BibleVerse < ApplicationRecord
   end
   
   # Format reference (e.g., "John 3:16 (KJV)")
-  def reference
-    base = "#{book} #{chapter}:#{verse}"
-    translation == "KJV" && language == "en" ? base : "#{base} (#{translation}, #{language_name})"
-  end
+  # Removed duplicate reference method here
   
   # Full text with reference
   def full_text
