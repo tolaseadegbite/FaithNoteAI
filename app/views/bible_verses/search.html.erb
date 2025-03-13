@@ -30,17 +30,7 @@
   
   <!-- Translation selector -->
   <div class="px-4 mb-6">
-    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4">
-      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Select Translation</h2>
-      <div class="flex flex-wrap gap-2">
-        <% @translations.each do |translation| %>
-          <%= link_to translation, search_bible_verses_path(q: @query, translation: translation), 
-              class: "px-3 py-1 rounded-lg #{@translation == translation ? 
-              'bg-green-600 text-white' : 
-              'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'}" %>
-        <% end %>
-      </div>
-    </div>
+    <%= render 'bible_verses/components/translation_selector' %>
   </div>
 
   <div class="px-4 mb-6">
