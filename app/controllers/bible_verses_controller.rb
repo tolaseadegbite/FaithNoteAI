@@ -46,7 +46,7 @@ class BibleVersesController < ApplicationController
   @translation = params[:translation] || "KJV"
   
   begin
-    search_result = BibleVerseSearchService.new(
+    search_result = Bible::BibleVerseSearchService.new(
       @query, 
       translation: @translation,
       page: params[:page] || 1
