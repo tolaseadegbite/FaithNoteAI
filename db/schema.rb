@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_12_212801) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_13_015246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -53,6 +53,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_212801) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "bible_chat_conversations", force: :cascade do |t|
+    t.string "title", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_bible_chat_conversations_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_bible_chat_conversations_on_user_id"
+  end
+
   create_table "bible_chat_messages", force: :cascade do |t|
     t.text "content", null: false
     t.string "role", null: false
@@ -61,6 +70,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_212801) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "translation"
+    t.bigint "bible_chat_conversation_id"
+    t.index ["bible_chat_conversation_id", "created_at"], name: "index_messages_on_conversation_and_created_at"
+    t.index ["bible_chat_conversation_id"], name: "index_bible_chat_messages_on_bible_chat_conversation_id"
     t.index ["user_id"], name: "index_bible_chat_messages_on_user_id"
   end
 
@@ -129,6 +141,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_212801) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bible_chat_conversations", "users"
+  add_foreign_key "bible_chat_messages", "bible_chat_conversations"
   add_foreign_key "bible_chat_messages", "users"
   add_foreign_key "note_chats", "notes"
   add_foreign_key "note_chats", "users"

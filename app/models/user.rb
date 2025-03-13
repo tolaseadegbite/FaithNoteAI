@@ -28,4 +28,5 @@ class User < ApplicationRecord
 
   has_many :notes, dependent: :destroy
   has_many :bible_chat_messages, dependent: :destroy
+  has_many :bible_chat_conversations, dependent: :destroy
 end

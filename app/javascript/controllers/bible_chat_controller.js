@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "form", "messages"]
+  static targets = ["input", "form", "messages", "translationSelector"]
   
   connect() {
     this.scrollToBottom()
@@ -20,44 +20,59 @@ export default class extends Controller {
     }
   }
   
+  setupMessageObserver() {
+    if (this.hasMessagesTarget) {
+      this.observer = new MutationObserver(() => {
+        this.scrollToBottom()
+      })
+      
+      this.observer.observe(this.messagesTarget, {
+        childList: true,
+        subtree: true
+      })
+    }
+  }
+  
+  disconnect() {
+    if (this.observer) {
+      this.observer.disconnect()
+    }
+  }
+  
   scrollToBottom() {
     if (this.hasMessagesTarget) {
       this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
     }
   }
   
-  setupMessageObserver() {
-    if (this.hasMessagesTarget) {
-      const observer = new MutationObserver(() => {
-        this.scrollToBottom()
-      })
-      
-      observer.observe(this.messagesTarget, { 
-        childList: true, 
-        subtree: true 
-      })
-    }
-  }
-  
-  submit(event) {
-    // Only prevent default if it's the Enter key without Shift
+  handleKeydown(event) {
+    // Submit the form when Enter is pressed without Shift
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
-      
-      // Don't submit if the input is empty
-      if (this.inputTarget.value.trim() === "") {
-        return
-      }
-      
-      // Submit the form using Turbo
       this.formTarget.requestSubmit()
     }
   }
   
-  // Auto-resize the input field as the user types
   resize() {
     const input = this.inputTarget
     input.style.height = "auto"
-    input.style.height = `${Math.min(input.scrollHeight, 150)}px` // Limit to 150px max height
+    input.style.height = (input.scrollHeight) + "px"
+  }
+  
+  updateTranslation(event) {
+    event.preventDefault()
+    
+    // Update the translation in the UI
+    if (this.hasTranslationSelectorTarget) {
+      const translation = event.currentTarget.dataset.translation
+      
+      // Update all form actions to include the new translation
+      const forms = document.querySelectorAll('form')
+      forms.forEach(form => {
+        const url = new URL(form.action)
+        url.searchParams.set('translation', translation)
+        form.action = url.toString()
+      })
+    }
   }
 }

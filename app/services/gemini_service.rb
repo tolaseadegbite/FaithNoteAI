@@ -133,7 +133,7 @@ class GeminiService
 
 
 
-  def chat_with_bible(question, translation = "KJV")
+  def chat_with_bible(question, translation = "KJV", context_messages = [])
     return "No question provided" if question.blank?
     
     uri = URI("#{BASE_URL}?key=#{@api_key}")
@@ -143,8 +143,20 @@ class GeminiService
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     
+    # Format the conversation history
+    conversation_history = ""
+    if context_messages.any?
+      conversation_history = "Previous conversation:\n\n"
+      context_messages.each do |msg|
+        role = msg.role == "user" ? "User" : "Assistant"
+        conversation_history += "#{role}: #{msg.content}\n\n"
+      end
+    end
+    
     prompt = <<~PROMPT
       You are a knowledgeable Bible assistant trained to answer questions about scripture, theology, and biblical concepts.
+      
+      #{conversation_history}
       
       User question: #{question}
       
@@ -161,6 +173,7 @@ class GeminiService
       - Structure your answer clearly and concisely
       
       If you're unsure about an answer, acknowledge the limitations and suggest what scripture might be relevant.
+      Remember to consider the conversation history when providing your response.
     PROMPT
     
     request.body = {
@@ -192,7 +205,7 @@ class GeminiService
       return "I'm sorry, I encountered an error processing your request. Please try again."
     end
   rescue StandardError => e
-    Rails.logger.error("Error in Bible chat: #{e.message}")
+    Rails.logger.error("Error in Gemini chat: #{e.message}")
     "I'm sorry, I encountered an error processing your request. Please try again."
   end
 end

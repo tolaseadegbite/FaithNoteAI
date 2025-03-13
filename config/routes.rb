@@ -35,9 +35,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :bible_chats, only: [:index, :create] do
+  resources :bible_chat_conversations, path: 'bible/chat/conversations' do
+    resources :bible_chat_messages, only: [:create], controller: 'bible_chats'
+  end
+  
+  resources :bible_chats, path: 'bible/chat', only: [:index, :create] do
     collection do
-      delete :clear
       patch :update_translation
     end
   end
