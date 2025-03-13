@@ -162,8 +162,12 @@ class GeminiService
       
       Preferred Bible translation: #{translation}
       
-      Answer the question with biblical accuracy, citing relevant scripture verses with their references (e.g., John 3:16). 
-      When quoting scripture, use the #{translation} translation when possible.
+      Important instructions:
+      - Answer the question directly without phrases like "Here's an answer to..." or "I understand..."
+      - Respond as if in a natural conversation
+      - Cite relevant scripture verses with their references (e.g., John 3:16)
+      - When quoting scripture, use the #{translation} translation
+      - Maintain biblical accuracy in your responses
       
       Format your response using Markdown for better readability:
       - Use bullet points for lists
