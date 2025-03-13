@@ -13,7 +13,10 @@
 
   <div class="px-4 mb-6">
     <div data-controller="bible-search">
-      <%= form_with url: search_bible_verses_path, method: :get, class: "flex" do |f| %>
+      <%= form_with url: search_bible_verses_path, 
+                    method: :get, 
+                    class: "flex", 
+                    data: { bible_search_target: "form", action: "submit->bible-search#validateBeforeSubmit" } do |f| %>
         <%= f.text_field :q, 
                         value: @query,
                         placeholder: "Search by reference (e.g., John 3:16) or text", 

@@ -1,11 +1,13 @@
 class BibleVersesController < ApplicationController
+  include BibleConstants
+  
   before_action :set_bible_books, only: [:index, :show, :chapter]
-  before_action :set_translations, only: [:index, :show, :chapter]
+  before_action :set_translations, only: [:index, :show, :chapter, :search]
 
   def index
     # Display all Bible books
-    @old_testament_books = old_testament_books
-    @new_testament_books = new_testament_books
+    @old_testament_books = OLD_TESTAMENT_BOOKS
+    @new_testament_books = NEW_TESTAMENT_BOOKS
     @translation = params[:translation] || "KJV"
   end
 
@@ -35,91 +37,65 @@ class BibleVersesController < ApplicationController
     end
     
     # Get chapter count for the book
-    @chapter_count = BibleVerse.where(book: @book, translation: @translation)
-                              .select(:chapter).distinct.count
+    @chapter_count = BibleVerse.chapter_count_for_book(@book, @translation)
   end
 
   def search
-    @query = params[:q]
-    @highlight_query = @query.downcase if @query.present?
-    @translation = params[:translation] || "KJV"
-    set_translations
+  @query = params[:q]
+  @highlight_query = @query.downcase if @query.present?
+  @translation = params[:translation] || "KJV"
+  
+  begin
+    search_result = BibleVerseSearchService.new(
+      @query, 
+      translation: @translation,
+      page: params[:page] || 1
+    ).search
     
-    if @query.present?
-      # Try to parse as a reference first (e.g., "John 3:16")
-      if @query.match?(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/i)
-        # Use match instead of match? to capture the groups
-        match_data = @query.match(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/i)
-        
-        if match_data
-          book = match_data[1].strip
-          chapter = match_data[2].to_i
-          verse = match_data[3].to_i if match_data[3]
-          
-          if verse
-            # Specific verse reference
-            @verse = BibleVerse.find_verse(book, chapter, verse, @translation)
-            if @verse
-              redirect_to bible_verse_path(book: @verse.book, chapter: @verse.chapter, verse: @verse.verse, translation: @translation)
-              return
-            end
-          else
-            # Chapter reference
-            @verses = BibleVerse.find_chapter(book, chapter, @translation)
-            if @verses.any?
-              redirect_to bible_chapter_path(book: book, chapter: chapter, translation: @translation)
-              return
-            end
-          end
-        end
-      end
-      
-      # If not a valid reference or not found, search by content with pagination
-      @pagy, @results = pagy(
-        BibleVerse.where("content ILIKE ? AND translation = ?", "%#{@query}%", @translation)
-                .order(:book, :chapter, :verse),
-        items: 20
+    case search_result[:type]
+    when :verse
+      redirect_to bible_verse_path(
+        book: search_result[:verse].book, 
+        chapter: search_result[:verse].chapter, 
+        verse: search_result[:verse].verse, 
+        translation: @translation
       )
-    else
+      return
+    when :chapter
+      redirect_to bible_chapter_path(
+        book: search_result[:book], 
+        chapter: search_result[:chapter], 
+        translation: @translation
+      )
+      return
+    when :search_results
+      @pagy, @results = pagy(search_result[:results], items: 20)
+    when :empty
       @results = []
       @pagy = Pagy.new(count: 0)
+      flash.now[:notice] = search_result[:message] if search_result[:message].present?
     end
+  rescue StandardError => e
+    # Log the error
+    Rails.logger.error("Bible search error: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    
+    # Set empty results and show an error message
+    @results = []
+    @pagy = Pagy.new(count: 0)
+    flash.now[:alert] = "An error occurred while searching. Please try again."
   end
+end
 
   private
 
   def set_bible_books
-    @old_testament_books = old_testament_books
-    @new_testament_books = new_testament_books
+    @old_testament_books = OLD_TESTAMENT_BOOKS
+    @new_testament_books = NEW_TESTAMENT_BOOKS
   end
   
   def set_translations
-    @translations = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"]
+    @translations = TRANSLATIONS
     @translation = params[:translation] || "KJV"
-  end
-
-  def old_testament_books
-    [
-      "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
-      "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel",
-      "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles",
-      "Ezra", "Nehemiah", "Esther", "Job", "Psalms",
-      "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
-      "Jeremiah", "Lamentations", "Ezekiel", "Daniel",
-      "Hosea", "Joel", "Amos", "Obadiah", "Jonah",
-      "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
-      "Zechariah", "Malachi"
-    ]
-  end
-
-  def new_testament_books
-    [
-      "Matthew", "Mark", "Luke", "John", "Acts",
-      "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
-      "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
-      "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
-      "James", "1 Peter", "2 Peter", "1 John", "2 John",
-      "3 John", "Jude", "Revelation"
-    ]
   end
 end

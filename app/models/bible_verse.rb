@@ -39,6 +39,12 @@ class BibleVerse < ApplicationRecord
   scope :with_language, ->(language = "en") {
     where(language: language)
   }
+
+  # class method for chapter count
+  def self.chapter_count_for_book(book, translation = "KJV")
+    where(book: book, translation: translation)
+      .select(:chapter).distinct.count
+  end
   
   # Class methods for lookup with caching
   def self.find_verse(book, chapter, verse, translation = "KJV", language = "en")
