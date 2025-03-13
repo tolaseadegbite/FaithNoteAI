@@ -4,12 +4,15 @@
     data: { controller: "chat-input" },
     id: form_id do |form| %>
     <%= form.hidden_field :translation, value: translation %>
+    <% if local_assigns[:field_name] == :message %>
+      <%= form.hidden_field :title, name: 'title' %>
+    <% end %>
     <div class="flex-grow relative">
         <div class="absolute right-3 top-3 flex items-center gap-2">
             <div class="relative" data-controller="dropdown">
                 <button type="button" 
                         data-action="click->dropdown#toggle" 
-                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors cursor-pointer">
+                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors cursor-pointergit">
                     <span><%= translation || "KJV" %></span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -33,7 +36,7 @@
             name: local_assigns[:field_name] == :message ? 'message' : 'bible_chat_message[content]',
             data: { 
                 chat_input_target: "input",
-                action: "keydown->chat-input#submitOnEnter input->chat-input#resize"
+                action: "keydown->chat-input#submitOnEnter input->chat-input#resize chat-input#updateTitle"
             } %>
     </div>
 <% end %>

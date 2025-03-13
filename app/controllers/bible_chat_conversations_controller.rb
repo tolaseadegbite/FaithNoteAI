@@ -15,31 +15,27 @@ class BibleChatConversationsController < ApplicationController
   end
   
   def create
+    return redirect_to bible_chat_conversations_path unless params[:message].present?
+  
     @conversation = current_user.bible_chat_conversations.create(
-      title: "New Conversation"
+      title: params[:message].truncate(50)
     )
     
-    # Check both params[:message] and params[:bible_chat_message][:message]
-    message_content = params[:message] || params.dig(:bible_chat_message, :message)
+    @message = @conversation.bible_chat_messages.create(
+      content: params[:message],
+      role: "user",
+      user: current_user,
+      translation: params[:translation]
+    )
     
-    if message_content.present?
-      @message = @conversation.bible_chat_messages.create(
-        content: message_content,
-        role: "user",
-        user: current_user,
-        translation: params[:translation]
-      )
-      
-      # Process AI response
-      BibleChatJob.perform_later(@message, params[:translation] || "KJV")
-    end
+    BibleChatJob.perform_later(@message, params[:translation] || "KJV")
     
     redirect_to bible_chat_conversation_path(@conversation, translation: params[:translation] || "KJV")
   end
   
   def destroy
     @conversation.destroy
-    redirect_to bible_chat_conversations_path, notice: "Conversation deleted"
+    redirect_to bible_chat_conversations_path, alert: "Conversation deleted"
   end
   
   private

@@ -32,4 +32,10 @@ export default class extends Controller {
     const newHeight = Math.min(input.scrollHeight, 150)
     input.style.height = `${newHeight}px`
   }
+
+  updateTitle(event) {
+    if (event.target.form.querySelector('input[name="title"]')) {
+      event.target.form.querySelector('input[name="title"]').value = event.target.value;
+    }
+  }
 }
