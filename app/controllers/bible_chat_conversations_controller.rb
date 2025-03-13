@@ -32,8 +32,8 @@ class BibleChatConversationsController < ApplicationController
       
       redirect_to bible_chat_conversation_path(@conversation, translation: params[:translation] || "KJV")
     else
-      # If no message, redirect to index with a notice
-      redirect_to bible_chat_conversations_path, notice: "Please enter a message to start a new chat"
+      # If no message, redirect to index
+      redirect_to bible_chat_conversations_path
     end
   end
   
