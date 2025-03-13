@@ -37,19 +37,6 @@
     </div>
   </div>
 
-  <!-- Translation selector -->
-  <!--<div class="border-b border-gray-200 dark:border-gray-700 p-4">
-    <div class="flex flex-wrap gap-2">
-      <% @translations.each do |translation| %>
-        <%= link_to translation, 
-            bible_chat_conversation_path(@conversation, translation: translation), 
-            class: "px-3 py-1 rounded-lg text-sm #{@translation == translation ? 
-            'bg-green-600 text-white' : 
-            'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'}" %>
-      <% end %>
-    </div>
-  </div>-
-
   <!-- Chat messages -->
   <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-black" data-controller="bible-chat" data-bible-chat-target="messages">
     <div id="bible_chat_messages" class="space-y-4 max-w-3xl mx-auto">
@@ -67,22 +54,15 @@
     <!-- Message input -->
     <div class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
         <div class="max-w-3xl mx-auto">
-            <%= form_with model: BibleChatMessage.new, 
-                url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation), 
-                class: "flex items-center", 
-                data: { controller: "chat-input" },
-                id: "new_bible_chat_message" do |form| %>
-                <div class="flex-grow relative">
-                    <%= form.text_area :content, 
-                        class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white p-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none overflow-hidden",
-                        placeholder: "Message Bible Chat... (Press Enter to send)", 
-                        rows: 1,
-                        data: { 
-                        chat_input_target: "input",
-                        action: "keydown->chat-input#submitOnEnter input->chat-input#resize"
-                        } %>
-                </div>
-            <% end %>
+            <%= render "bible_chat_conversations/components/chat_input",
+                model: BibleChatMessage.new,
+                url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation),
+                form_id: "new_bible_chat_message",
+                translation: @translation,
+                translations: @translations,
+                translation_url: ->(t) { bible_chat_conversation_path(@conversation, translation: t) },
+                placeholder: "Message Bible Chat... (Press Enter to send)",
+                rows: 1 %>
         </div>
     </div>
 </div> 

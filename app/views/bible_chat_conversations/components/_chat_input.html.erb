@@ -1,0 +1,38 @@
+<%= form_with model: model, 
+    url: url,
+    class: "flex items-center", 
+    data: { controller: "chat-input" },
+    id: form_id do |form| %>
+    <%= form.hidden_field :translation, value: translation %>
+    <div class="flex-grow relative">
+        <div class="absolute right-3 top-3 flex items-center gap-2">
+            <div class="relative" data-controller="dropdown">
+                <button type="button" 
+                        data-action="click->dropdown#toggle" 
+                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors">
+                    <span><%= translation || "KJV" %></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div data-dropdown-target="menu" 
+                     class="absolute right-0 bottom-full mb-1 w-24 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 hidden">
+                    <% translations.each do |t| %>
+                        <%= link_to t,
+                            translation_url.call(t),
+                            class: "block px-4 py-2 text-sm #{translation == t ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'}" %>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+        <%= form.text_area local_assigns.fetch(:field_name, :content), 
+            class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white p-3 pr-20 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none overflow-hidden",
+            placeholder: placeholder, 
+            rows: local_assigns.fetch(:rows, 1),
+            autofocus: local_assigns[:autofocus],
+            data: { 
+                chat_input_target: "input",
+                action: "keydown->chat-input#submitOnEnter input->chat-input#resize"
+            } %>
+    </div>
+<% end %>
