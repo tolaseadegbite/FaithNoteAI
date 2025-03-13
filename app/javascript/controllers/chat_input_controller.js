@@ -1,41 +1,64 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input"]
-  
+  static targets = ["input", "translationField", "translationDisplay"]
+
   connect() {
     this.resize()
-  }
-  
-  submitOnEnter(event) {
-    // Only submit if it's the Enter key without Shift
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault()
-      
-      // Don't submit if the input is empty
-      if (this.inputTarget.value.trim() === "") {
-        return
-      }
-      
-      // Submit the form
-      this.element.requestSubmit()
+    
+    // Initialize title update if needed
+    if (this.hasInputTarget && this.element.querySelector('input[name="title"]')) {
+      this.updateTitle()
     }
-  }
-  
-  resize() {
-    const input = this.inputTarget
-    
-    // Reset height to auto to get the correct scrollHeight
-    input.style.height = 'auto'
-    
-    // Set the height to match content (with a max height)
-    const newHeight = Math.min(input.scrollHeight, 150)
-    input.style.height = `${newHeight}px`
   }
 
-  updateTitle(event) {
-    if (event.target.form.querySelector('input[name="title"]')) {
-      event.target.form.querySelector('input[name="title"]').value = event.target.value;
+  resize() {
+    if (this.hasInputTarget) {
+      const input = this.inputTarget
+      input.style.height = "auto"
+      input.style.height = (input.scrollHeight) + "px"
     }
+  }
+
+  submitOnEnter(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault()
+      event.target.form.requestSubmit()
+    }
+  }
+
+  updateTitle() {
+    const titleField = this.element.querySelector('input[name="title"]')
+    const messageField = this.inputTarget
+    
+    if (titleField && messageField) {
+      titleField.value = messageField.value
+    }
+  }
+
+  changeTranslation(event) {
+    event.preventDefault()
+    
+    if (!this.hasTranslationFieldTarget || !this.hasTranslationDisplayTarget) {
+      console.error("Missing required targets for translation change")
+      return
+    }
+    
+    const newTranslation = event.currentTarget.dataset.translation
+    this.translationFieldTarget.value = newTranslation
+    this.translationDisplayTarget.textContent = newTranslation
+    
+    // Update all translation links
+    const links = this.element.querySelectorAll('[data-chat-input-translation]')
+    links.forEach(link => {
+      const translation = link.dataset.chatInputTranslation
+      if (translation === newTranslation) {
+        link.classList.add('text-green-600', 'dark:text-green-400', 'bg-green-50', 'dark:bg-green-900/10')
+        link.classList.remove('text-gray-700', 'dark:text-gray-200')
+      } else {
+        link.classList.remove('text-green-600', 'dark:text-green-400', 'bg-green-50', 'dark:bg-green-900/10')
+        link.classList.add('text-gray-700', 'dark:text-gray-200')
+      }
+    })
   }
 }

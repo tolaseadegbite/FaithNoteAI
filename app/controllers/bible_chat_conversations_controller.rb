@@ -25,12 +25,13 @@ class BibleChatConversationsController < ApplicationController
       content: params[:message],
       role: "user",
       user: current_user,
-      translation: params[:translation]
+      translation: params[:translation] || params[:bible_chat_message][:translation] || "KJV"
     )
     
-    BibleChatJob.perform_later(@message, params[:translation] || "KJV")
+    translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
+    BibleChatJob.perform_later(@message, translation)
     
-    redirect_to bible_chat_conversation_path(@conversation, translation: params[:translation] || "KJV")
+    redirect_to bible_chat_conversation_path(@conversation, translation: translation)
   end
   
   def destroy

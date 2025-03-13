@@ -3,7 +3,7 @@
     class: "flex items-center", 
     data: { controller: "chat-input" },
     id: form_id do |form| %>
-    <%= form.hidden_field :translation, value: translation %>
+    <%= form.hidden_field :translation, value: translation, data: { chat_input_target: "translationField" } %>
     <% if local_assigns[:field_name] == :message %>
       <%= form.hidden_field :title, name: 'title' %>
     <% end %>
@@ -12,8 +12,8 @@
             <div class="relative" data-controller="dropdown">
                 <button type="button" 
                         data-action="click->dropdown#toggle" 
-                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors cursor-pointergit">
-                    <span><%= translation || "KJV" %></span>
+                        class="flex items-center gap-1 px-2 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors cursor-pointer">
+                    <span data-chat-input-target="translationDisplay"><%= translation || "KJV" %></span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -21,9 +21,13 @@
                 <div data-dropdown-target="menu" 
                      class="absolute right-0 bottom-full mb-1 w-24 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 hidden">
                     <% translations.each do |t| %>
-                        <%= link_to t,
-                            translation_url.call(t),
-                            class: "block px-4 py-2 text-sm #{translation == t ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'}" %>
+                        <a href="#" 
+                           data-translation="<%= t %>"
+                           data-chat-input-translation="<%= t %>"
+                           data-action="click->chat-input#changeTranslation click->dropdown#toggle"
+                           class="w-full text-left block px-4 py-2 text-sm <%= translation == t ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600' %>">
+                            <%= t %>
+                        </a>
                     <% end %>
                 </div>
             </div>
@@ -36,7 +40,7 @@
             name: local_assigns[:field_name] == :message ? 'message' : 'bible_chat_message[content]',
             data: { 
                 chat_input_target: "input",
-                action: "keydown->chat-input#submitOnEnter input->chat-input#resize chat-input#updateTitle"
+                action: "keydown->chat-input#submitOnEnter input->chat-input#resize"
             } %>
     </div>
 <% end %>

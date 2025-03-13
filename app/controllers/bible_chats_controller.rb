@@ -12,7 +12,8 @@ class BibleChatsController < ApplicationController
     @message = @conversation.bible_chat_messages.build(message_params)
     @message.user = current_user
     @message.role = "user"
-    @translation = params[:translation] || "KJV"
+    @translation = params[:bible_chat_message][:translation] || params[:translation] || "KJV"
+    @message.translation = @translation
     
     if @message.save
       # Process the AI response asynchronously
@@ -44,7 +45,7 @@ class BibleChatsController < ApplicationController
   end
   
   def message_params
-    params.require(:bible_chat_message).permit(:content).merge(role: "user")
+    params.require(:bible_chat_message).permit(:content, :translation).merge(role: "user")
   end
   
   def set_translations
