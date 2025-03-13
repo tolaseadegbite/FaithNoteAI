@@ -8,20 +8,25 @@ class BibleChatsController < ApplicationController
   end
   
   def create
+    @conversation = current_user.bible_chat_conversations.find(params[:bible_chat_conversation_id])
     @message = @conversation.bible_chat_messages.build(message_params)
     @message.user = current_user
+    @message.role = "user"
     @translation = params[:translation] || "KJV"
     
     if @message.save
-      # Process the message in the background
+      # Process the AI response asynchronously
       BibleChatJob.perform_later(@message, @translation)
       
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to bible_chat_conversation_path(@conversation) }
+        format.html { redirect_to bible_chat_conversation_path(@conversation, translation: @translation) }
       end
     else
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace('new_bible_chat_message', partial: 'bible_chat_messages/form', locals: { message: @message }) }
+        format.html { redirect_to bible_chat_conversation_path(@conversation, translation: @translation), alert: "Failed to send message" }
+      end
     end
   end
   
@@ -35,7 +40,7 @@ class BibleChatsController < ApplicationController
   private
   
   def set_conversation
-    @conversation = current_user.bible_chat_conversations.find(params[:conversation_id])
+    @conversation = current_user.bible_chat_conversations.find(params[:bible_chat_conversation_id])
   end
   
   def message_params

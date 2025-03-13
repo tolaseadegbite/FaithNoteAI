@@ -5,20 +5,23 @@
 <%= turbo_stream.replace "new_bible_chat_message" do %>
   <%= form_with model: BibleChatMessage.new, 
       url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation), 
-      class: "flex items-end gap-2", 
-      data: { bible_chat_target: "form" }, 
+      class: "flex items-center", 
+      data: { controller: "chat-input" },
       id: "new_bible_chat_message" do |form| %>
-    <div class="flex-grow">
+    <div class="flex-grow relative">
       <%= form.text_area :content, 
-          class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-2 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none",
-          placeholder: "Type your message...", 
+          class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white p-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none",
+          placeholder: "Message Bible Chat... (Press Enter to send)", 
           rows: 1,
           data: { 
-            bible_chat_target: "input",
-            action: "keydown->bible-chat#handleKeydown input->bible-chat#resize"
+            chat_input_target: "input",
+            action: "keydown->chat-input#submitOnEnter input->chat-input#resize"
           } %>
+      <div class="absolute right-3 bottom-3 text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        </svg>
+      </div>
     </div>
-    <%= form.submit "Send", 
-        class: "bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg" %>
   <% end %>
 <% end %>

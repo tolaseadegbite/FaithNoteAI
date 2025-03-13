@@ -53,11 +53,25 @@
           </div>
         </div>
         
-        <%= form_with url: bible_chat_conversations_path(translation: @translation), method: :post, class: "max-w-md mx-auto" do |form| %>
-          <%= form.hidden_field :message, value: "Hello, I'd like to learn about the Bible." %>
-          <%= form.submit "Start a New Chat", class: "w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white text-lg font-medium rounded-lg shadow-md cursor-pointer" %>
-        <% end %>
-      </div>
+        <div class="max-w-md mx-auto">
+            <%= form_with url: bible_chat_conversations_path(translation: @translation), 
+                            method: :post, 
+                            class: "flex flex-col gap-3",
+                            data: { controller: "chat-input" } do |form| %>
+                <%= form.text_area :message, 
+                                placeholder: "Ask a question about the Bible...", 
+                                class: "w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white p-3 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+                                rows: 2,
+                                autofocus: true,
+                                data: { 
+                                    action: "keydown->chat-input#submitOnEnter input->chat-input#resize",
+                                    chat_input_target: "input"
+                                } %>
+                <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                Press Enter to start a new chat
+                </div>
+            <% end %>
+        </div>
     </div>
   </div>
 </div>

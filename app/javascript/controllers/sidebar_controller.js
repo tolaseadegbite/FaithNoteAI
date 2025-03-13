@@ -32,4 +32,9 @@ export default class extends Controller {
     panel.classList.remove('max-h-96')
     panel.classList.add('max-h-0')
   }
+
+  preventPropagation(event) {
+    // Prevent the click from bubbling up to parent elements
+    event.stopPropagation()
+  }
 }

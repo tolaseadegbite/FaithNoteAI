@@ -8,29 +8,33 @@ class BibleChatConversationsController < ApplicationController
   end
   
   def show
+    @conversations = current_user.bible_chat_conversations.ordered
     @messages = @conversation.bible_chat_messages.ordered
     @message = BibleChatMessage.new
     @translation = params[:translation] || "KJV"
   end
   
   def create
-    @conversation = current_user.bible_chat_conversations.create(
-      title: "New Conversation" # Default title since there's no first message
-    )
-    
-    # Only create a message if one was provided
+    # Only create a conversation if a message is provided
     if params[:message].present?
+      @conversation = current_user.bible_chat_conversations.create(
+        title: params[:message].truncate(30) # Use message content for title
+      )
+      
       @message = @conversation.bible_chat_messages.create(
         content: params[:message],
         role: "user",
         user: current_user
       )
       
-      # Process AI response if a message was sent
+      # Process AI response
       BibleChatJob.perform_later(@message, params[:translation] || "KJV")
+      
+      redirect_to bible_chat_conversation_path(@conversation, translation: params[:translation] || "KJV")
+    else
+      # If no message, redirect to index with a notice
+      redirect_to bible_chat_conversations_path, notice: "Please enter a message to start a new chat"
     end
-    
-    redirect_to bible_chat_conversation_path(@conversation, translation: params[:translation] || "KJV")
   end
   
   def destroy
