@@ -8,7 +8,6 @@ class BibleChatConversationsController < ApplicationController
   end
   
   def show
-    @conversations = current_user.bible_chat_conversations.ordered
     @messages = @conversation.bible_chat_messages.ordered
     @message = BibleChatMessage.new
     @translation = params[:translation] || "KJV"
@@ -17,6 +16,9 @@ class BibleChatConversationsController < ApplicationController
   def create
     return redirect_to bible_chat_conversations_path unless params[:message].present?
   
+    # Get the translation from either direct params or nested params
+    translation = params[:translation] || params.dig(:bible_chat_message, :translation) || "KJV"
+    
     @conversation = current_user.bible_chat_conversations.create(
       title: params[:message].truncate(50)
     )
@@ -25,10 +27,9 @@ class BibleChatConversationsController < ApplicationController
       content: params[:message],
       role: "user",
       user: current_user,
-      translation: params[:translation] || params[:bible_chat_message][:translation] || "KJV"
+      translation: translation
     )
     
-    translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
     BibleChatJob.perform_later(@message, translation)
     
     redirect_to bible_chat_conversation_path(@conversation, translation: translation)
