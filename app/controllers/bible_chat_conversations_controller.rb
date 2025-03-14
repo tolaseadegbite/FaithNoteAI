@@ -13,37 +13,56 @@ class BibleChatConversationsController < ApplicationController
     @messages = @conversation.bible_chat_messages.ordered
     @message = BibleChatMessage.new
     @translation = params[:translation] || "KJV"
+  rescue ActiveRecord::RecordNotFound
+    redirect_to bible_chat_conversations_path, alert: "Conversation not found"
   end
   
   def create
-    return redirect_to bible_chat_conversations_path unless params[:message].present?
+    return redirect_to bible_chat_conversations_path, alert: "Message cannot be empty" unless params[:message].present?
   
-    @conversation = current_user.bible_chat_conversations.create(
+    @conversation = current_user.bible_chat_conversations.new(
       title: params[:message].truncate(50)
     )
     
-    @message = @conversation.bible_chat_messages.create(
-      content: params[:message],
-      role: "user",
-      user: current_user,
-      translation: params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-    )
-    
-    translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-    BibleChatJob.perform_later(@message, translation)
-    
-    redirect_to bible_chat_conversation_path(@conversation, translation: translation)
+    if @conversation.save
+      @message = @conversation.bible_chat_messages.new(
+        content: params[:message],
+        role: "user",
+        user: current_user,
+        translation: params[:translation] || params[:bible_chat_message][:translation] || "KJV"
+      )
+      
+      if @message.save
+        translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
+        BibleChatJob.perform_later(@message, translation)
+        
+        redirect_to bible_chat_conversation_path(@conversation, translation: translation), notice: "Conversation started"
+      else
+        @conversation.destroy # Clean up the conversation if message creation fails
+        redirect_to bible_chat_conversations_path, alert: "Failed to create message: #{@message.errors.full_messages.join(', ')}"
+      end
+    else
+      redirect_to bible_chat_conversations_path, alert: "Failed to create conversation: #{@conversation.errors.full_messages.join(', ')}"
+    end
   end
   
   def destroy
-    @conversation.destroy
-    redirect_to bible_chat_conversations_path, alert: "Conversation deleted"
+    if @conversation.destroy
+      redirect_to bible_chat_conversations_path, notice: "Conversation deleted successfully"
+    else
+      redirect_to bible_chat_conversation_path(@conversation), alert: "Failed to delete conversation"
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error deleting conversation: #{e.message}")
+    redirect_to bible_chat_conversations_path, alert: "An error occurred while deleting the conversation"
   end
   
   private
   
   def set_conversation
     @conversation = BibleChatConversation.includes(:bible_chat_messages).find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to bible_chat_conversations_path, alert: "Conversation not found"
   end
 
   def ensure_conversation_ownership
