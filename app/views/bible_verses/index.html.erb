@@ -6,51 +6,71 @@
   </div>
 
   <div class="px-4 mb-6">
+    <!-- Search form - improved mobile layout -->
     <div data-controller="bible-search">
       <%= form_with url: search_bible_verses_path, 
-                    method: :get, 
-                    class: "flex", 
-                    data: { bible_search_target: "form", action: "submit->bible-search#validateBeforeSubmit" } do |f| %>
-        <%= f.text_field :q, 
-                        placeholder: "Search by reference (e.g., John 3:16) or text", 
-                        data: { bible_search_target: "input", action: "input->bible-search#checkReference" },
-                        class: "flex-grow px-4 py-2 border rounded-l border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-white" %>
-        <%= f.button type: "submit", class: "bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 py-2 rounded-r cursor-pointer" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        <% end %>
+              method: :get, 
+              class: "w-full", 
+              data: { bible_search_target: "form", action: "submit->bible-search#validateBeforeSubmit" } do |f| %>
+        <div class="w-full">
+          <%= f.text_field :q, 
+                          placeholder: "Search by reference (e.g., John 3:16) or text", 
+                          data: { bible_search_target: "input", action: "input->bible-search#checkReference" },
+                          class: "w-full px-4 py-2 border rounded border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-white text-sm sm:text-base" %>
+        </div>
       <% end %>
     </div>
   </div>
-  
-  <!-- Translation selector -->
+      
+  <!-- Translation selector - full width on mobile -->
   <div class="px-4 mb-6">
-    <%= render 'bible_verses/components/translation_selector' %>
+    <div class="w-full relative" data-controller="translation-dropdown">
+      <button data-translation-dropdown-target="button" data-action="click->translation-dropdown#toggle" 
+              class="w-full sm:w-auto flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+        <span class="font-medium">Translation: <%= @translation %></span>
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div data-translation-dropdown-target="menu" class="hidden absolute z-10 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <div class="py-1">
+          <% @translations.each do |code| %>
+            <%= link_to bible_verses_path(translation: code), 
+                        class: "block px-4 py-2 text-sm #{code == @translation ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-500' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'}" do %>
+              <span class="font-medium"><%= code %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
   
+  <!-- Old Testament - improved grid for mobile -->
   <div class="px-4 mb-6">
-    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Old Testament</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4">Old Testament</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
         <% @old_testament_books.each do |book| %>
           <%= link_to book, bible_chapter_path(book: book, chapter: 1, translation: @translation), 
-                      class: "block p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors" %>
+                      class: "block p-2 sm:p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors text-sm sm:text-base" %>
         <% end %>
       </div>
     </div>
   </div>
 
-  <!-- New Testament -->
+  <!-- New Testament - improved grid for mobile -->
   <div class="px-4 mb-6">
-    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">New Testament</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+    <div class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4">New Testament</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
         <% @new_testament_books.each do |book| %>
           <%= link_to book, bible_chapter_path(book: book, chapter: 1, translation: @translation), 
-                      class: "block p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors" %>
+                      class: "block p-2 sm:p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors text-sm sm:text-base" %>
         <% end %>
       </div>
     </div>
   </div>
+  
+  <!-- Bottom spacing for mobile navigation if needed -->
+  <div class="h-16 md:h-0"></div>
 </div>
