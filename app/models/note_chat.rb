@@ -22,7 +22,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class NoteChat < ApplicationRecord
-  belongs_to :note
+  belongs_to :note, counter_cache: true
   belongs_to :user
   
   validates :content, presence: true

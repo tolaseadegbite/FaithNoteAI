@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_13_015246) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_13_015246) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "bible_chat_messages_count", default: 0, null: false
     t.index ["user_id", "created_at"], name: "index_bible_chat_conversations_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_bible_chat_conversations_on_user_id"
   end
@@ -110,6 +111,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_13_015246) do
     t.string "audio_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "note_chats_count", default: 0, null: false
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
@@ -136,6 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_13_015246) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "bible_chat_conversations_count", default: 0, null: false
+    t.integer "notes_count", default: 0, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

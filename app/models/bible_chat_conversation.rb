@@ -2,11 +2,12 @@
 #
 # Table name: bible_chat_conversations
 #
-#  id         :bigint           not null, primary key
-#  title      :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  id                        :bigint           not null, primary key
+#  bible_chat_messages_count :integer          default(0), not null
+#  title                     :string           not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  user_id                   :bigint           not null
 #
 # Indexes
 #
@@ -18,7 +19,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class BibleChatConversation < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, counter_cache: true
   has_many :bible_chat_messages, dependent: :destroy
   
   validates :title, presence: true

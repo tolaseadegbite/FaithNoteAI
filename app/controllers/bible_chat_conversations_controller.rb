@@ -74,4 +74,4 @@ class BibleChatConversationsController < ApplicationController
   def set_translations
     @translations = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"]
   end
-end
+end 

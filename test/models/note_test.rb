@@ -2,13 +2,14 @@
 #
 # Table name: notes
 #
-#  id         :bigint           not null, primary key
-#  audio_url  :string
-#  language   :string           default("en")
-#  title      :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  id               :bigint           not null, primary key
+#  audio_url        :string
+#  language         :string           default("en")
+#  note_chats_count :integer          default(0), not null
+#  title            :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  user_id          :bigint           not null
 #
 # Indexes
 #
