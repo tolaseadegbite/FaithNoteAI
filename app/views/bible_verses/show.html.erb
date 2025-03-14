@@ -42,7 +42,7 @@
       
       <!-- Copy button -->
       <div class="flex justify-center md:justify-end mb-6">
-        <button onclick="copyToClipboard('<%= @verse.reference %> - <%= @verse.content %>')" 
+        <button data-action="bible-verse#copy" 
                 class="flex items-center px-3 py-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 

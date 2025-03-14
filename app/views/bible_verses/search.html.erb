@@ -11,7 +11,7 @@
     <!--<h1 class="font-bold text-xl text-gray-800 dark:text-white">Search Results: "<%= @query %>"</h1>-->
   </div>
 
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-4">
     <div data-controller="bible-search">
       <%= form_with url: search_bible_verses_path, 
                     method: :get, 
@@ -27,14 +27,14 @@
   </div>
 
   <!-- Translation selector - updated to match index page -->
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-4">
     <%= render "bible_verses/components/translation_selector", 
               translation: @translation, 
               translations: @translations, 
               container_class: "w-full relative" %>
   </div>
 
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
       <% if @results.any? %>
         <p class="mb-4 text-gray-600 dark:text-gray-400">

@@ -5,7 +5,7 @@
     <h1 class="font-bold text-xl text-gray-800 dark:text-white">Bible</h1>
   </div>
 
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-4">
     <!-- Search form - improved mobile layout -->
     <div data-controller="bible-search">
       <%= form_with url: search_bible_verses_path, 
@@ -23,7 +23,7 @@
   </div>
       
   <!-- Translation selector - full width on mobile -->
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-4">
     <%= render "bible_verses/components/translation_selector", 
               translation: @translation, 
               translations: @translations, 
