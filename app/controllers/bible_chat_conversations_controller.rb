@@ -34,7 +34,18 @@ class BibleChatConversationsController < ApplicationController
       
       if @message.save
         translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-        BibleChatJob.perform_later(@message, translation)
+        
+        # Create a placeholder message that will be visible immediately
+        @assistant_message = @conversation.bible_chat_messages.create(
+          content: "Searching the Bible...",
+          role: "assistant",
+          user: current_user,
+          processing: true,
+          translation: translation
+        )
+        
+        # Pass the assistant message ID to the job
+        BibleChatJob.perform_later(@message, translation, @assistant_message.id)
         
         redirect_to bible_chat_conversation_path(@conversation, translation: translation), notice: "Conversation started"
       else
@@ -74,4 +85,4 @@ class BibleChatConversationsController < ApplicationController
   def set_translations
     @translations = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"]
   end
-end 
+end
