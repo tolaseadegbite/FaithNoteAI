@@ -24,25 +24,10 @@
       
   <!-- Translation selector - full width on mobile -->
   <div class="px-4 mb-6">
-    <div class="w-full relative" data-controller="translation-dropdown">
-      <button data-translation-dropdown-target="button" data-action="click->translation-dropdown#toggle" 
-              class="w-full sm:w-auto flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-        <span class="font-medium">Translation: <%= @translation %></span>
-        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-      <div data-translation-dropdown-target="menu" class="hidden absolute z-10 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-        <div class="py-1">
-          <% @translations.each do |code| %>
-            <%= link_to bible_verses_path(translation: code), 
-                        class: "block px-4 py-2 text-sm #{code == @translation ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-500' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'}" do %>
-              <span class="font-medium"><%= code %></span>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    </div>
+    <%= render "bible_verses/components/translation_selector", 
+              translation: @translation, 
+              translations: @translations, 
+              container_class: "w-full relative" %>
   </div>
   
   <!-- Old Testament - improved grid for mobile -->

@@ -1,53 +1,52 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["button", "menu"]
+  static targets = ["menu"]
 
   connect() {
-    // Close any open dropdowns when the controller connects
-    this.closeDropdown()
-    
-    // Add event listener to close dropdown when clicking outside
-    document.addEventListener('click', this.handleOutsideClick.bind(this))
-    
-    // Add event listener for Turbo navigation
-    document.addEventListener('turbo:before-visit', this.closeDropdown.bind(this))
+    // Close dropdown when clicking outside
+    document.addEventListener("click", this.closeIfClickedOutside)
+    // Close dropdown when another dropdown opens
+    document.addEventListener("dropdown:opened", this.closeDropdown)
   }
-  
+
   disconnect() {
-    // Remove event listeners when controller disconnects
-    document.removeEventListener('click', this.handleOutsideClick.bind(this))
-    document.removeEventListener('turbo:before-visit', this.closeDropdown.bind(this))
+    document.removeEventListener("click", this.closeIfClickedOutside)
+    document.removeEventListener("dropdown:opened", this.closeDropdown)
   }
-  
+
   toggle(event) {
     event.stopPropagation()
-    const isHidden = this.menuTarget.classList.contains('hidden')
     
-    // Close all other dropdowns first
-    document.querySelectorAll('[data-dropdown-target="menu"]').forEach(menu => {
-      if (menu !== this.menuTarget) {
-        menu.classList.add('hidden')
-      }
-    })
-    
-    // Toggle this dropdown
-    if (isHidden) {
-      this.menuTarget.classList.remove('hidden')
+    if (this.menuTarget.classList.contains("hidden")) {
+      this.open()
     } else {
-      this.menuTarget.classList.add('hidden')
+      this.close()
     }
   }
-  
-  closeDropdown() {
-    if (this.hasMenuTarget) {
-      this.menuTarget.classList.add('hidden')
+
+  open() {
+    // Dispatch event to close other dropdowns
+    const event = new CustomEvent("dropdown:opened", { bubbles: true })
+    this.element.dispatchEvent(event)
+    
+    // Open this dropdown
+    this.menuTarget.classList.remove("hidden")
+  }
+
+  close() {
+    this.menuTarget.classList.add("hidden")
+  }
+
+  closeDropdown = () => {
+    if (!this.menuTarget.classList.contains("hidden")) {
+      this.close()
     }
   }
-  
-  handleOutsideClick(event) {
-    if (!this.element.contains(event.target) && this.hasMenuTarget) {
-      this.menuTarget.classList.add('hidden')
+
+  closeIfClickedOutside = (event) => {
+    if (!this.element.contains(event.target) && !this.menuTarget.classList.contains("hidden")) {
+      this.close()
     }
   }
 }
