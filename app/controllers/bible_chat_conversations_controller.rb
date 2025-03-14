@@ -83,6 +83,8 @@ class BibleChatConversationsController < ApplicationController
   end
   
   def set_translations
-    @translations = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"]
+    @translations = Rails.cache.fetch("bible_translations", expires_in: 1.week) do
+      BibleConstants::TRANSLATIONS
+    end
   end
 end
