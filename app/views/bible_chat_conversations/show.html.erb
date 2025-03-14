@@ -54,15 +54,15 @@
     <!-- Message input -->
     <div class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
         <div class="max-w-3xl mx-auto">
-            <%= render "bible_chat_conversations/components/chat_input",
-                model: BibleChatMessage.new,
-                url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation),
-                form_id: "new_bible_chat_message",
-                translation: @translation,
-                translations: @translations,
-                translation_url: ->(t) { bible_chat_conversation_path(@conversation, translation: t) },
-                placeholder: "Ask a question...",
-                rows: 1 %>
+          <%= render "bible_chat_conversations/components/chat_input",
+            model: BibleChatMessage.new,
+            url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation),
+            form_id: "new_bible_chat_message",
+            translation: @translation,
+            translations: @translations,
+            translation_url: ->(t) { bible_chat_conversation_path(@conversation, translation: t) },
+            placeholder: "Ask a question...",
+            rows: 1 %>
         </div>
     </div>
 </div> 

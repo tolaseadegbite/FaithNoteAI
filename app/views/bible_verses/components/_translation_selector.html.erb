@@ -2,12 +2,24 @@
   <button data-translation-dropdown-target="button" data-action="click->translation-dropdown#toggle" 
           class="<%= local_assigns[:button_class] || 'w-full sm:w-auto flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer' %>">
     <span class="font-medium"><%= local_assigns[:label] || "Translation: #{translation}" %></span>
+    <% if Rails.env.development? %>
+      <% cache_hit = Rails.cache.exist?(translations_cache_key) %>
+      <span class="text-xs <%= cache_hit ? 'text-green-500' : 'text-red-500' %> ml-1" 
+            title="<%= cache_hit ? 'Using cached translations' : 'Cache miss - loading from database' %>">●</span>
+    <% end %>
     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
     </svg>
   </button>
   
   <div data-translation-dropdown-target="menu" class="hidden absolute z-10 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+    <% if Rails.env.development? %>
+      <% cache translations_cache_key do %>
+        <div class="px-4 py-1 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
+          Cache: <%= Time.current.strftime("%H:%M:%S") %>
+        </div>
+      <% end %>
+    <% end %>
     <div class="py-1 max-h-60 overflow-y-auto">
       <% translations.each do |code| %>
         <%= link_to url_for(params.permit!.merge(translation: code)), 

@@ -32,17 +32,17 @@
         </div>
         
         <div class="max-w-md mx-auto">
-            <%= render "bible_chat_conversations/components/chat_input",
-                model: BibleChatMessage.new,
-                url: bible_chat_conversations_path(translation: @translation),
-                form_id: "new_bible_chat_message",
-                translation: @translation,
-                translations: @translations,
-                translation_url: ->(t) { bible_chat_conversations_path(translation: t) },
-                placeholder: "Ask a question about the Bible...",
-                rows: 2,
-                field_name: :message,
-                autofocus: true %>
+          <%= render "bible_chat_conversations/components/chat_input",
+              model: BibleChatMessage.new,
+              url: bible_chat_conversations_path(translation: @translation),
+              form_id: "new_bible_chat_message",
+              translation: @translation,
+              translations: @translations,
+              translation_url: ->(t) { bible_chat_conversations_path(translation: t) },
+              placeholder: "Ask a question about the Bible...",
+              rows: 2,
+              field_name: :message,
+              autofocus: true %>
             <div class="text-sm text-gray-500 dark:text-gray-400 text-center mt-3">
                 Press Enter to start a new chat
             </div>
