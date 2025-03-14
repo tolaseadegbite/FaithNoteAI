@@ -109,4 +109,4 @@ class BibleVerse < ApplicationRecord
     else language
     end
   end
-end
+endgit push
