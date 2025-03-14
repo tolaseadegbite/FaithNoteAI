@@ -27,7 +27,7 @@ class BibleChatMessage < ApplicationRecord
   belongs_to :user
   belongs_to :bible_chat_conversation, optional: true
 
-  validates :content, presence: true
+  validates :content, presence: true, length: { maximum: 10000 }
   validates :role, presence: true, inclusion: { in: %w[user assistant] }
   
   scope :ordered, -> { order(created_at: :asc) }

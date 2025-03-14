@@ -1,6 +1,7 @@
 class BibleChatConversationsController < ApplicationController
   before_action :set_conversation, only: [:show, :destroy]
   before_action :set_translations, only: [:index, :show, :create]
+  before_action :ensure_conversation_ownership, only: [:show, :destroy]
   
   def index
     @conversations = current_user.bible_chat_conversations.ordered
@@ -42,7 +43,13 @@ class BibleChatConversationsController < ApplicationController
   private
   
   def set_conversation
-    @conversation = current_user.bible_chat_conversations.find(params[:id])
+    @conversation = BibleChatConversation.includes(:bible_chat_messages).find(params[:id])
+  end
+
+  def ensure_conversation_ownership
+    unless @conversation.user_id == current_user.id
+      redirect_to bible_chat_conversations_path, alert: "You don't have permission to access that conversation."
+    end
   end
   
   def set_translations
