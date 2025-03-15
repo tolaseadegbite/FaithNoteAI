@@ -20,24 +20,42 @@ class BibleVersesController < ApplicationController
       flash[:alert] = "Verse not found"
       redirect_to bible_verses_path
     end
+    
+    # Pre-load adjacent verses using the caching mechanism
+    @prev_verse = if @verse.verse > 1
+      BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse - 1, @translation)
+    else
+      # For first verse in chapter, get last verse of previous chapter if exists
+      last_verse_of_prev_chapter = @verse.chapter > 1 ? 
+        BibleVerse.find_chapter_last_verse(@verse.book, @verse.chapter - 1, @translation) : 
+        nil
+    end
+    
+    @next_verse = BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse + 1, @translation)
   end
 
   def chapter
-    # Show all verses in a chapter
+    @translation = params[:translation] || "KJV"
     @book = params[:book]
     @chapter = params[:chapter].to_i
-    @translation = params[:translation] || "KJV"
+    
+    # Cache the chapter count
+    cache_key = "bible_chapter_count/#{@translation}/#{@book}"
+    
+    # Log cache status for chapter count
+    cached = Rails.cache.exist?(cache_key)
+    Rails.logger.info "BibleChapterCount Cache #{cached ? 'HIT' : 'MISS'}: #{cache_key}"
+    
+    @chapter_count = Rails.cache.fetch(cache_key, expires_in: 1.day) do
+      BibleVerse.chapter_count_for_book(@book, @translation)
+    end
     
     @verses = BibleVerse.find_chapter(@book, @chapter, @translation)
     
     if @verses.empty?
       flash[:alert] = "Chapter not found"
       redirect_to bible_verses_path
-      return
     end
-    
-    # Get chapter count for the book
-    @chapter_count = BibleVerse.chapter_count_for_book(@book, @translation)
   end
 
   def search
