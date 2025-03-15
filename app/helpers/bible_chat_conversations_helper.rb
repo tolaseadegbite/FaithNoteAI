@@ -1,4 +1,6 @@
 module BibleChatConversationsHelper
+  include Pagy::Frontend
+  
   def conversation_cache_key(user)
     # Cache the maximum updated_at value to avoid repeated queries
     max_updated_at = Rails.cache.fetch(CacheKeys.user_conversations_timestamp_key(user.id), expires_in: 10.minutes) do

@@ -19,6 +19,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class BibleChatConversation < ApplicationRecord
+
   belongs_to :user, counter_cache: true
   has_many :bible_chat_messages, dependent: :destroy
   

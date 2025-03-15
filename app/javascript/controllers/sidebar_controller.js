@@ -25,7 +25,7 @@ export default class extends Controller {
   expandConversations() {
     const panel = this.conversationsPanelTarget
     panel.classList.remove('max-h-0')
-    panel.classList.add('max-h-96') // Adjust height as needed
+    panel.classList.add('max-h-40') // Adjust height as needed to fit between navigation and plan card
   }
   
   collapseConversations() {
