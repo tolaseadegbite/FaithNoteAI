@@ -1,12 +1,14 @@
 module BibleChatConversationsHelper
+  include CacheKeyConcern
+  
   def conversation_cache_key(user)
     # Cache the maximum updated_at value to avoid repeated queries
-    max_updated_at = Rails.cache.fetch("user_#{user.id}_max_conversation_timestamp", expires_in: 10.minutes) do
+    max_updated_at = Rails.cache.fetch(user_conversations_timestamp_key(user.id), expires_in: 10.minutes) do
       user.bible_chat_conversations.maximum(:updated_at).to_i
     end
     
     # Include conversation count to handle deletion edge cases
-    conversation_count = Rails.cache.fetch("user_#{user.id}_conversation_count", expires_in: 10.minutes) do
+    conversation_count = Rails.cache.fetch(user_conversations_count_key(user.id), expires_in: 10.minutes) do
       user.bible_chat_conversations.count
     end
     
@@ -14,8 +16,8 @@ module BibleChatConversationsHelper
     [user.id, "conversations_list", max_updated_at, conversation_count]
   end
   
-  def translations_cache_key
-    "bible_translations_v1" # Version number allows for easy cache invalidation
+  def translations_cache_key(version = 1)
+    bible_translations_key(version)
   end
   
   def cached_bible_translations

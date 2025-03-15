@@ -20,6 +20,8 @@
 #  index_bible_verses_on_translation                       (translation)
 #
 class BibleVerse < ApplicationRecord
+  include CacheKeyConcern
+
   # Validations
   validates :book, :chapter, :verse, :content, :translation, :language, presence: true
   
@@ -41,9 +43,18 @@ class BibleVerse < ApplicationRecord
   }
 
   # class method for chapter count
-  def self.chapter_count_for_book(book, translation = "KJV")
-    where(book: book, translation: translation)
-      .select(:chapter).distinct.count
+  def self.chapter_count_for_book(book, translation = "KJV", language = "en")
+    normalized_book = book.is_a?(String) ? book.titleize : book
+    cache_key = bible_chapter_count_key(language, translation, normalized_book)
+    
+    # Log cache status
+    cached = Rails.cache.exist?(cache_key)
+    Rails.logger.info "BibleChapterCount Cache #{cached ? 'HIT' : 'MISS'}: #{cache_key}"
+    
+    Rails.cache.fetch(cache_key, expires_in: 1.week) do
+      where(book: book, translation: translation)
+        .select(:chapter).distinct.count
+    end
   end
   
   # Class methods for lookup with caching
@@ -52,7 +63,7 @@ class BibleVerse < ApplicationRecord
     normalized_book = book.is_a?(String) ? book.titleize : book
     
     # Cache key for the requested verse
-    cache_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/#{verse}"
+    cache_key = bible_verse_key(language, translation, normalized_book, chapter, verse)
     
     # Log cache status
     cached = Rails.cache.exist?(cache_key)
@@ -71,7 +82,7 @@ class BibleVerse < ApplicationRecord
     if current_verse
       # Cache previous verse (if not first verse in chapter)
       if verse > 1
-        prev_cache_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/#{verse-1}"
+        prev_cache_key = bible_verse_key(language, translation, normalized_book, chapter, verse-1)
         # Only fetch from DB if not already cached
         unless Rails.cache.exist?(prev_cache_key)
           prev_verse = where("LOWER(book) = LOWER(?)", normalized_book)
@@ -85,7 +96,7 @@ class BibleVerse < ApplicationRecord
       end
       
       # Cache next verse
-      next_cache_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/#{verse+1}"
+      next_cache_key = bible_verse_key(language, translation, normalized_book, chapter, verse+1)
       # Only fetch from DB if not already cached
       unless Rails.cache.exist?(next_cache_key)
         next_verse = where("LOWER(book) = LOWER(?)", normalized_book)
@@ -105,7 +116,7 @@ class BibleVerse < ApplicationRecord
     # Normalize book name for case-insensitive search
     normalized_book = book.is_a?(String) ? book.titleize : book
     
-    cache_key = "bible_chapter/#{language}/#{translation}/#{normalized_book}/#{chapter}"
+    cache_key = bible_chapter_key(language, translation, normalized_book, chapter)
     
     # Log cache status
     cached = Rails.cache.exist?(cache_key)
@@ -125,7 +136,7 @@ class BibleVerse < ApplicationRecord
     # This helps with navigation within and between chapters
     if verses.present?
       verses.each do |verse|
-        verse_cache_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/#{verse.verse}"
+        verse_cache_key = bible_verse_key(language, translation, normalized_book, chapter, verse.verse)
         unless Rails.cache.exist?(verse_cache_key)
           Rails.cache.write(verse_cache_key, verse, expires_in: 1.week)
           Rails.logger.info "BibleVerse Cache PREFETCH: #{verse_cache_key}"
@@ -134,7 +145,7 @@ class BibleVerse < ApplicationRecord
       
       # Also cache the last verse with a special key for chapter navigation
       last_verse = verses.last
-      last_verse_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/last"
+      last_verse_key = bible_verse_key(language, translation, normalized_book, chapter, "last")
       unless Rails.cache.exist?(last_verse_key)
         Rails.cache.write(last_verse_key, last_verse, expires_in: 1.week)
         Rails.logger.info "BibleVerse Cache PREFETCH: #{last_verse_key}"
@@ -147,7 +158,7 @@ class BibleVerse < ApplicationRecord
   def self.find_chapter_last_verse(book, chapter, translation = "KJV", language = "en")
     normalized_book = book.is_a?(String) ? book.titleize : book
     
-    cache_key = "bible_verse/#{language}/#{translation}/#{normalized_book}/#{chapter}/last"
+    cache_key = bible_verse_key(language, translation, normalized_book, chapter, "last")
     
     # Log cache status
     cached = Rails.cache.exist?(cache_key)
