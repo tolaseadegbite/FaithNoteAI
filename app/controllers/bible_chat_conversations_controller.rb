@@ -20,45 +20,30 @@ class BibleChatConversationsController < ApplicationController
   def create
     return redirect_to bible_chat_conversations_path, alert: "Message cannot be empty" unless params[:message].present?
   
-    @conversation = current_user.bible_chat_conversations.new(
-      title: params[:message].truncate(50)
+    translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
+    
+    result = ChatConversation::BibleChatConversationService.create(
+      current_user,
+      params[:message],
+      translation
     )
     
-    if @conversation.save
-      @message = @conversation.bible_chat_messages.new(
-        content: params[:message],
-        role: "user",
-        user: current_user,
-        translation: params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-      )
+    if result[:conversation].persisted? && result[:message].persisted?
+      @conversation = result[:conversation]
+      @message = result[:message]
+      @assistant_message = result[:assistant_message]
       
-      if @message.save
-        translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-        
-        # Create a placeholder message that will be visible immediately
-        @assistant_message = @conversation.bible_chat_messages.create(
-          content: "Searching the Bible...",
-          role: "assistant",
-          user: current_user,
-          processing: true,
-          translation: translation
-        )
-        
-        # Pass the assistant message ID to the job
-        BibleChatJob.perform_later(@message, translation, @assistant_message.id)
-        
-        redirect_to bible_chat_conversation_path(@conversation, translation: translation), notice: "Conversation started"
-      else
-        @conversation.destroy # Clean up the conversation if message creation fails
-        redirect_to bible_chat_conversations_path, alert: "Failed to create message: #{@message.errors.full_messages.join(', ')}"
-      end
+      # Start the background job
+      BibleChatJob.perform_later(@message, translation, @assistant_message.id)
+      
+      redirect_to bible_chat_conversation_path(@conversation, translation: translation), notice: "Conversation started"
     else
-      redirect_to bible_chat_conversations_path, alert: "Failed to create conversation: #{@conversation.errors.full_messages.join(', ')}"
+      redirect_to bible_chat_conversations_path, alert: "Failed to create conversation: #{result[:errors].join(', ')}"
     end
   end
   
   def destroy
-    if @conversation.destroy
+    if ChatConversation::BibleChatConversationService.destroy(@conversation)
       redirect_to bible_chat_conversations_path, notice: "Conversation deleted successfully"
     else
       redirect_to bible_chat_conversation_path(@conversation), alert: "Failed to delete conversation"

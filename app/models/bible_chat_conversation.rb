@@ -20,10 +20,6 @@
 #
 class BibleChatConversation < ApplicationRecord
 
-  after_create :invalidate_conversation_cache
-  after_destroy :invalidate_conversation_cache
-  after_update :invalidate_conversation_cache
-
   belongs_to :user, counter_cache: true
   has_many :bible_chat_messages, dependent: :destroy
   
@@ -47,17 +43,5 @@ class BibleChatConversation < ApplicationRecord
     )
     
     return conversation, message
-  end
-
-  private
-  
-  def invalidate_conversation_cache
-    # Clear the cache keys used in the conversation_cache_key helper
-    # Use the same cache keys as in the helper
-    Rails.cache.delete(CacheKeys.user_conversations_timestamp_key(user.id))
-    Rails.cache.delete(CacheKeys.user_conversations_count_key(user.id))
-    
-    # Log the cache invalidation for debugging
-    Rails.logger.info "Invalidated conversation cache for user #{user.id}"
   end
 end
