@@ -1,5 +1,4 @@
 module BibleChatConversationsHelper
-  include Pagy::Frontend
   
   def conversation_cache_key(user)
     # Cache the maximum updated_at value to avoid repeated queries

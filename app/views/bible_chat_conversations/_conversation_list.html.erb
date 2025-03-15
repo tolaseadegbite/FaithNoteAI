@@ -3,6 +3,8 @@
   <!--Cache generated at: <%= cache_time %>-->
   <div class="space-y-1 max-h-60 overflow-y-hidden pr-1 conversation-list mb-5">
     <% conversations_to_display = defined?(conversations) && conversations.present? ? conversations : current_user.bible_chat_conversations.ordered %>
+
+    <!--Total conversations: <%= conversations_to_display.count %>-->
     
     <% if conversations_to_display.any? %>
       <% conversations_to_display.each do |conversation| %>
