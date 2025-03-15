@@ -1,6 +1,6 @@
 <% cache conversation_cache_key(current_user) do %>
   <% cache_time = Time.current %>
-  Cache generated at: <%= cache_time %>
+  <!--Cache generated at: <%= cache_time %>-->
   <div class="space-y-1 max-h-60 overflow-y-auto pr-1 conversation-list">
     <% conversations_to_display = defined?(conversations) && conversations.present? ? conversations : current_user.bible_chat_conversations.ordered %>
     

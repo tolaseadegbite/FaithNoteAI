@@ -1,6 +1,11 @@
 module CacheKeyConcern
   extend ActiveSupport::Concern
 
+  included do
+    # Make class methods available as module methods
+    extend ClassMethods
+  end
+
   class_methods do
     def bible_verse_key(language, translation, book, chapter, verse)
       "bible/verse/#{language}/#{translation}/#{book}/#{chapter}/#{verse}"
@@ -27,7 +32,7 @@ module CacheKeyConcern
     end
   end
   
-  # Add instance methods that mirror the class methods for use in controllers and helpers
+  # Instance methods that mirror the class methods
   def bible_verse_key(language, translation, book, chapter, verse)
     self.class.bible_verse_key(language, translation, book, chapter, verse)
   end
