@@ -178,13 +178,12 @@ class GeminiService
       - Answer the question directly without phrases like "Here's an answer to..." or "I understand..."
       - Respond as if in a natural conversation
       - Cite relevant scripture verses with their references (e.g., John 3:16)
-      - When quoting scripture, use the #{translation} translation
+      - When quoting scripture, ONLY include the reference (e.g., John 3:16) - DO NOT include the actual verse text
       - Maintain biblical accuracy in your responses
       
       Format your response using Markdown for better readability:
       - Use bullet points for lists
       - Use **bold** for emphasis and scripture references
-      - Use > for quotes from scripture
       - Use ### for headings
       - Structure your answer clearly and concisely
       
@@ -210,8 +209,12 @@ class GeminiService
       result = JSON.parse(response.body)
       if result["candidates"] && !result["candidates"].empty?
         markdown_text = result["candidates"][0]["content"]["parts"][0]["text"]
+        
+        # Process the response to replace verse references with actual verse text
+        processed_text = ChatConversation::BibleVerseProcessor.process_response(markdown_text, translation)
+        
         # Convert markdown to HTML for proper formatting
-        html_content = @markdown.render(markdown_text)
+        html_content = @markdown.render(processed_text)
         return html_content
       else
         return "I couldn't generate an answer to your Bible question."

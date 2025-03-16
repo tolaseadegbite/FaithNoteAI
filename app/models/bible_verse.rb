@@ -190,6 +190,12 @@ class BibleVerse < ApplicationRecord
       "#{base} (#{translation}, #{language_name})"
     end
   end
+
+  # Add this method to the BibleVerse model
+  def self.clear_verse_cache(language = "en", translation = "KJV")
+    Rails.cache.delete_matched("bible/verse/#{language}/#{translation}/*")
+    Rails.logger.info("Cleared Bible verse cache for #{language}/#{translation}")
+  end
   
   private
   
