@@ -66,16 +66,43 @@ class BibleVersesController < ApplicationController
   end
   
   def search
-    @query = params[:q].to_s.strip
+    @query = params[:q]
     @translation = params[:translation] || "KJV"
     
     if @query.present?
-      # Check if the query looks like a Bible reference
-      if @query.match(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/)
-        handle_reference_search
-      else
-        # Text search
-        @results = BibleVerse.search_content(@query, @translation)
+      search_service = Bible::BibleVerseSearchService.new(
+        @query, 
+        translation: @translation,
+        page: params[:page].to_i || 1,
+        items_per_page: 20
+      )
+      
+      result = search_service.search
+      
+      case result[:type]
+      when :verse
+        # Redirect to the specific verse
+        redirect_to bible_verse_path(
+          book: result[:verse].book, 
+          chapter: result[:verse].chapter, 
+          verse: result[:verse].verse,
+          translation: @translation
+        )
+        return
+      when :chapter
+        # Redirect to the chapter view
+        redirect_to bible_chapter_path(
+          book: result[:book], 
+          chapter: result[:chapter],
+          translation: @translation
+        )
+        return
+      when :search_results
+        # Paginate the results
+        @pagy, @results = pagy(result[:results], items: 20)
+      when :empty
+        @results = []
+        flash.now[:notice] = result[:message] if result[:message]
       end
     else
       @results = []
