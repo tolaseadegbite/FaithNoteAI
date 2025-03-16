@@ -1,4 +1,4 @@
-<div data-controller="note-chat" class="bg-white dark:bg-black flex flex-col h-[calc(100vh-16.5rem)] md:h-[calc(100vh-14.5rem)]">
+<div data-controller="note-chat" class="bg-white dark:bg-black flex flex-col h-[calc(100vh-16.5rem)]">
   <%= turbo_stream_from note %>
   
     <div id="note_chat_messages" data-note-chat-target="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
@@ -8,7 +8,7 @@
             <% end %>
         <% else %>
             <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-                <p>Ask a question about this note</p>
+                <p>Ask a question about this transcription</p>
             </div>
         <% end %>
     </div>

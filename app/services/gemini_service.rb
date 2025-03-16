@@ -67,7 +67,7 @@ class GeminiService
 
 
 
-  def chat_with_note_context(question, context)
+  def chat_with_note_context(question, context, context_messages = [])
     return "No context provided" if context.blank?
     
     uri = URI("#{BASE_URL}?key=#{@api_key}")
@@ -77,11 +77,23 @@ class GeminiService
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     
+    # Format the conversation history
+    conversation_history = ""
+    if context_messages.any?
+      conversation_history = "Previous conversation:\n\n"
+      context_messages.each do |msg|
+        role = msg.role == "user" ? "User" : "Assistant"
+        conversation_history += "#{role}: #{msg.content}\n\n"
+      end
+    end
+    
     prompt = <<~PROMPT
-      ou are an AI assistant designed to answer questions based on a transcribed Christian-related talk (sermon, lecture, workshop, or discussion).
+      You are an AI assistant designed to answer questions based on a transcribed Christian-related talk (sermon, lecture, workshop, or discussion).
       
       Context:
       #{context}
+      
+      #{conversation_history}
       
       User question: #{question}
       

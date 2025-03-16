@@ -3,23 +3,36 @@ class ProcessNoteChatJob < ApplicationJob
   
   def perform(note_chat)
     note = note_chat.note
+    user = note_chat.user
     
-    # Create a thinking message first
-    thinking_message = note.note_chats.create!(
-      user: note_chat.user,
-      role: "assistant",
+    # Create assistant message
+    assistant_message = note.note_chats.create!(
       content: "Thinking...",
+      role: "assistant",
+      user: user,
       processing: true
     )
+    
+    # Get previous messages for context (limit to last 10 for performance)
+    previous_messages = note.note_chats
+                           .where.not(id: [note_chat.id, assistant_message.id])
+                           .order(created_at: :desc)
+                           .limit(10)
+                           .to_a
+                           .reverse
+    
+    # Add the current user message
+    context_messages = previous_messages + [note_chat]
     
     # Get response from Gemini
     response = GeminiService.new.chat_with_note_context(
       note_chat.content, 
-      note.transcription.to_plain_text
+      note.transcription.to_plain_text,
+      context_messages
     )
     
-    # Update the message with the actual response
-    thinking_message.update!(
+    # Update assistant message with response
+    assistant_message.update!(
       content: response,
       processing: false
     )
