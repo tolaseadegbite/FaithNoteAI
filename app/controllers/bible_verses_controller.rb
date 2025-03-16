@@ -4,22 +4,22 @@ class BibleVersesController < ApplicationController
   
   before_action :set_bible_books, only: [:index, :show, :chapter]
   before_action :set_translations, only: [:index, :show, :chapter, :search]
+  before_action :set_translation, only: [:index, :show, :chapter, :search]
 
   def index
     # Display all Bible books
     @old_testament_books = OLD_TESTAMENT_BOOKS
     @new_testament_books = NEW_TESTAMENT_BOOKS
-    @translation = params[:translation] || "KJV"
   end
 
   def show
     # Show a specific verse
-    @translation = params[:translation] || "KJV"
     @verse = BibleVerse.find_verse(params[:book], params[:chapter].to_i, params[:verse].to_i, @translation)
     
     if @verse.nil?
       flash[:alert] = "Verse not found"
       redirect_to bible_verses_path
+      return
     end
     
     # Pre-load adjacent verses using the caching mechanism
@@ -27,7 +27,7 @@ class BibleVersesController < ApplicationController
       BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse - 1, @translation)
     else
       # For first verse in chapter, get last verse of previous chapter if exists
-      last_verse_of_prev_chapter = @verse.chapter > 1 ? 
+      @verse.chapter > 1 ? 
         BibleVerse.find_chapter_last_verse(@verse.book, @verse.chapter - 1, @translation) : 
         nil
     end
@@ -36,7 +36,6 @@ class BibleVersesController < ApplicationController
   end
 
   def chapter
-    @translation = params[:translation] || "KJV"
     @book = params[:book]
     @chapter = params[:chapter].to_i
     
@@ -52,6 +51,7 @@ class BibleVersesController < ApplicationController
     if @verses.empty?
       flash[:alert] = "Chapter not found"
       redirect_to bible_verses_path
+      return
     end
     
     # Get the last verse of the previous chapter (if not first chapter)
@@ -67,13 +67,12 @@ class BibleVersesController < ApplicationController
   
   def search
     @query = params[:q]
-    @translation = params[:translation] || "KJV"
     
     if @query.present?
       search_service = Bible::BibleVerseSearchService.new(
         @query, 
         translation: @translation,
-        page: params[:page].to_i || 1,
+        page: params[:page].to_i.positive? ? params[:page].to_i : 1,
         items_per_page: 20
       )
       
@@ -111,29 +110,24 @@ class BibleVersesController < ApplicationController
   
   private
   
-  def handle_reference_search
-    # Parse the reference
-    match = @query.match(/^([1-3]?\s*[A-Za-z]+)\s+(\d+)(?::(\d+))?$/)
-    book = match[1].strip
-    chapter = match[2].to_i
-    verse = match[3].to_i if match[3]
-    
-    if verse
-      # Specific verse reference
-      redirect_to bible_verse_path(book: book, chapter: chapter, verse: verse, translation: @translation)
-    else
-      # Chapter reference
-      redirect_to bible_chapter_path(book: book, chapter: chapter, translation: @translation)
-    end
-  end
-  
   def set_bible_books
     @bible_books = OLD_TESTAMENT_BOOKS + NEW_TESTAMENT_BOOKS
   end
   
   def set_translations
-    @translations = Rails.cache.fetch(bible_translations_key, expires_in: 1.day) do
+    # Using the CacheKeys module for consistent cache key generation
+    cache_key = CacheKeys.bible_translations_key
+    cached = Rails.cache.exist?(cache_key)
+    
+    @translations = Rails.cache.fetch(cache_key, expires_in: 1.day) do
+      Rails.logger.info "CACHE MISS: Bible translations cache being generated"
       TRANSLATIONS
     end
+    
+    Rails.logger.info "CACHE #{cached ? 'HIT' : 'MISS'}: Bible translations (#{@translations.count} items)"
+  end
+  
+  def set_translation
+    @translation = params[:translation] || "KJV"
   end
 end
