@@ -22,6 +22,9 @@ class BibleVersesController < ApplicationController
       return
     end
     
+    # Track the source of the request (from chat or regular browsing)
+    @source = params[:source]
+    
     # Pre-load adjacent verses using the caching mechanism
     @prev_verse = if @verse.verse > 1
       BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse - 1, @translation)

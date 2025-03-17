@@ -186,6 +186,7 @@ class GeminiService
       - Use **bold** for emphasis and scripture references
       - Use ### for headings
       - Structure your answer clearly and concisely
+      - Use blockquote for quotes
       
       If you're unsure about an answer, acknowledge the limitations and suggest what scripture might be relevant.
       Remember to consider the conversation history when providing your response.

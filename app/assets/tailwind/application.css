@@ -2,3 +2,9 @@
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+    .bible-verse-link {
+      @apply text-green-600 dark:text-green-400 hover:underline;
+    }
+}
