@@ -38,6 +38,8 @@
         <%= yield %>
         <%= render partial: "layouts/flash" %>
       </div>
+
+      <%= turbo_frame_tag :modal %>
     </div>
   </body>
 </html>
