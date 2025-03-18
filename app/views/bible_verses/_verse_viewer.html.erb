@@ -1,0 +1,34 @@
+<div class="verse-content p-4">
+  <h3 class="text-lg font-semibold mb-2">
+    <% if @verse_end %>
+      <%= @book %> <%= @chapter %>:<%= @verse_start %>-<%= @verse_end %> (<%= @translation %>)
+    <% else %>
+      <%= @book %> <%= @chapter %>:<%= @verse_start %> (<%= @translation %>)
+    <% end %>
+  </h3>
+  
+  <div class="verse-text">
+    <% if @verses.present? %>
+      <% @verses.each_with_index do |verse, index| %>
+        <p class="mb-2">
+          <span class="text-gray-500 dark:text-gray-400 mr-1 text-sm align-super"><%= @verse_start + index %></span>
+          <span><%= verse.content %></span>
+        </p>
+      <% end %>
+    <% elsif @verse.present? %>
+      <p><%= @verse.content %></p>
+    <% else %>
+      <p class="text-red-500">Verse not found</p>
+    <% end %>
+  </div>
+  
+  <div class="mt-4 flex justify-end">
+    <button type="button" 
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            data-action="bible-verse#closeViewer">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+</div>

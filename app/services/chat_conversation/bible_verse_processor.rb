@@ -13,11 +13,11 @@ module ChatConversation
             fetch_verse(book, chapter, v, translation)
           end
           
-          # Format the verse range with proper citation and add link
+          # Format the verse range with proper citation
           formatted_verses = verses.compact.map(&:content).join(" ")
           if formatted_verses.present?
-            verse_link = create_verse_link(book, chapter, verse_start, verse_end, translation)
-            "> #{formatted_verses}\n>\n> **#{verse_link}** (#{translation})"
+            reference = "#{book} #{chapter}:#{verse_start}-#{verse_end}"
+            create_verse_block(formatted_verses, reference, book, chapter, verse_start, verse_end, translation)
           else
             match # Keep original if verses not found
           end
@@ -25,8 +25,8 @@ module ChatConversation
           # Handle single verse
           verse = fetch_verse(book, chapter, verse_start, translation)
           if verse
-            verse_link = create_verse_link(book, chapter, verse_start, nil, translation)
-            "> #{verse.content}\n>\n> **#{verse_link}** (#{translation})"
+            reference = "#{book} #{chapter}:#{verse_start}"
+            create_verse_block(verse.content, reference, book, chapter, verse_start, nil, translation)
           else
             match # Keep original if verse not found
           end
@@ -36,15 +36,32 @@ module ChatConversation
     
     private
     
+    def self.create_verse_block(content, reference, book, chapter, verse_start, verse_end = nil, translation = "KJV")
+      # Create a link that will load the verse in a Turbo Frame
+      verse_params = {
+        book: book,
+        chapter: chapter,
+        verse_start: verse_start,
+        translation: translation
+      }
+      verse_params[:verse_end] = verse_end if verse_end
+      
+      # Use HTML blockquote that will be preserved through markdown rendering
+      <<~HTML
+        <blockquote class="bible-verse">
+          <p>#{content}</p>
+          <p><strong><a href="/bible/show_verse?#{verse_params.to_query}" 
+            class="bible-verse-link" 
+            data-turbo-frame="verse_viewer" 
+            data-controller="verse-link" 
+            data-action="click->verse-link#showVerse">#{reference}</a></strong> (#{translation})</p>
+        </blockquote>
+      HTML
+    end
+    
     def self.fetch_verse(book, chapter, verse, translation)
       # Use the existing BibleVerse model to fetch the verse
       BibleVerse.find_verse(book, chapter, verse, translation)
-    end
-    
-    def self.create_verse_link(book, chapter, verse_start, verse_end, translation)
-      reference = verse_end ? "#{book} #{chapter}:#{verse_start}-#{verse_end}" : "#{book} #{chapter}:#{verse_start}"
-      url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&source=chat"
-      "<a href=\"#{url}\" class=\"bible-verse-link\" target=\"_blank\">#{reference}</a>"
     end
   end
 end

@@ -110,6 +110,24 @@ class BibleVersesController < ApplicationController
       @results = []
     end
   end
+
+  def show_verse
+    @book = params[:book]
+    @chapter = params[:chapter].to_i
+    @verse_start = params[:verse_start].to_i
+    @verse_end = params[:verse_end].to_i if params[:verse_end].present?
+    @translation = params[:translation] || "KJV"
+    
+    if @verse_end
+      @verses = (@verse_start..@verse_end).map do |v|
+        BibleVerse.find_verse(@book, @chapter, v, @translation)
+      end.compact
+    else
+      @verse = BibleVerse.find_verse(@book, @chapter, @verse_start, @translation)
+    end
+    
+    render layout: false
+  end
   
   private
   

@@ -1,0 +1,7 @@
+<%= turbo_stream.update "verse_viewer_content" do %>
+  <%= render "verse_viewer" %>
+<% end %>
+
+<%= turbo_stream.replace "verse_viewer_status" do %>
+  <div id="verse_viewer_status" data-bible-verse-target="status" data-status="open"></div>
+<% end %>

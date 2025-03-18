@@ -41,5 +41,50 @@
 
       <%= turbo_frame_tag :modal %>
     </div>
+
+    <!-- Verse Backdrop -->
+    <div id="verse_backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300" 
+        data-controller="verse-link" 
+        data-action="click->verse-link#closeViewer">
+    </div>
+
+    <!-- Verse Side Panel (Desktop) -->
+    <div id="verse_side_panel" class="fixed top-0 right-0 h-full w-96 bg-white dark:bg-gray-800 shadow-xl z-50 transform translate-x-full transition-transform duration-300 overflow-y-auto">
+      <div class="p-4">
+        <button type="button" 
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                data-controller="verse-link" 
+                data-action="verse-link#closeViewer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <turbo-frame id="verse_viewer">
+          <div class="flex items-center justify-center h-64">
+            <div class="text-gray-500 dark:text-gray-400">Select a verse to view details</div>
+          </div>
+        </turbo-frame>
+      </div>
+    </div>
+
+    <!-- Verse Bottom Sheet (Mobile) -->
+    <div id="verse_bottom_sheet" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-xl z-50 transform translate-y-full transition-transform duration-300 rounded-t-xl max-h-[80vh] overflow-y-auto">
+      <div class="p-4">
+        <div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4"></div>
+        <button type="button" 
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                data-controller="verse-link" 
+                data-action="verse-link#closeViewer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <turbo-frame id="verse_viewer">
+          <div class="flex items-center justify-center h-64">
+            <div class="text-gray-500 dark:text-gray-400">Select a verse to view details</div>
+          </div>
+        </turbo-frame>
+      </div>
+    </div>
   </body>
 </html>
