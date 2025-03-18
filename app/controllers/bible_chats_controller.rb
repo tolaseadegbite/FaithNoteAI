@@ -1,5 +1,5 @@
 class BibleChatsController < ApplicationController
-  before_action :set_translations, only: [:index, :create]
+  before_action :set_translations, only: [:index, :create, :update_translation]
   before_action :set_conversation, only: [:create]
   
   def index
