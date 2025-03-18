@@ -26,6 +26,9 @@ class BibleChatConversation < ApplicationRecord
   validates :title, presence: true
   
   scope :ordered, -> { order(updated_at: :desc) }
+
+  # Add callback to invalidate cache when conversation is destroyed
+  # after_destroy :invalidate_conversation_cache
   
   def self.create_with_message(user, message_content, translation)
     # Generate a title from the first message
@@ -44,4 +47,12 @@ class BibleChatConversation < ApplicationRecord
     
     return conversation, message
   end
+
+  # private
+  
+  # def invalidate_conversation_cache
+  #   Rails.cache.delete(CacheKeys.user_conversations_timestamp_key(user_id))
+  #   Rails.cache.delete(CacheKeys.user_conversations_count_key(user_id))
+  #   Rails.logger.info "Invalidated conversation cache for user #{user_id} from model callback"
+  # end
 end

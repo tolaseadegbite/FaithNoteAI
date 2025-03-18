@@ -177,16 +177,16 @@ class GeminiService
       Important instructions:
       - Answer the question directly without phrases like "Here's an answer to..." or "I understand..."
       - Respond as if in a natural conversation
-      - Cite relevant scripture verses with their references (e.g., John 3:16)
-      - When quoting scripture, ONLY include the reference (e.g., John 3:16) - DO NOT include the actual verse text
+      - When citing scripture, use natural language like "In [Book Chapter:Verse], it says..." or "[Person] writes in [Book Chapter:Verse]..."
+      - Always include the full reference (e.g., John 3:16) when citing scripture
+      - ONLY include the reference - DO NOT include the actual verse text, as it will be added automatically
       - Maintain biblical accuracy in your responses
       
       Format your response using Markdown for better readability:
       - Use bullet points for lists
-      - Use **bold** for emphasis and scripture references
+      - Use **bold** for emphasis
       - Use ### for headings
       - Structure your answer clearly and concisely
-      - Use blockquote for quotes
       
       If you're unsure about an answer, acknowledge the limitations and suggest what scripture might be relevant.
       Remember to consider the conversation history when providing your response.

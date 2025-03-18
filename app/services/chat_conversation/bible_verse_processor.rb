@@ -4,8 +4,12 @@ module ChatConversation
 
     def self.process_response(response_text, translation = "KJV")
       # Find all verse references in the response
-      response_text.gsub(VERSE_REGEX) do |match|
+      processed_text = response_text.gsub(VERSE_REGEX) do |match|
         book, chapter, verse_start, verse_end = $1, $2.to_i, $3.to_i, $4&.to_i
+        
+        # Create the reference text and link
+        reference = verse_end ? "#{book} #{chapter}:#{verse_start}-#{verse_end}" : "#{book} #{chapter}:#{verse_start}"
+        verse_link = create_verse_link(book, chapter, verse_start, verse_end, translation)
         
         if verse_end
           # Handle verse range
@@ -16,20 +20,24 @@ module ChatConversation
           # Format the verse range with proper citation
           formatted_verses = verses.compact.map(&:content).join(" ")
           if formatted_verses.present?
-            "> #{formatted_verses}\n>\n> **#{book} #{chapter}:#{verse_start}-#{verse_end}** (#{translation})"
+            # Add styling to make verse content visually distinct
+            "#{verse_link}: <span class=\"bible-verse-content\">#{formatted_verses}</span>"
           else
-            match # Keep original if verses not found
+            verse_link # Just link the reference if verses not found
           end
         else
           # Handle single verse
           verse = fetch_verse(book, chapter, verse_start, translation)
           if verse
-            "> #{verse.content}\n>\n> **#{book} #{chapter}:#{verse_start}** (#{translation})"
+            # Add styling to make verse content visually distinct
+            "#{verse_link}: <span class=\"bible-verse-content\">#{formatted_verses}</span>"
           else
-            match # Keep original if verse not found
+            verse_link # Just link the reference if verse not found
           end
         end
       end
+      
+      return processed_text
     end
     
     private
@@ -37,6 +45,19 @@ module ChatConversation
     def self.fetch_verse(book, chapter, verse, translation)
       # Use the existing BibleVerse model to fetch the verse
       BibleVerse.find_verse(book, chapter, verse, translation)
+    end
+    
+    def self.create_verse_link(book, chapter, verse_start, verse_end, translation)
+      reference = verse_end ? "#{book} #{chapter}:#{verse_start}-#{verse_end}" : "#{book} #{chapter}:#{verse_start}"
+      
+      # Create URL to the verse show page, not the chapter page
+      if verse_end
+        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&verse_end=#{verse_end}&source=chat"
+      else
+        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&source=chat"
+      end
+      
+      "<a href=\"#{url}\" class=\"bible-verse-link\" target=\"_blank\">#{reference}</a>"
     end
   end
 end

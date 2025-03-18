@@ -73,3 +73,20 @@ p {
     background-color: rgba(75, 85, 99, 0.5);
   }
 }
+
+.bible-verse-content {
+  font-style: italic;
+  color: #6b7280; /* Gray-500 */
+  background-color: #f3f4f6; /* Gray-100 */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border-left: 3px solid #10b981; /* Emerald-500 */
+  display: inline-block;
+  margin: 0.25rem 0;
+}
+
+.dark .bible-verse-content {
+  color: #d1d5db; /* Gray-300 */
+  background-color: #374151; /* Gray-700 */
+  border-left: 3px solid #059669; /* Emerald-600 */
+}
