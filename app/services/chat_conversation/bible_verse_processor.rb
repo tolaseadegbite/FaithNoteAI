@@ -51,7 +51,7 @@ module ChatConversation
         <blockquote class="bible-verse">
           <p>#{content}</p>
           <p><strong><a href="/bible/show_verse?#{verse_params.to_query}" 
-            class="bible-verse-link" 
+            class="bible-verse-link text-green-600 dark:text-green-400 hover:underline" 
             data-turbo-frame="verse_viewer" 
             data-controller="verse-link" 
             data-action="click->verse-link#showVerse">#{reference}</a></strong> (#{translation})</p>
