@@ -1,0 +1,7 @@
+<% pagy ||= nil %>
+
+<% if pagy&.next %>
+    <%= turbo_frame_tag "load_more", src: { page: pagy.next, format: :turbo_stream }, loading: :lazy do %>
+        <%= render("shared/loading_animation") %>
+    <% end %>
+<% end %>

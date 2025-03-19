@@ -1,0 +1,7 @@
+<%= turbo_stream.prepend "messages" do %>
+    <%= render partial: "bible_chats/bible_chat_message", collection: @messages %>
+<% end %>
+
+<%= turbo_stream.replace "load_more" do %>
+    <%= render_load_more(@pagy) %>
+<% end %>

@@ -38,7 +38,10 @@
   </div>
 
   <!-- Chat messages -->
-  <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-black" data-controller="bible-chat" data-bible-chat-target="messages">
+  <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-black" 
+      data-controller="bible-chat scroll" 
+      data-bible-chat-target="messages"
+      data-scroll-target="container">
     <div id="bible_chat_messages" class="space-y-4 max-w-3xl mx-auto">
       <% if @messages.empty? %>
         <div class="text-center text-gray-500 dark:text-gray-400 py-8">
@@ -46,7 +49,12 @@
           <p class="text-sm mt-2">For example: "What does the Bible say about love?" or "Tell me about Noah's ark"</p>
         </div>
       <% else %>
-        <%= render partial: "bible_chats/bible_chat_message", collection: @messages %>
+        <%= turbo_frame_tag "load_more" do %>
+          <%= render_load_more(@pagy) %>
+        <% end %>
+        <%= turbo_frame_tag "messages", class: "space-y-4" do %>
+          <%= render partial: "bible_chats/bible_chat_message", collection: @messages %>
+        <% end %>
       <% end %>
     </div>
   </div>

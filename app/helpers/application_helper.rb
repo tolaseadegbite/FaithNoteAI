@@ -1,5 +1,9 @@
 module ApplicationHelper
   include Pagy::Frontend
+
+  def render_load_more(pagy)
+    render "shared/load_more", pagy: pagy
+  end
   
   # returns full title if present, else returns base title
   def full_title(page_title="")

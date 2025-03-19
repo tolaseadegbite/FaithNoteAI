@@ -10,7 +10,7 @@ class BibleChatConversationsController < ApplicationController
   
   def show
     @conversations = current_user.bible_chat_conversations.ordered
-    @messages = @conversation.bible_chat_messages.ordered
+    @pagy, @messages = pagy_keyset(@conversation.bible_chat_messages.ordered)
     @message = BibleChatMessage.new
     @translation = params[:translation] || "KJV"
   rescue ActiveRecord::RecordNotFound
