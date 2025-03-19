@@ -30,7 +30,7 @@ class BibleChatMessage < ApplicationRecord
   validates :content, presence: true, length: { maximum: 100000 }
   validates :role, presence: true, inclusion: { in: %w[user assistant] }
   
-  scope :ordered, -> { order(created_at: :asc) }
+  scope :ordered, -> { order(created_at: :desc) }
   scope :for_conversation, ->(conversation_id) { where(bible_chat_conversation_id: conversation_id).ordered }
   
   # Update the broadcast to specify the partial
