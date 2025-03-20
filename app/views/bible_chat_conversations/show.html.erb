@@ -40,29 +40,36 @@
   <!-- Chat messages -->
   <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-black" data-controller="bible-chat" data-bible-chat-target="messages">
     <div id="bible_chat_messages" class="space-y-4">
-      <% if @messages.empty? %>
+      <% if @conversation.bible_chat_messages.exists? %>
+        <% cache conversation_messages_cache_key(@conversation) do %>
+          <!-- Cache timestamp for debugging -->
+          <% if Rails.env.development? %>
+            <!-- Cache generated at: <%= Time.current %> -->
+          <% end %>
+          
+          <%= render partial: "bible_chats/bible_chat_message", collection: @messages %>
+        <% end %>
+      <% else %>
         <div class="text-center text-gray-500 dark:text-gray-400 py-8">
           <p>Ask a question about the Bible to get started.</p>
           <p class="text-sm mt-2">For example: "What does the Bible say about love?" or "Tell me about Noah's ark"</p>
         </div>
-      <% else %>
-        <%= render partial: "bible_chats/bible_chat_message", collection: @messages %>
       <% end %>
     </div>
   </div>
 
-    <!-- Message input -->
-    <div class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-        <div class="">
-          <%= render "bible_chat_conversations/components/chat_input",
-            model: BibleChatMessage.new,
-            url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation),
-            form_id: "new_bible_chat_message",
-            translation: @translation,
-            translations: @translations,
-            translation_url: ->(t) { bible_chat_conversation_path(@conversation, translation: t) },
-            placeholder: "Ask a question...",
-            rows: 1 %>
-        </div>
+  <!-- Message input -->
+  <div class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+    <div class="">
+      <%= render "bible_chat_conversations/components/chat_input",
+        model: BibleChatMessage.new,
+        url: bible_chat_conversation_bible_chat_messages_path(@conversation, translation: @translation),
+        form_id: "new_bible_chat_message",
+        translation: @translation,
+        translations: @translations,
+        translation_url: ->(t) { bible_chat_conversation_path(@conversation, translation: t) },
+        placeholder: "Ask a question...",
+        rows: 1 %>
     </div>
+  </div>
 </div> 

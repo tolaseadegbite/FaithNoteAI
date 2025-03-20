@@ -26,4 +26,13 @@ module CacheKeys
   def self.bible_translations_key(version = 1)
     "app/bible/translations/v#{version}"
   end
+  
+  # Conversation messages cache keys
+  def self.conversation_messages_timestamp_key(conversation_id)
+    "conversation/#{conversation_id}/messages_timestamp"
+  end
+  
+  def self.conversation_messages_count_key(conversation_id)
+    "conversation/#{conversation_id}/messages_count"
+  end
 end

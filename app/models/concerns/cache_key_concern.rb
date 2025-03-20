@@ -30,6 +30,15 @@ module CacheKeyConcern
     def bible_translations_key(version = 1)
       "app/bible/translations/v#{version}"
     end
+    
+    # Add new methods for conversation messages caching
+    def conversation_messages_timestamp_key(conversation_id)
+      "conversation/#{conversation_id}/messages_timestamp"
+    end
+    
+    def conversation_messages_count_key(conversation_id)
+      "conversation/#{conversation_id}/messages_count"
+    end
   end
   
   # Instance methods that mirror the class methods
@@ -55,5 +64,14 @@ module CacheKeyConcern
   
   def bible_translations_key(version = 1)
     self.class.bible_translations_key(version)
+  end
+  
+  # Add instance methods for conversation messages caching
+  def conversation_messages_timestamp_key(conversation_id)
+    self.class.conversation_messages_timestamp_key(conversation_id)
+  end
+  
+  def conversation_messages_count_key(conversation_id)
+    self.class.conversation_messages_count_key(conversation_id)
   end
 end

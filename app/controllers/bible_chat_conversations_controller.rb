@@ -1,4 +1,6 @@
 class BibleChatConversationsController < ApplicationController
+  include BibleChatConversationsHelper
+
   before_action :set_conversation, only: [:show, :destroy]
   before_action :set_translations, only: [:index, :show, :create]
   before_action :ensure_conversation_ownership, only: [:show, :destroy]
@@ -10,9 +12,22 @@ class BibleChatConversationsController < ApplicationController
   
   def show
     @conversations = current_user.bible_chat_conversations.ordered
-    @messages = @conversation.bible_chat_messages.ordered
-    @message = BibleChatMessage.new
     @translation = params[:translation] || "KJV"
+    @message = BibleChatMessage.new
+    
+    # Check if messages are cached before loading them
+    cache_key = conversation_messages_cache_key(@conversation)
+    cached = fragment_exist?(cache_key)
+    
+    # Only load messages if cache is missing
+    if !cached
+      Rails.logger.info "Messages Cache MISS: conversation #{@conversation.id}"
+      @messages = @conversation.bible_chat_messages.ordered
+    else
+      Rails.logger.info "Messages Cache HIT: conversation #{@conversation.id}"
+      # Don't load messages if we have a cache hit
+      @messages = []
+    end
   rescue ActiveRecord::RecordNotFound
     redirect_to bible_chat_conversations_path, alert: "Conversation not found"
   end
@@ -56,7 +71,7 @@ class BibleChatConversationsController < ApplicationController
   private
   
   def set_conversation
-    @conversation = BibleChatConversation.includes(:bible_chat_messages).find(params[:id])
+    @conversation = current_user.bible_chat_conversations.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to bible_chat_conversations_path, alert: "Conversation not found"
   end

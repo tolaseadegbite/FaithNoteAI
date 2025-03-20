@@ -31,4 +31,19 @@ module BibleChatConversationsHelper
     Rails.logger.info "CACHE #{cached ? 'HIT' : 'MISS'}: Bible translations (#{translations.count} items)"
     translations
   end
+  
+  def conversation_messages_cache_key(conversation)
+    # Cache the maximum updated_at value to avoid repeated queries
+    max_updated_at = Rails.cache.fetch(CacheKeys.conversation_messages_timestamp_key(conversation.id), expires_in: 5.minutes) do
+      conversation.bible_chat_messages.maximum(:updated_at).to_i
+    end
+    
+    # Include message count to handle deletion edge cases
+    messages_count = Rails.cache.fetch(CacheKeys.conversation_messages_count_key(conversation.id), expires_in: 5.minutes) do
+      conversation.bible_chat_messages.count
+    end
+    
+    # Return a consistent cache key format
+    [conversation.id, "messages_list", max_updated_at, messages_count]
+  end
 end
