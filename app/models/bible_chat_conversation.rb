@@ -48,6 +48,14 @@ class BibleChatConversation < ApplicationRecord
     return conversation, message
   end
 
+  def messages_timestamp
+    bible_chat_messages.maximum(:updated_at).to_i
+  end
+  
+  def messages_count
+    bible_chat_messages.count
+  end
+
   # private
   
   # def invalidate_conversation_cache

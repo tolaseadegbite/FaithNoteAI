@@ -15,21 +15,14 @@ class BibleChatConversationsController < ApplicationController
     @translation = params[:translation] || "KJV"
     @message = BibleChatMessage.new
     
-    # Check if messages are cached before loading them
+    # Load messages before checking cache to ensure accurate cache key
+    @messages = @conversation.bible_chat_messages.ordered
+    
+    # Generate cache key
     cache_key = conversation_messages_cache_key(@conversation)
     cached = fragment_exist?(cache_key)
     
-    # Only load messages if cache is missing
-    if !cached
-      Rails.logger.info "Messages Cache MISS: conversation #{@conversation.id}"
-      @messages = @conversation.bible_chat_messages.ordered
-    else
-      Rails.logger.info "Messages Cache HIT: conversation #{@conversation.id}"
-      # Don't load messages if we have a cache hit
-      @messages = []
-    end
-  rescue ActiveRecord::RecordNotFound
-    redirect_to bible_chat_conversations_path, alert: "Conversation not found"
+    Rails.logger.info "Messages Cache #{cached ? 'HIT' : 'MISS'}: conversation #{@conversation.id}"
   end
   
   def create

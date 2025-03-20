@@ -33,17 +33,11 @@ module BibleChatConversationsHelper
   end
   
   def conversation_messages_cache_key(conversation)
-    # Cache the maximum updated_at value to avoid repeated queries
-    max_updated_at = Rails.cache.fetch(CacheKeys.conversation_messages_timestamp_key(conversation.id), expires_in: 5.minutes) do
-      conversation.bible_chat_messages.maximum(:updated_at).to_i
-    end
+    # Get the messages timestamp and count directly
+    max_updated_at = conversation.bible_chat_messages.maximum(:updated_at).to_i
+    messages_count = conversation.bible_chat_messages.count
     
-    # Include message count to handle deletion edge cases
-    messages_count = Rails.cache.fetch(CacheKeys.conversation_messages_count_key(conversation.id), expires_in: 5.minutes) do
-      conversation.bible_chat_messages.count
-    end
-    
-    # Return a consistent cache key format
-    [conversation.id, "messages_list", max_updated_at, messages_count]
+    # Use the same format as the fragment_exist? check in the controller
+    ["views", conversation.id, "messages_list", max_updated_at, messages_count]
   end
 end
