@@ -2,6 +2,6 @@
     <%= render partial: "notes/components/note_card", collection: @notes, as: :note %>
 <% end %>
 
-<%= turbo_stream.replace "load more" do %>
+<%= turbo_stream.replace "load_more" do %>
     <%= render_load_more(@pagy) %>
 <% end %>
