@@ -46,7 +46,7 @@
           <p class="text-sm mt-2">For example: "What does the Bible say about love?" or "Tell me about Noah's ark"</p>
         </div>
       <% else %>
-      <%= turbo_frame_tag "load_more" do %>
+        <%= turbo_frame_tag "load_more" do %>
           <%= render_load_more(@pagy) %>
         <% end %>
         <%= turbo_frame_tag "messages", class: "space-y-4" do %>

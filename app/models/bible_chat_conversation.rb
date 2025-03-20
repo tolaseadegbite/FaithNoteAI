@@ -28,7 +28,7 @@ class BibleChatConversation < ApplicationRecord
   scope :ordered, -> { order(updated_at: :desc) }
 
   # Add callback to invalidate cache when conversation is destroyed
-  after_destroy :invalidate_conversation_cache
+  # after_destroy :invalidate_conversation_cache
   
   def self.create_with_message(user, message_content, translation)
     # Generate a title from the first message
