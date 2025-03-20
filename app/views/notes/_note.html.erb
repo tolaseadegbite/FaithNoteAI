@@ -2,7 +2,7 @@
     <div class="p-4" data-action="click->note-click#visit" data-note-click-url="<%= note_path(note) %>">
         <%= render 'notes/components/note_meta', note: note %>
 
-        <h2 class="text-lg font-semibold group-hover:text-green-600 dark:group-hover:text-green-500">
+        <h2 class="text-lg font-semibold group-hover:text-green-600 dark:group-hover:text-green-500" title="<%= note.title %>">
             <%= note.title %>
         </h2>
         <p class="text-sm mt-2 text-gray-600 dark:text-gray-300">
