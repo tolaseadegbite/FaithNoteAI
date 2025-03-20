@@ -32,33 +32,17 @@ class BibleChatMessage < ApplicationRecord
   
   scope :ordered, -> { order(created_at: :asc) }
   scope :for_conversation, ->(conversation_id) { where(bible_chat_conversation_id: conversation_id).ordered }
-
-  after_create_commit :invalidate_conversation_messages_cache
-  after_update_commit :invalidate_conversation_messages_cache
-  after_destroy_commit :invalidate_conversation_messages_cache
   
   # Update the broadcast to specify the partial
   after_create_commit -> { 
     broadcast_append_to "bible_chat_#{user_id}", 
-                      target: "bible_chat_messages", 
-                      partial: "bible_chats/bible_chat_message"
+                        target: "bible_chat_messages", 
+                        partial: "bible_chats/bible_chat_message"
   }
   
   # Update the broadcast to specify the partial
   after_update_commit -> {
     broadcast_replace_to "bible_chat_#{user_id}",
-                       partial: "bible_chats/bible_chat_message"
+                         partial: "bible_chats/bible_chat_message"
   }
-  
-  private
-  
-  def invalidate_conversation_messages_cache
-    return unless bible_chat_conversation_id
-    
-    # Force expire the fragment cache
-    ActionController::Base.new.expire_fragment(
-      ["views", bible_chat_conversation_id, "messages_list", "*", "*"]
-    )
-    Rails.logger.info "Invalidated messages cache for conversation #{bible_chat_conversation_id}"
-  end
 end

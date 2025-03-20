@@ -31,13 +31,4 @@ module BibleChatConversationsHelper
     Rails.logger.info "CACHE #{cached ? 'HIT' : 'MISS'}: Bible translations (#{translations.count} items)"
     translations
   end
-  
-  def conversation_messages_cache_key(conversation)
-    # Get the messages timestamp and count directly
-    max_updated_at = conversation.bible_chat_messages.maximum(:updated_at).to_i
-    messages_count = conversation.bible_chat_messages.count
-    
-    # Use the same format as the fragment_exist? check in the controller
-    ["views", conversation.id, "messages_list", max_updated_at, messages_count]
-  end
 end
