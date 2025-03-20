@@ -38,6 +38,7 @@ export default class extends Controller {
 
   changeTranslation(event) {
     event.preventDefault()
+    console.log("Translation change triggered", event.currentTarget.dataset.translation)
     
     if (!this.hasTranslationFieldTarget || !this.hasTranslationDisplayTarget) {
       console.error("Missing required targets for translation change")
@@ -45,19 +46,30 @@ export default class extends Controller {
     }
     
     const newTranslation = event.currentTarget.dataset.translation
+    if (!newTranslation) return
+    
+    console.log("Updating translation to:", newTranslation)
+    
+    // Update hidden field and display
     this.translationFieldTarget.value = newTranslation
     this.translationDisplayTarget.textContent = newTranslation
     
-    // Update all translation links
-    const links = this.element.querySelectorAll('[data-chat-input-translation]')
+    // Update form action URL
+    const form = this.element
+    const url = new URL(form.action)
+    url.searchParams.set('translation', newTranslation)
+    form.action = url.toString()
+    
+    // Update translation link states
+    const links = document.querySelectorAll('[data-translation]')
     links.forEach(link => {
-      const translation = link.dataset.chatInputTranslation
+      const translation = link.dataset.translation
       if (translation === newTranslation) {
-        link.classList.add('text-green-600', 'dark:text-green-400', 'bg-green-50', 'dark:bg-green-900/10')
-        link.classList.remove('text-gray-700', 'dark:text-gray-200')
+        link.classList.add('bg-green-50', 'dark:bg-green-900/10', 'text-green-600', 'dark:text-green-500')
+        link.classList.remove('text-gray-700', 'dark:text-gray-200', 'hover:bg-gray-50', 'dark:hover:bg-gray-700')
       } else {
-        link.classList.remove('text-green-600', 'dark:text-green-400', 'bg-green-50', 'dark:bg-green-900/10')
-        link.classList.add('text-gray-700', 'dark:text-gray-200')
+        link.classList.remove('bg-green-50', 'dark:bg-green-900/10', 'text-green-600', 'dark:text-green-500')
+        link.classList.add('text-gray-700', 'dark:text-gray-200', 'hover:bg-gray-50', 'dark:hover:bg-gray-700')
       }
     })
   }

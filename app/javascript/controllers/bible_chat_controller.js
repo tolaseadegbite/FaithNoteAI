@@ -58,21 +58,4 @@ export default class extends Controller {
     input.style.height = "auto"
     input.style.height = (input.scrollHeight) + "px"
   }
-  
-  updateTranslation(event) {
-    event.preventDefault()
-    
-    // Update the translation in the UI
-    if (this.hasTranslationSelectorTarget) {
-      const translation = event.currentTarget.dataset.translation
-      
-      // Update all form actions to include the new translation
-      const forms = document.querySelectorAll('form')
-      forms.forEach(form => {
-        const url = new URL(form.action)
-        url.searchParams.set('translation', translation)
-        form.action = url.toString()
-      })
-    }
-  }
 }
