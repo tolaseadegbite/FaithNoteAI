@@ -1,5 +1,5 @@
 <% content_for :title, "All notes" %>
-<div class="max-w-screen-lg mx-auto">
+<div class="">
   <div class="py-6 px-4 flex justify-between items-center">
     <h1 class="font-bold text-2xl text-gray-800 dark:text-white">Notes</h1>
     
@@ -12,7 +12,7 @@
   </div>
 
   <% if @notes.any? %>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 pb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-6">
       <%= render partial: "notes/components/note_card", collection: @notes, as: :note %>
     </div>
   <% else %>
