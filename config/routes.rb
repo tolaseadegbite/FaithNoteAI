@@ -15,8 +15,10 @@ Rails.application.routes.draw do
   root "notes#index"
 
   get "/pricing", to: "pages#pricing"
+  get "/home", to: "pages#home"
   get "/privacy", to: "pages#privacy"
   get "/documentation", to: "pages#documentation"
+  get "/donations", to: "pages#donations"
 
   resources :notes do
     resources :note_chats, only: [:create]
