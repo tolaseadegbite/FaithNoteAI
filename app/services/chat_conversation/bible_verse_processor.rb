@@ -30,7 +30,7 @@ module ChatConversation
           verse = fetch_verse(book, chapter, verse_start, translation)
           if verse
             # Add styling to make verse content visually distinct
-            "#{verse_link}: <span class=\"bible-verse-content\">#{formatted_verses}</span>"
+            "#{verse_link}: <span class=\"bible-verse-content\">#{verse.content}</span>"
           else
             verse_link # Just link the reference if verse not found
           end
