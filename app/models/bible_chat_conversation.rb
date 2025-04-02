@@ -31,8 +31,8 @@ class BibleChatConversation < ApplicationRecord
   # after_destroy :invalidate_conversation_cache
   
   def self.create_with_message(user, message_content, translation)
-    # Generate a title from the first message
-    title = message_content.truncate(30)
+    # Generate a title from the first message using the service
+    title = ChatConversation::TitleGeneratorService.generate_title(message_content)
     
     # Create the conversation
     conversation = user.bible_chat_conversations.create!(title: title)

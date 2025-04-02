@@ -5,9 +5,11 @@ module ChatConversation
       message = nil
       
       ActiveRecord::Base.transaction do
-        # Create the conversation
+        # Create the conversation with a summarized title
+        title = TitleGeneratorService.generate_title(message_content)
+        
         conversation = user.bible_chat_conversations.new(
-          title: message_content.truncate(50)
+          title: title
         )
         
         if conversation.save
