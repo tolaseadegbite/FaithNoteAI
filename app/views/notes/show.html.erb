@@ -49,12 +49,32 @@
     <% case @current_tab %>
     <% when 'transcription' %>
       <div class="p-4 text-justify">
-        <%= sanitize(@note.transcription) %>
+        <% if @note.transcription.present? %>
+          <div class="prose prose-sm dark:prose-invert max-w-none trix-content
+            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
+            prose-p:my-2 prose-ul:my-2 prose-li:my-1 
+            prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
+            prose-a:text-green-600 dark:prose-a:text-green-400
+            prose-strong:text-gray-800 dark:prose-strong:text-gray-200">
+            <%= sanitize(process_bible_verses(@note.transcription)) %>
+          </div>
+        <% else %>
+          <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+            <p>No transcription available yet.</p>
+          </div>
+        <% end %>
       </div>
     <% when 'summary' %>
       <% if @note.summary.present? %>
         <div class="p-4 text-justify">
-          <%= sanitize(@note.summary) %>
+          <div class="prose prose-sm dark:prose-invert max-w-none trix-content
+            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
+            prose-p:my-2 prose-ul:my-2 prose-li:my-1 
+            prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
+            prose-a:text-green-600 dark:prose-a:text-green-400
+            prose-strong:text-gray-800 dark:prose-strong:text-gray-200">
+            <%= sanitize(process_bible_verses(@note.summary)) %>
+          </div>
         </div>
       <% else %>
         <div class="text-center py-10">

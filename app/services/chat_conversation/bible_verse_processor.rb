@@ -40,6 +40,39 @@ module ChatConversation
       return processed_text
     end
     
+    # Process HTML content by finding and replacing Bible references
+    # Update the process_html_content method in BibleVerseProcessor
+    
+    def self.process_html_content(html_content, translation = "KJV")
+      return html_content if html_content.blank?
+      
+      # Parse the HTML content
+      doc = Nokogiri::HTML.fragment(html_content)
+      
+      # Process text nodes only, but preserve HTML structure
+      process_text_nodes(doc, translation)
+      
+      doc.to_html
+    end
+    
+    def self.process_text_nodes(node, translation)
+      # Process each child node
+      node.children.each do |child|
+        if child.text? && child.content.present?
+          # Process text node content
+          processed_content = process_response(child.content, translation)
+          if processed_content != child.content
+            # Replace the text node with processed HTML
+            new_fragment = Nokogiri::HTML.fragment(processed_content)
+            child.replace(new_fragment)
+          end
+        elsif child.element?
+          # Recursively process child elements
+          process_text_nodes(child, translation)
+        end
+      end
+    end
+    
     private
     
     def self.fetch_verse(book, chapter, verse, translation)

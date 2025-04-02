@@ -402,3 +402,32 @@ trix-editor blockquote {
 .dark trix-editor blockquote {
   border-left: 3px solid #10b981;
 }
+
+/* Add these rules at the end of your actiontext.css file */
+
+/* Bible verse styling for ActionText content */
+.trix-content .bible-verse-link {
+  color: #10b981;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.trix-content .bible-verse-content {
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+  font-style: italic;
+  border-radius: 0.25rem;
+}
+
+.dark .trix-content .bible-verse-content {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid #10b981;
+}
+
+/* Make sure Bible verse links stand out in dark mode too */
+.dark .trix-content .bible-verse-link {
+  color: #34d399;
+}
