@@ -1,5 +1,5 @@
-<div id="<%= dom_id(note_chat) %>" class="<%= note_chat.role == 'user' ? 'ml-auto max-w-[80%]' : 'mr-auto max-w-[80%]' %>">
-  <div class="<%= note_chat.role == 'user' ? 'bg-green-100 dark:bg-green-900/30 text-gray-800 dark:text-white ml-auto' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white' %> rounded-lg px-4 py-2 shadow-sm">
+<div id="<%= dom_id(note_chat) %>" class="flex <%= note_chat.role == 'user' ? 'justify-end' : 'justify-start' %>">
+  <div class="max-w-3/4 rounded-lg p-4 <%= note_chat.role == 'user' ? 'bg-green-100 dark:bg-green-900/30 text-gray-800 dark:text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white' %>">
     <% if note_chat.processing? %>
       <div class="flex items-center space-x-2">
         <div class="animate-pulse flex space-x-1">
@@ -7,24 +7,24 @@
           <div class="h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
           <div class="h-2 w-2 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
         </div>
-        <p>Processing...</p>
+        <span><%= note_chat.content %></span>
       </div>
     <% else %>
-      <% if note_chat.role == 'user' %>
-        <%= simple_format(note_chat.content, class: "whitespace-pre-wrap") %>
-      <% else %>
+      <% if note_chat.role == 'assistant' %>
         <div class="prose prose-sm dark:prose-invert max-w-none 
           prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
           prose-p:my-2 prose-ul:my-2 prose-li:my-1 
           prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
           prose-a:text-green-600 dark:prose-a:text-green-400
           prose-strong:text-gray-800 dark:prose-strong:text-gray-200">
-          <%= sanitize(process_bible_verses(note_chat.content)) %>
+          <%= sanitize(note_chat.content) %>
         </div>
+      <% else %>
+        <%= simple_format(note_chat.content, class: "whitespace-pre-wrap") %>
       <% end %>
     <% end %>
-  </div>
-  <div class="text-xs text-gray-500 mt-1 <%= note_chat.role == 'user' ? 'text-right' : 'text-left' %>">
-    <%= time_ago_in_words(note_chat.created_at) %> ago
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
+      <%= note_chat.created_at.strftime("%I:%M %p") %>
+    </div>
   </div>
 </div>
