@@ -1,126 +1,60 @@
 <% content_for :title, @verse.reference %>
 
-<%= render 'layouts/modal_dialog' do %>
-  <div data-action="turbo:submit-end->dialog#submitEnd">
-    <div class="max-w-screen-lg mx-auto">
-      <div class="py-4 px-4 flex items-center justify-between bg-white dark:bg-gray-800">
-        <% if @source == 'chat' %>
-          <%= link_to 'javascript:history.back()', class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Chat
-          <% end %>
-        <% else %>
-          <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter, translation: @translation), class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to <%= @verse.book %> <%= @verse.chapter %>
-          <% end %>
-        <% end %>
-      </div>
-      
-      <!--<div class="px-4 mb-6">-->
-      <div>
-        <div class="bg-white dark:bg-gray-800 shadow border border-gray-200 dark:border-gray-700 p-6" data-controller="bible-verse">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white" data-bible-verse-target="reference"><%= @verse.reference %></h1>
-            
-            <!-- Inline translation selector -->
-            <%= render "bible_verses/components/translation_selector", 
-                translation: @translation, 
-                translations: @translations,
-                container_class: "relative inline-block mt-2 sm:mt-0",
-                button_class: "flex items-center justify-center px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer",
-                label: @translation %>
-          </div>
-          
-          <div class="text-xl mb-6 text-gray-800 dark:text-white" data-bible-verse-target="content">
-            <%= @verse.content %>
-          </div>
-          
-          <!-- Copy button -->
-          <div class="flex justify-center md:justify-end mb-6">
-            <button data-action="bible-verse#copy" 
-                    class="flex items-center px-3 py-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+<% if params[:display_mode] == 'modal' || @source == 'chat' %>
+  <%= render 'layouts/modal_dialog' do %>
+    <div data-action="turbo:submit-end->dialog#submitEnd">
+      <div class="max-w-screen-lg mx-auto">
+        <div class="py-4 px-4 flex items-center justify-between bg-white dark:bg-gray-800">
+          <% if @source == 'chat' %>
+            <%= link_to '#', class: "text-green-600 dark:text-green-500 hover:underline flex items-center", data: {action: "modal#close"} do %>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
-              Copy
-            </button>
-          </div>
-          
-          <!-- Navigation buttons - flex-col on mobile, flex-row on larger screens -->
-          <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-            <% prev_verse = BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse - 1, @translation) %>
-            <% if prev_verse %>
-              <%= link_to bible_verse_path(book: prev_verse.book, chapter: prev_verse.chapter, verse: prev_verse.verse, translation: @translation),
-                        class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 text-gray-800 dark:text-white rounded-lg" do %>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Previous Verse
-              <% end %>
-            <% elsif @verse.verse == 1 && @verse.chapter > 1 %>
-              <% last_verse_of_prev_chapter = BibleVerse.find_chapter_last_verse(@verse.book, @verse.chapter - 1, @translation) %>
-              <% if last_verse_of_prev_chapter %>
-                <%= link_to bible_verse_path(book: last_verse_of_prev_chapter.book, 
-                                          chapter: last_verse_of_prev_chapter.chapter, 
-                                          verse: last_verse_of_prev_chapter.verse,
-                                          translation: @translation),
-                          class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 text-gray-800 dark:text-white rounded-lg" do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Previous Verse
-                <% end %>
-              <% else %>
-                <div class="w-full sm:w-auto"></div>
-              <% end %>
-            <% else %>
-              <div class="w-full sm:w-auto"></div>
+              Back to Chat
             <% end %>
-            
-            <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter, translation: @translation),
-                      class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 text-gray-800 dark:text-white rounded-lg" do %>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
+          <% else %>
+            <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter, translation: @translation), class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
+              Back to <%= @verse.book %> <%= @verse.chapter %>
             <% end %>
-            
-            <% next_verse = BibleVerse.find_verse(@verse.book, @verse.chapter, @verse.verse + 1, @translation) %>
-              <% if next_verse %>
-                <%= link_to bible_verse_path(book: next_verse.book, chapter: next_verse.chapter, verse: next_verse.verse, translation: @translation),
-                          class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 text-gray-800 dark:text-white rounded-lg" do %>
-                  Next Verse
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                <% end %>
-              <% elsif @chapter_count && @verse.verse == @verse_count && @verse.chapter < @chapter_count %>
-                <% first_verse_of_next_chapter = BibleVerse.find_verse(@verse.book, @verse.chapter + 1, 1, @translation) %>
-              <% if first_verse_of_next_chapter %>
-                <%= link_to bible_verse_path(book: first_verse_of_next_chapter.book, 
-                                          chapter: first_verse_of_next_chapter.chapter, 
-                                          verse: first_verse_of_next_chapter.verse,
-                                          translation: @translation),
-                          class: "w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/10 text-gray-800 dark:text-white rounded-lg" do %>
-                  Next Verse
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                <% end %>
-              <% else %>
-                <div class="w-full sm:w-auto"></div>
-              <% end %>
-            <% else %>
-              <div class="w-full sm:w-auto"></div>
-            <% end %>
-          </div>
+          <% end %>
         </div>
+        
+        <!-- Verse content for modal display -->
+        <%= render 'bible_verses/components/verse_content', 
+            verse: @verse, 
+            translation: @translation, 
+            translations: @translations,
+            prev_verse: @prev_verse,
+            next_verse: @next_verse,
+            chapter_count: @chapter_count,
+            verse_count: @verse_count,
+            source: @source %>
       </div>
     </div>
+  <% end %>
+<% else %>
+  <!-- Regular page display (non-modal) -->
+  <div class="max-w-screen-lg mx-auto px-4 py-6">
+    <div class="mb-6 flex items-center">
+      <%= link_to bible_chapter_path(book: @verse.book, chapter: @verse.chapter, translation: @translation), class: "text-green-600 dark:text-green-500 hover:underline flex items-center" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to <%= @verse.book %> <%= @verse.chapter %>
+      <% end %>
+    </div>
+    
+    <!-- Verse content for regular display -->
+    <%= render 'bible_verses/components/verse_content', 
+        verse: @verse, 
+        translation: @translation, 
+        translations: @translations,
+        prev_verse: @prev_verse,
+        next_verse: @next_verse,
+        chapter_count: @chapter_count,
+        verse_count: @verse_count %>
   </div>
 <% end %>

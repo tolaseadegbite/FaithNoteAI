@@ -13,7 +13,8 @@
     </svg>
   </button>
   
-  <div data-translation-dropdown-target="menu" class="hidden absolute z-10 mt-2 w-full sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+  <!-- Updated dropdown menu with fixed positioning -->
+  <div data-translation-dropdown-target="menu" class="hidden fixed z-50 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
     <% if Rails.env.development? %>
       <% cache "app/bible/translations/v1" do %>
         <div class="px-4 py-1 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">

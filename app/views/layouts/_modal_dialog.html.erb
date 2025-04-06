@@ -1,14 +1,15 @@
 <%= turbo_frame_tag :modal do %>
-  <dialog data-controller="modal" data-action="click->modal#clickOutside" class="bg-white rounded-2xl border w-full md:w-2/3 lg:w-1/3 mx-auto shadow-md z-50 relative">
+  <dialog data-controller="modal" data-action="click->modal#clickOutside" class="bg-white rounded-2xl border w-full md:w-2/3 lg:w-1/2 mx-auto shadow-md z-50 relative my-auto">
     
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-black/40 z-40"></div>
 
     <!-- Modal content -->
     <div class="relative z-50 bg-white">
-      <button class="absolute top-4 right-5 close-modal-btn" data-action="modal#close">
+      <button class="absolute top-4 right-5 close-modal-btn cursor-pointer text-dark-800 dark:text-white" data-action="modal#close">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          <path stroke-linecap="round" stroke-
+          linejoin="round" d="M6 18 18 6M6 6l12 12" />
         </svg>
       </button>
       <%= yield %>

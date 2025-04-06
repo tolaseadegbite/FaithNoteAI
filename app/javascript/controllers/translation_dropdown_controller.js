@@ -30,6 +30,11 @@ export default class extends Controller {
     const event = new CustomEvent("dropdown:opened", { bubbles: true })
     this.element.dispatchEvent(event)
     
+    // Position the dropdown relative to the button
+    const buttonRect = this.buttonTarget.getBoundingClientRect()
+    this.menuTarget.style.top = `${buttonRect.bottom + window.scrollY + 8}px`
+    this.menuTarget.style.left = `${buttonRect.left + window.scrollX}px`
+    
     // Open this dropdown
     this.menuTarget.classList.remove("hidden")
   }
