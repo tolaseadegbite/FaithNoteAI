@@ -83,14 +83,15 @@ module ChatConversation
     def self.create_verse_link(book, chapter, verse_start, verse_end, translation)
       reference = verse_end ? "#{book} #{chapter}:#{verse_start}-#{verse_end}" : "#{book} #{chapter}:#{verse_start}"
       
-      # Create URL to the verse show page, not the chapter page
+      # Create URL to the verse show page
       if verse_end
         url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&verse_end=#{verse_end}&source=chat"
       else
         url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&source=chat"
       end
       
-      "<a href=\"#{url}\" class=\"bible-verse-link\" target=\"_blank\">#{reference}</a>"
+      # Ensure data-turbo-frame="modal" is set
+      "<a href=\"#{url}\" class=\"bible-verse-link\" data-turbo-frame=\"modal\">#{reference}</a>"
     end
   end
 end
