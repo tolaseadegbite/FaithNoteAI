@@ -41,8 +41,6 @@ module ChatConversation
     end
     
     # Process HTML content by finding and replacing Bible references
-    # Update the process_html_content method in BibleVerseProcessor
-    
     def self.process_html_content(html_content, translation = "KJV")
       return html_content if html_content.blank?
       
@@ -83,11 +81,11 @@ module ChatConversation
     def self.create_verse_link(book, chapter, verse_start, verse_end, translation)
       reference = verse_end ? "#{book} #{chapter}:#{verse_start}-#{verse_end}" : "#{book} #{chapter}:#{verse_start}"
       
-      # Create URL to the verse show page
+      # Create URL to the verse show page with display_mode=modal parameter
       if verse_end
-        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&verse_end=#{verse_end}&source=chat"
+        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&verse_end=#{verse_end}&display_mode=modal"
       else
-        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&source=chat"
+        url = "/bible/#{book}/#{chapter}/#{verse_start}?translation=#{translation}&display_mode=modal"
       end
       
       # Ensure data-turbo-frame="modal" is set
