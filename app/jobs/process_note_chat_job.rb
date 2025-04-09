@@ -1,39 +1,40 @@
 class ProcessNoteChatJob < ApplicationJob
   queue_as :default
-  
+
   def perform(note_chat)
-    note = note_chat.note
-    user = note_chat.user
+    return unless note_chat.role == "user"
     
-    # Create assistant message
-    assistant_message = note.note_chats.create!(
-      content: "Thinking...",
+    # Create an assistant message
+    assistant_message = note_chat.note.note_chats.create!(
+      user: note_chat.user,
       role: "assistant",
-      user: user,
+      content: "Thinking...",
       processing: true
     )
     
-    # Get previous messages for context (limit to last 10 for performance)
-    previous_messages = note.note_chats
-                           .where.not(id: [note_chat.id, assistant_message.id])
-                           .order(created_at: :desc)
-                           .limit(10)
-                           .to_a
-                           .reverse
+    # Get the note content for context
+    note_content = note_chat.note.content.to_plain_text
     
-    # Add the current user message
-    context_messages = previous_messages + [note_chat]
+    # Get previous messages for context
+    previous_messages = note_chat.note.note_chats
+      .where.not(id: [note_chat.id, assistant_message.id])
+      .order(created_at: :asc)
+      .last(10)
+      .map { |msg| { role: msg.role, content: msg.content } }
     
-    # Get response from Gemini
-    response = GeminiService.new.chat_with_note_context(
-      note_chat.content, 
-      note.transcription.to_plain_text,
-      context_messages
+    # Process the AI response
+    response = GeminiService.new.chat_with_note(
+      note_chat.content,
+      note_content,
+      previous_messages
     )
     
-    # Update assistant message with response
+    # Process Bible verse references in the response
+    processed_response = ChatConversation::BibleVerseProcessor.process_response(response, "KJV")
+    
+    # Update the assistant message with the processed response
     assistant_message.update!(
-      content: response,
+      content: processed_response,
       processing: false
     )
   end
