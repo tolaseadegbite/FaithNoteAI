@@ -4,6 +4,9 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="modal"
 export default class extends Controller {
   connect() {
+    // Store the current scroll position before opening the modal
+    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop
+    
     this.open()
     // needed because ESC key does not trigger close event
     this.element.addEventListener("close", this.enableBodyScroll.bind(this))
@@ -28,7 +31,13 @@ export default class extends Controller {
   }
 
   open() {
+    // Use fixed positioning instead of overflow hidden to prevent scroll jump
     this.element.showModal()
+    
+    // Prevent body scroll without changing position
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${this.scrollPosition}px`
+    document.body.style.width = '100%'
     document.body.classList.add('overflow-hidden')
   }
 
@@ -38,10 +47,18 @@ export default class extends Controller {
     const frame = document.getElementById('modal')
     frame.removeAttribute("src")
     frame.innerHTML = ""
+    
+    this.enableBodyScroll()
   }
 
   enableBodyScroll() {
     document.body.classList.remove('overflow-hidden')
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    
+    // Restore scroll position
+    window.scrollTo(0, this.scrollPosition)
   }
 
   clickOutside(event) {
