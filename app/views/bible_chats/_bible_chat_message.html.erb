@@ -24,8 +24,13 @@
         <%= simple_format(bible_chat_message.content, class: "whitespace-pre-wrap") %>
       <% end %>
     <% end %>
-    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
-      <%= bible_chat_message.created_at.strftime("%I:%M %p") %>
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right flex justify-end items-center space-x-2">
+      <% if bible_chat_message.translation.present? && bible_chat_message.role == 'assistant' %>
+        <span class="px-1.5 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-md font-medium">
+          <%= bible_chat_message.translation %>
+        </span>
+      <% end %>
+      <span><%= bible_chat_message.created_at.strftime("%I:%M %p") %></span>
     </div>
   </div>
 </div>
