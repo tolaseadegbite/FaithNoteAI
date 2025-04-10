@@ -1,0 +1,15 @@
+<% cache conversation_messages_cache_key(conversation) do %>
+  <div id="bible_chat_messages">
+    <% if messages.empty? %>
+      <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+        <p>No messages yet. Start a conversation!</p>
+      </div>
+    <% else %>
+      <% messages.each do |message| %>
+        <% cache message do %>
+          <%= render "bible_chats/bible_chat_message", message: message %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

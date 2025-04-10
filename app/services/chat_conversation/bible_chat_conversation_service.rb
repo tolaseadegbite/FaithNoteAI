@@ -33,6 +33,7 @@ module ChatConversation
             
             # Explicitly invalidate cache
             invalidate_conversation_cache(user)
+            invalidate_messages_cache(conversation)
             
             # Return all necessary objects
             return {
@@ -72,6 +73,12 @@ module ChatConversation
       Rails.cache.delete(CacheKeys.user_conversations_timestamp_key(user.id))
       Rails.cache.delete(CacheKeys.user_conversations_count_key(user.id))
       Rails.logger.info "Invalidated conversation cache for user #{user.id}"
+    end
+    
+    def self.invalidate_messages_cache(conversation)
+      Rails.cache.delete(CacheKeys.conversation_messages_timestamp_key(conversation.id))
+      Rails.cache.delete(CacheKeys.conversation_messages_count_key(conversation.id))
+      Rails.logger.info "Invalidated messages cache for conversation #{conversation.id}"
     end
   end
 end

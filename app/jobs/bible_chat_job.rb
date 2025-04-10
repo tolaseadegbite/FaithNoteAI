@@ -40,5 +40,16 @@ class BibleChatJob < ApplicationJob
       content: response,
       processing: false
     )
+    
+    # Invalidate the messages cache
+    invalidate_messages_cache(conversation)
+  end
+  
+  private
+  
+  def invalidate_messages_cache(conversation)
+    Rails.cache.delete(CacheKeys.conversation_messages_timestamp_key(conversation.id))
+    Rails.cache.delete(CacheKeys.conversation_messages_count_key(conversation.id))
+    Rails.logger.info "Invalidated messages cache for conversation #{conversation.id}"
   end
 end

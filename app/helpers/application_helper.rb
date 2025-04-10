@@ -1,5 +1,6 @@
 module ApplicationHelper
   include Pagy::Frontend
+  include CacheMonitoringHelper
 
   def render_load_more(pagy)
     render "shared/load_more", pagy: pagy

@@ -1,75 +1,56 @@
 class BibleChatConversationsController < ApplicationController
-  before_action :set_conversation, only: [:show, :destroy]
-  before_action :set_translations, only: [:index, :show, :create]
-  before_action :ensure_conversation_ownership, only: [:show, :destroy]
+  before_action :set_conversation, only: [:show, :destroy]  # Remove any other actions that don't exist
   
   def index
     @conversations = current_user.bible_chat_conversations.ordered
-    @translation = params[:translation] || "KJV"
-  end
-  
-  def show
-    @conversations = current_user.bible_chat_conversations.ordered
-    @messages = @conversation.bible_chat_messages.ordered
-    @message = BibleChatMessage.new
-    @translation = params[:translation] || "KJV"
-  rescue ActiveRecord::RecordNotFound
-    redirect_to bible_chat_conversations_path, alert: "Conversation not found"
-  end
-  
-  def create
-    return redirect_to bible_chat_conversations_path, alert: "Message cannot be empty" unless params[:message].present?
-  
-    translation = params[:translation] || params[:bible_chat_message][:translation] || "KJV"
-    
-    result = ChatConversation::BibleChatConversationService.create(
-      current_user,
-      params[:message],
-      translation
-    )
-    
-    if result[:conversation].persisted? && result[:message].persisted?
-      @conversation = result[:conversation]
-      @message = result[:message]
-      @assistant_message = result[:assistant_message]
-      
-      # Start the background job
-      BibleChatJob.perform_later(@message, translation, @assistant_message.id)
-      
-      redirect_to bible_chat_conversation_path(@conversation, translation: translation), notice: "Conversation started"
-    else
-      redirect_to bible_chat_conversations_path, alert: "Failed to create conversation: #{result[:errors].join(', ')}"
-    end
-  end
-  
-  def destroy
-    if ChatConversation::BibleChatConversationService.destroy(@conversation)
-      redirect_to bible_chat_conversations_path, notice: "Conversation deleted successfully"
-    else
-      redirect_to bible_chat_conversation_path(@conversation), alert: "Failed to delete conversation"
-    end
-  rescue StandardError => e
-    Rails.logger.error("Error deleting conversation: #{e.message}")
-    redirect_to bible_chat_conversations_path, alert: "An error occurred while deleting the conversation"
-  end
-  
-  private
-  
-  def set_conversation
-    @conversation = BibleChatConversation.includes(:bible_chat_messages).find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to bible_chat_conversations_path, alert: "Conversation not found"
+    @conversation = BibleChatConversation.new
   end
 
-  def ensure_conversation_ownership
-    unless @conversation.user_id == current_user.id
-      redirect_to bible_chat_conversations_path, alert: "You don't have permission to access that conversation."
+  def show
+    @conversations = current_user.bible_chat_conversations.ordered
+    
+    ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+      @query_count ||= 0
+      @query_count += 1
+    end
+
+    @messages = Rails.cache.fetch(["bible_chat_messages", @conversation.id, @conversation.updated_at.to_i]) do
+      @cache_miss = true
+      @conversation.bible_chat_messages.ordered.includes(:user)
+    end
+    
+    @message = BibleChatMessage.new
+    @translation = params[:translation] || "KJV"
+    @translations = BibleConstants::TRANSLATIONS
+
+    @cache_stats = {
+      hit: !@cache_miss,
+      queries: @query_count || 0
+    }
+  end
+
+  def create
+    @conversation = current_user.bible_chat_conversations.new(conversation_params)
+    
+    if @conversation.save
+      redirect_to bible_chat_conversation_path(@conversation), notice: "Conversation created."
+    else
+      redirect_to bible_chat_conversations_path, alert: "Failed to create conversation."
     end
   end
-  
-  def set_translations
-    @translations = Rails.cache.fetch("bible_translations", expires_in: 1.week) do
-      BibleConstants::TRANSLATIONS
-    end
+
+  def destroy
+    @conversation.destroy
+    redirect_to bible_chat_conversations_path, notice: "Conversation deleted."
+  end
+
+  private
+
+  def set_conversation
+    @conversation = current_user.bible_chat_conversations.find(params[:id])
+  end
+
+  def conversation_params
+    params.require(:bible_chat_conversation).permit(:title)
   end
 end
