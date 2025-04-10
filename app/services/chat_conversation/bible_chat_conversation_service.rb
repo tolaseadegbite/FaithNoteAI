@@ -3,6 +3,7 @@ module ChatConversation
     def self.create(user, message_content, translation = "KJV")
       conversation = nil
       message = nil
+      assistant_message = nil
       
       ActiveRecord::Base.transaction do
         # Create the conversation with a summarized title
@@ -22,8 +23,8 @@ module ChatConversation
           )
           
           if message.save
-            # Create a placeholder message that will be visible immediately
-            assistant_message = conversation.bible_chat_messages.create(
+            # Create a placeholder assistant message
+            assistant_message = conversation.bible_chat_messages.create!(
               content: "Searching the Bible...",
               role: "assistant",
               user: user,
@@ -31,24 +32,18 @@ module ChatConversation
               translation: translation
             )
             
-            # Explicitly invalidate cache
+            # Invalidate caches
             invalidate_conversation_cache(user)
             invalidate_messages_cache(conversation)
-            
-            # Return all necessary objects
-            return {
-              conversation: conversation,
-              message: message,
-              assistant_message: assistant_message
-            }
-          else
-            # Roll back if message creation fails
-            raise ActiveRecord::Rollback
           end
         end
       end
       
-      # If we get here, something failed
+      # Enqueue the job to process the AI response OUTSIDE the transaction
+      if message&.persisted? && assistant_message&.persisted?
+        BibleChatJob.perform_later(message, translation, assistant_message.id)
+      end
+      
       return {
         conversation: conversation,
         message: message,
