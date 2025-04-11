@@ -63,27 +63,38 @@ class NotesController < ApplicationController
     end
   end
 
-  # Add this method to your NotesController
-  def quick_record
-    @note = current_user.notes.build(
-      title: "Quick Recording - #{Time.current.strftime('%b %d, %Y')}"
-    )
-    
-    if params[:note] && params[:note][:audio_file].present?
-      # Process the audio file
-      # This would involve saving the file and potentially starting a background job for transcription
-      
-      if @note.save
-        # Return JSON response for the AJAX request
-        render json: { id: @note.id, status: 'success' }, status: :created
-      else
-        render json: { errors: @note.errors.full_messages, status: 'error' }, status: :unprocessable_entity
+  def process_audio
+    # Don't create a note yet, just process the audio
+    if params[:audio_file].present?
+      begin
+        # Transcribe the audio
+        transcription = ElevenlabsService.new.transcribe(params[:audio_file])
+        
+        if transcription
+          # Generate summary if requested
+          summary = nil
+          if params[:generate_summary] == "true"
+            summary = GeminiService.new.generate_summary(transcription)
+          end
+          
+          # Return the transcription and summary without saving a note
+          render json: { 
+            status: 'success',
+            transcription: transcription,
+            summary: summary.to_s
+          }, status: :ok
+        else
+          render json: { errors: ['Failed to transcribe audio'], status: 'error' }, status: :unprocessable_entity
+        end
+      rescue => e
+        Rails.logger.error("Audio processing error: #{e.message}")
+        render json: { errors: ["Error processing audio: #{e.message}"], status: 'error' }, status: :unprocessable_entity
       end
     else
       render json: { errors: ['No audio file provided'], status: 'error' }, status: :unprocessable_entity
     end
   end
-
+  
   private
 
   def notes_param

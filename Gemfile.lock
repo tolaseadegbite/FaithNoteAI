@@ -147,6 +147,10 @@ GEM
       listen
       rails (>= 7.0.0)
       zeitwerk
+    httparty (0.23.1)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -205,6 +209,8 @@ GEM
       minitest (>= 5.0)
       ruby-progressbar
     msgpack (1.8.0)
+    multi_xml (0.7.1)
+      bigdecimal (~> 3.1)
     nenv (0.3.0)
     net-imap (0.5.6)
       date
@@ -445,6 +451,7 @@ DEPENDENCIES
   guard (~> 2.19)
   guard-minitest (~> 2.4)
   hotwire-spark
+  httparty
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

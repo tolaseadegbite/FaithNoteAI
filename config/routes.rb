@@ -22,12 +22,15 @@ Rails.application.routes.draw do
 
   resources :notes do
     resources :note_chats, only: [:create]
-    member do
-      post :generate_summary
-    end
+    
     collection do
+      post :process_audio
       post :generate_summary
       post :quick_record
+    end
+    
+    member do
+      post :generate_summary
     end
   end
 

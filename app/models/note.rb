@@ -29,4 +29,6 @@ class Note < ApplicationRecord
   has_rich_text :summary
 
   scope :ordered, -> { order(id: :desc) }
+
+  has_one_attached :audio_file
 end

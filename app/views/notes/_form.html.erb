@@ -1,7 +1,10 @@
 <div class="">
-  <%= form_with(model: note, data: { controller: "summary", summary_url: note.persisted? ? generate_summary_note_path(note) : generate_summary_notes_path 
-      }, 
-      class: "w-full") do |form| %>
+  <%= form_with(model: note, data: { 
+      controller: "summary audio-upload", 
+      summary_url: note.persisted? ? generate_summary_note_path(note) : generate_summary_notes_path,
+      audio_upload_target: "form"
+    }, 
+    class: "w-full") do |form| %>
     <%= render 'shared/errors', form: form %>
 
     <div class="mb-5">
@@ -9,67 +12,111 @@
       <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-[#121212] dark:text-gray-100 border-gray-300 dark:border-[#121212] text-gray-700", {"": note.errors[:title].none?, "border-red-400 focus:outline-red-600": note.errors[:title].any?}] %>
     </div>
 
-    <div class="mb-8">
-      <%= form.label :transcription, class: "block text-sm font-semibold mb-2" %>
-      <%= form.rich_text_area :transcription, placeholder: "Transcription", class: ["text-sm h-100 mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:transcription].none?, "border-red-400 focus:outline-red-600": note.errors[:transcription].any?}], data: { summary_target: "transcription" } %>
+    <!-- Audio Upload Section -->
+    <div class="mb-5 p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+      <h3 class="text-lg font-medium mb-2">Audio Processing</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">Upload an audio file to automatically transcribe and summarize</p>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio File</label>
+        <input type="file" 
+               accept="audio/*" 
+               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-gray-700 dark:file:text-gray-200 cursor-pointer"
+               data-audio-upload-target="audioInput"
+               data-action="change->audio-upload#previewAudio">
+      </div>
+      
+      <audio controls class="w-full mb-4 hidden" data-audio-upload-target="audioPreview"></audio>
+      
+      <div class="flex space-x-3 mb-4">
+        <button type="button" 
+                disabled
+                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                data-audio-upload-target="processButton"
+                data-action="click->audio-upload#processAudio">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 inline-block mr-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+          </svg>
+          Process Audio (Transcribe & Summarize)
+        </button>
+        
+        <button type="button"
+                disabled
+                class="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                data-audio-upload-target="transcribeButton"
+                data-action="click->audio-upload#transcribeOnly">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 inline-block mr-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+          </svg>
+          Transcribe Only
+        </button>
+      </div>
+      
+      <!-- Loading and Progress Indicators -->
+      <div class="hidden" data-audio-upload-target="loadingIndicator">
+        <div class="flex items-center justify-center mb-2">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Processing audio...</span>
+        </div>
+        
+        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-4">
+          <div class="bg-green-600 h-2.5 rounded-full hidden" style="width: 0%" data-audio-upload-target="progressBar"></div>
+        </div>
+      </div>
+      
+      <!-- Error Message -->
+      <div class="hidden text-red-500 text-sm mt-2" data-audio-upload-target="errorMessage"></div>
     </div>
 
     <div class="mb-5">
-      <div class="flex items-center justify-between mb-1">
-        <span>
-          <%= form.label "Summary (Bullet points)", class: "block text-sm font-semibold" %>
-        </span>
-      </div>
-      <div data-summary-target="summary">
-        <%= form.rich_text_area :summary, placeholder: "Summary", class: ["h-100 text-sm mt-2 h-24 mt-2 w-full px-3 p-2.5 border rounded-md dark:text-gray-100 border-gray-300 dark:border-gray-700 dark:focus:border-green-400 dark:focus:ring-green-400 text-gray-700", {"": note.errors[:summary].none?, "border-red-400 focus:outline-red-600": note.errors[:summary].any?}] %>
-      </div>
-
-      <div class="mt-7 mb-3 relative pt-1">
-        <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-200">
-          <div data-summary-target="progress" class="hidden transition-all duration-300 ease-out bg-yellow-500 w-0"></div>
-        </div>
-      </div>
-
-      <div class="block space-y-2 md:space-y-0 md:flex items-center gap-2 mt-5">
-        <div class="relative">
-          <button type="button" data-action="click->summary#generate" data-summary-target="button" class="w-full md:w-auto flex gap-1 items-center justify-center border border-yellow-700 bg-yellow-700 text-sm text-white hover:bg-yellow-800 py-2 px-4 rounded cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-            </svg>
-            AI summary
-            <div data-summary-target="spinner" class="hidden ml-2">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-          </button>
-        </div>
-        <div>
-          <%= link_to root_path, class: "w-full md:w-auto flex gap-1 items-center justify-center border border-blue-700 bg-blue-700 text-sm text-white hover:bg-blue-800 py-2 px-4 rounded cursor-pointer" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
-            </svg>
-            Copy summary
-          <% end %>
-        </div>
-        <div>
-          <%= link_to root_path, class: "w-full md:w-auto flex gap-1 items-center justify-center border border-blue-700 bg-blue-700 text-sm text-white hover:bg-blue-800 py-2 px-4 rounded cursor-pointer" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
-            </svg>
-            Save version
-          <% end %>
-        </div>
+      <%= form.label :transcription, class: "block text-sm font-semibold" %>
+      <div data-audio-upload-target="transcriptionField">
+        <%= form.rich_text_area :transcription, placeholder: "Enter the transcription of the sermon, workshop, lecture, etc.", class: ["h-100 mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-[#121212] dark:text-gray-100 border-gray-300 dark:border-[#121212] text-gray-700", {"": note.errors[:transcription].none?, "border-red-400 focus:outline-red-600": note.errors[:transcription].any?}], data: { summary_target: "transcription" } %>
       </div>
     </div>
 
-    <div class="flex gap-2 justify-end text-center">
-      <%= link_to note.persisted? ? note_path(note) : root_path, 
-      class: "w-full md:w-auto bg-white border border-gray-200 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded cursor-pointer" do %>
-        Cancel
-      <% end %>
-      <%= form.submit "Upload", class: "w-full md:w-auto bg-green-700 hover:bg-green-800 text-white py-2 px-4 rounded cursor-pointer" %>
+    <div class="mb-5">
+      <%= form.label :summary, class: "block text-sm font-semibold" %>
+      <div data-audio-upload-target="summaryField" data-summary-target="summary">
+        <%= form.rich_text_area :summary, placeholder: "Enter a summary of the sermon, workshop, lecture, etc.", class: ["h-100 mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-[#121212] dark:text-gray-100 border-gray-300 dark:border-[#121212] text-gray-700", {"": note.errors[:summary].none?, "border-red-400 focus:outline-red-600": note.errors[:summary].any?}] %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="hidden mt-2 mb-2" data-summary-target="progress">
+          <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div class="bg-green-600 h-2.5 rounded-full hidden" style="width: 0%" data-summary-target="progressBar"></div>
+          </div>
+        </div>
+        <div class="hidden mb-2" data-summary-target="spinner">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        <button type="button" 
+                data-action="summary#generate" 
+                data-summary-target="button" 
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+          </svg>
+          Generate Summary
+        </button>
+      </div>
+      
+      <div>
+        <%= form.submit class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+          </svg>
+          Save
+        <% end %>
+      </div>
     </div>
   <% end %>
 </div>
