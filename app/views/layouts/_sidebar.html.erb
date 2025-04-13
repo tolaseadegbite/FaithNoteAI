@@ -1,14 +1,14 @@
 <aside id="logo-sidebar" class="fixed md:top-0 top-16 left-0 z-40 w-64 h-screen md:pt-20 pt-4 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-black dark:border-gray-700" aria-label="Sidebar">
    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-black flex flex-col">
-      <%= link_to new_note_path, class: "hidden md:flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800 rounded-lg shadow-md p-3 mb-5 font-medium transition-colors duration-200" do %>
+      <!--<%= link_to new_note_path, class: "hidden md:flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800 rounded-lg shadow-md p-3 mb-5 font-medium transition-colors duration-200" do %>
          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
          </svg>
       
          Add new note
-      <% end %>
+      <% end %>-->
 
-      <ul class="space-y-2 font-medium flex-grow overflow-hidden">
+      <ul class="font-medium flex-grow overflow-hidden">
          <li>
             <%= link_to notes_path, 
                 class: "flex items-center p-2 gap-3 rounded-lg #{current_page?(notes_path) ? 'text-green-600 bg-green-50 dark:bg-green-900/10 dark:text-green-500' : 'text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500'} group" do %>
@@ -43,12 +43,15 @@
             
             <!-- Conversations List - Collapsible Section -->
             <% if current_user %>
+               <!--<div id="bible-chat-conversations" 
+                  class="mt-1 overflow-y-auto transition-all duration-300 max-h-0"
+                  data-sidebar-target="conversationsPanel">-->
+
                <div id="bible-chat-conversations" 
-                  class="mt-1 ml-7 overflow-y-auto transition-all duration-300 max-h-0"
-                  data-sidebar-target="conversationsPanel">
+                  class="mt-2">
                   
                   <!-- New Chat Button -->
-                  <div class="mb-2">
+                  <!--<div class="mb-2">
                      <%= link_to bible_chat_conversations_path(translation: @translation || "KJV"), 
                         class: "w-full flex items-center p-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg group cursor-pointer" do %>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
@@ -56,7 +59,7 @@
                         </svg>
                         New Chat
                      <% end %>
-                  </div>
+                  </div>-->
                   
                   <!-- Render the conversation list partial -->
                   <%= render "bible_chat_conversations/conversation_list", 

@@ -184,6 +184,7 @@ trix-editor {
   min-height: 15rem;
   padding: 1rem;
   overflow-y: auto;
+  background-color: #f3f4f6;
 }
 
 .dark trix-editor {
