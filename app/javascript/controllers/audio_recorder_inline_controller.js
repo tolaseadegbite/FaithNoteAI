@@ -1,15 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["preRecording", "recording", "postRecording", "processing", "timer", "titleInput"]
-  
+  static targets = [
+    "preRecording", "recording", "postRecording", "processing", 
+    "audioPreview", "timer", "titleInput", "pauseResumeButton", 
+    "pauseIcon", "resumeIcon", "pauseText", "resumeText"
+  ]
+
   connect() {
     this.isRecording = false
+    this.isPaused = false
     this.recordingTime = 0
     this.timerInterval = null
     this.audioChunks = []
   }
-  
+
   async startRecording() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -27,6 +32,7 @@ export default class extends Controller {
       
       this.mediaRecorder.start()
       this.isRecording = true
+      this.isPaused = false
       
       // Update UI
       this.preRecordingTarget.classList.add("hidden")
@@ -42,25 +48,72 @@ export default class extends Controller {
       alert("Could not access microphone. Please check your browser permissions.")
     }
   }
-  
+
   stopRecording() {
-    if (this.mediaRecorder && this.isRecording) {
+    if (this.mediaRecorder && (this.isRecording || this.isPaused)) {
       this.mediaRecorder.stop()
       this.mediaRecorder.stream.getTracks().forEach(track => track.stop())
       this.isRecording = false
+      this.isPaused = false
       
       // Stop timer
       clearInterval(this.timerInterval)
     }
   }
   
-  updateTimer() {
-    this.recordingTime += 1
-    const minutes = Math.floor(this.recordingTime / 60).toString().padStart(2, '0')
-    const seconds = (this.recordingTime % 60).toString().padStart(2, '0')
-    this.timerTarget.textContent = `${minutes}:${seconds}`
+  // New method to toggle pause/resume
+  // Updated togglePause method
+  togglePause() {
+    if (!this.mediaRecorder) return
+    
+    if (this.isPaused) {
+      // Resume recording
+      this.mediaRecorder.resume()
+      this.isPaused = false
+      this.isRecording = true
+      
+      // Update UI - show pause elements, hide resume elements
+      this.pauseIconTarget.classList.remove("hidden")
+      this.resumeIconTarget.classList.add("hidden")
+      this.pauseTextTarget.classList.remove("hidden")
+      this.resumeTextTarget.classList.add("hidden")
+      
+      // Change button color back to yellow for pause
+      this.pauseResumeButtonTarget.classList.remove("bg-green-500", "hover:bg-green-600")
+      this.pauseResumeButtonTarget.classList.add("bg-yellow-500", "hover:bg-yellow-600")
+      
+      // Resume timer
+      this.timerInterval = setInterval(() => this.updateTimer(), 1000)
+    } else {
+      // Pause recording
+      this.mediaRecorder.pause()
+      this.isPaused = true
+      this.isRecording = false
+      
+      // Update UI - hide pause elements, show resume elements
+      this.pauseIconTarget.classList.add("hidden")
+      this.resumeIconTarget.classList.remove("hidden")
+      this.pauseTextTarget.classList.add("hidden")
+      this.resumeTextTarget.classList.remove("hidden")
+      
+      // Change button color to green for resume
+      this.pauseResumeButtonTarget.classList.remove("bg-yellow-500", "hover:bg-yellow-600")
+      this.pauseResumeButtonTarget.classList.add("bg-green-500", "hover:bg-green-600")
+      
+      // Pause timer
+      clearInterval(this.timerInterval)
+    }
   }
-  
+
+  updateTimer() {
+    if (this.isRecording) {
+      this.recordingTime++
+      const minutes = Math.floor(this.recordingTime / 60).toString().padStart(2, '0')
+      const seconds = (this.recordingTime % 60).toString().padStart(2, '0')
+      this.timerTarget.textContent = `${minutes}:${seconds}`
+    }
+  }
+
   showPostRecordingUI() {
     this.recordingTarget.classList.add("hidden")
     this.postRecordingTarget.classList.remove("hidden")
@@ -74,15 +127,14 @@ export default class extends Controller {
     })
     this.titleInputTarget.value = `Recording - ${formattedDate}`
   }
-  
+
   discardRecording() {
-    // Reset everything and go back to pre-recording state
-    this.audioChunks = []
     this.audioBlob = null
+    this.audioChunks = []
     this.postRecordingTarget.classList.add("hidden")
     this.preRecordingTarget.classList.remove("hidden")
   }
-  
+
   async saveRecording() {
     if (!this.audioBlob) {
       return
@@ -124,9 +176,9 @@ export default class extends Controller {
       this.postRecordingTarget.classList.remove("hidden")
     }
   }
-  
+
   disconnect() {
-    if (this.isRecording) {
+    if (this.isRecording || this.isPaused) {
       this.stopRecording()
     }
     if (this.timerInterval) {
