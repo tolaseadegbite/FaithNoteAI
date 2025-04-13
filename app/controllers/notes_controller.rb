@@ -64,11 +64,13 @@ class NotesController < ApplicationController
   end
 
   def process_audio
-    # Don't create a note yet, just process the audio
     if params[:audio_file].present?
       begin
+        # Store the original audio file for later attachment
+        audio_file = params[:audio_file]
+        
         # Transcribe the audio
-        transcription = ElevenlabsService.new.transcribe(params[:audio_file])
+        transcription = ElevenlabsService.new.transcribe(audio_file)
         
         if transcription
           # Generate summary if requested
@@ -77,11 +79,12 @@ class NotesController < ApplicationController
             summary = GeminiService.new.generate_summary(transcription)
           end
           
-          # Return the transcription and summary without saving a note
+          # Return the transcription, summary, and the audio file
           render json: { 
             status: 'success',
             transcription: transcription,
-            summary: summary.to_s
+            summary: summary.to_s,
+            audio_file: audio_file
           }, status: :ok
         else
           render json: { errors: ['Failed to transcribe audio'], status: 'error' }, status: :unprocessable_entity
@@ -98,7 +101,7 @@ class NotesController < ApplicationController
   private
 
   def notes_param
-    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary)
+    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file)
   end
 
   def find_note

@@ -1,125 +1,13 @@
 <div class="bg-white text-gray-800 dark:bg-black dark:text-white">
-    <div class="">
-        <h1 class="font-semibold text-xl px-4 py-4">New note</h1>
-        
-        <div class="px-4 mb-6">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div data-controller="note-type-selector" class="w-full md:w-2/3">
-                    <div class="flex border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-                        <button data-action="click->note-type-selector#selectType" data-type="text" data-note-type-selector-target="textButton" class="flex-1 py-3 px-4 text-center font-medium bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-500 cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Text Entry
-                        </button>
-                        <button data-action="click->note-type-selector#selectType" data-type="audio" data-note-type-selector-target="audioButton" class="flex-1 py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                            Record Audio
-                        </button>
-                    </div>
-                    
-                    <div data-note-type-selector-target="textForm" class="mt-4">
-                        <%= render "form", note: @note %>
-                    </div>
-                    
-                    <div data-note-type-selector-target="audioForm" class="mt-4 hidden">
-                        <div data-controller="audio-recorder-inline" class="border border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
-                            <div data-audio-recorder-inline-target="preRecording" class="py-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                </svg>
-                                <h3 class="text-lg font-medium mb-2">Record your sermon or notes</h3>
-                                <p class="text-gray-600 dark:text-gray-400 mb-4">Click the button below to start recording</p>
-                                <button data-action="click->audio-recorder-inline#startRecording" class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                    </svg>
-                                    Start Recording
-                                </button>
-                            </div>
-                            
-                            <div data-audio-recorder-inline-target="recording" class="hidden py-8">
-                                <div class="w-24 h-24 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
-                                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <h3 class="text-lg font-medium mb-2">Recording in progress</h3>
-                                <p data-audio-recorder-inline-target="timer" class="text-2xl font-bold mb-4">00:00</p>
-                                <button data-action="click->audio-recorder-inline#stopRecording" class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-lg transition-colors cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                                    </svg>
-                                    Stop Recording
-                                </button>
-                            </div>
-                            
-                            <div data-audio-recorder-inline-target="postRecording" class="hidden py-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <h3 class="text-lg font-medium mb-2">Recording complete!</h3>
-                                <p class="text-gray-600 dark:text-gray-400 mb-4">Your recording is ready to be processed</p>
-                                
-                                <div class="mb-4">
-                                    <label for="note_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-left">Title</label>
-                                    <input type="text" name="note[title]" id="note_title" data-audio-recorder-inline-target="titleInput" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm dark:text-white" placeholder="Enter a title for your note">
-                                </div>
-                                
-                                <div class="flex gap-3">
-                                    <button data-action="click->audio-recorder-inline#discardRecording" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                                        Discard
-                                    </button>
-                                    <button data-action="click->audio-recorder-inline#saveRecording" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors cursor-pointer">
-                                        Save & Process
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div data-audio-recorder-inline-target="processing" class="hidden py-8">
-                                <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-500 mx-auto mb-4"></div>
-                                <h3 class="text-lg font-medium mb-2">Processing your recording</h3>
-                                <p class="text-gray-600 dark:text-gray-400">This may take a moment...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="w-full md:w-1/3 md:sticky md:top-20 self-start border border-gray-300 dark:border-gray-700 rounded-lg p-6">
-                    <h2 class="text-lg font-medium mb-4">Tips for better notes</h2>
-                    <ul class="space-y-3 text-gray-600 dark:text-gray-400">
-                        <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Use clear titles that describe the content</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>For recordings, speak clearly and minimize background noise</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Use headings, lists, and formatting for better organization</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Review and edit transcriptions for accuracy</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <div class="py-6 px-4">
+        <div class="flex items-center gap-3 mb-4">
+            <%= link_to notes_path, class: "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+            <% end %>
+            <h1 class="font-semibold text-xl">New note</h1>
         </div>
+        <%= render "form", note: @note %>
     </div>
 </div>

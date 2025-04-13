@@ -37,15 +37,16 @@ export default class extends Controller {
     // Start progress simulation
     this.startProgressSimulation()
     
-    const formData = new FormData()
-    formData.append('audio_file', this.audioInputTarget.files[0])
-    formData.append('title', this.formTarget.querySelector('#note_title').value)
-    formData.append('generate_summary', 'true')
-    
     try {
+      // First process the audio
+      const processFormData = new FormData()
+      processFormData.append('audio_file', this.audioInputTarget.files[0])
+      processFormData.append('title', this.formTarget.querySelector('#note_title').value)
+      processFormData.append('generate_summary', 'true')
+      
       const response = await fetch('/notes/process_audio', {
         method: 'POST',
-        body: formData,
+        body: processFormData,
         headers: {
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
         }
@@ -69,6 +70,10 @@ export default class extends Controller {
           this.summaryFieldTarget.value = data.summary
         }
         
+        // The audio file is already part of the form since we're using form.file_field
+        // Just submit the form normally
+        this.formTarget.submit()
+        
         this.completeProgress()
       } else {
         const error = await response.json()
@@ -84,7 +89,7 @@ export default class extends Controller {
       this.transcribeButtonTarget.disabled = false
     }
   }
-  
+
   async transcribeOnly(event) {
     event.preventDefault()
     
@@ -100,6 +105,7 @@ export default class extends Controller {
     // Start progress simulation
     this.startProgressSimulation()
     
+    // Create FormData manually instead of using the form
     const formData = new FormData()
     formData.append('audio_file', this.audioInputTarget.files[0])
     formData.append('title', this.formTarget.querySelector('#note_title').value)
@@ -124,6 +130,10 @@ export default class extends Controller {
         } else {
           this.transcriptionFieldTarget.value = data.transcription
         }
+        
+        // The audio file is already part of the form since we're using form.file_field
+        // Just submit the form normally
+        this.formTarget.submit()
         
         this.completeProgress()
       } else {

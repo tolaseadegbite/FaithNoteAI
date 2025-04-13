@@ -7,6 +7,9 @@
     class: "w-full") do |form| %>
     <%= render 'shared/errors', form: form %>
 
+    <!-- Aaudio player -->
+    <%= render 'notes/components/audio_player', note: note %>
+
     <div class="mb-5">
       <%= form.label :title, class: "block text-sm font-semibold" %>
       <%= form.text_field :title, placeholder: "Title of the sermon, workshop, lecture, etc.", class: ["mt-2 text-sm w-full px-3 p-2.5 border rounded-md dark:bg-[#121212] dark:text-gray-100 border-gray-300 dark:border-[#121212] text-gray-700", {"": note.errors[:title].none?, "border-red-400 focus:outline-red-600": note.errors[:title].any?}] %>
@@ -19,11 +22,13 @@
       
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio File</label>
-        <input type="file" 
-               accept="audio/*" 
-               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-gray-700 dark:file:text-gray-200 cursor-pointer"
-               data-audio-upload-target="audioInput"
-               data-action="change->audio-upload#previewAudio">
+        <%= form.file_field :audio_file, 
+                       accept: "audio/*", 
+                       class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-gray-700 dark:file:text-gray-200 cursor-pointer",
+                       data: { 
+                         audio_upload_target: "audioInput",
+                         action: "change->audio-upload#previewAudio"
+                       } %>
       </div>
       
       <audio controls class="w-full mb-4 hidden" data-audio-upload-target="audioPreview"></audio>

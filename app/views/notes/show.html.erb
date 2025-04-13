@@ -11,6 +11,10 @@
       <h1 class="font-bold text-xl"><%= @note.title %></h1>
     </div>
     <%= render 'notes/components/note_meta', note: @note %>
+    
+    <!-- audio player here -->
+    <%= render 'notes/components/audio_player', note: @note %>
+    
     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
       <% if @note.updated_at > @note.created_at + 1.minute %>
         Updated <%= time_ago_in_words(@note.updated_at) %> ago
