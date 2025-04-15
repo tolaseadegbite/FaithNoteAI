@@ -54,12 +54,15 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json()
         
+        // Format the transcription with proper paragraph breaks
+        const formattedTranscription = this.formatTranscriptionWithBreaks(data.transcription)
+        
         // Update form fields with transcription and summary
         if (this.transcriptionFieldTarget.querySelector("trix-editor")) {
           const trixEditor = this.transcriptionFieldTarget.querySelector("trix-editor")
-          trixEditor.editor.loadHTML(data.transcription)
+          trixEditor.editor.loadHTML(formattedTranscription)
         } else {
-          this.transcriptionFieldTarget.value = data.transcription
+          this.transcriptionFieldTarget.value = formattedTranscription
         }
         
         if (this.summaryFieldTarget.querySelector("trix-editor")) {
@@ -70,7 +73,6 @@ export default class extends Controller {
         }
         
         this.completeProgress()
-        // Removed auto-submission code here
       } else {
         const error = await response.json()
         this.showError(error.errors ? error.errors.join(", ") : "Failed to process audio")
@@ -84,9 +86,9 @@ export default class extends Controller {
       this.processButtonTarget.disabled = false
       this.transcribeButtonTarget.disabled = false
     }
-}
+  }
 
-async transcribeOnly(event) {
+  async transcribeOnly(event) {
     event.preventDefault()
     
     if (this.isProcessing) return
@@ -118,16 +120,18 @@ async transcribeOnly(event) {
       if (response.ok) {
         const data = await response.json()
         
+        // Format the transcription with proper paragraph breaks
+        const formattedTranscription = this.formatTranscriptionWithBreaks(data.transcription)
+        
         // Update form field with transcription
         if (this.transcriptionFieldTarget.querySelector("trix-editor")) {
           const trixEditor = this.transcriptionFieldTarget.querySelector("trix-editor")
-          trixEditor.editor.loadHTML(data.transcription)
+          trixEditor.editor.loadHTML(formattedTranscription)
         } else {
-          this.transcriptionFieldTarget.value = data.transcription
+          this.transcriptionFieldTarget.value = formattedTranscription
         }
         
         this.completeProgress()
-        // Removed auto-submission code here
       } else {
         const error = await response.json()
         this.showError(error.errors ? error.errors.join(", ") : "Failed to transcribe audio")
@@ -141,8 +145,31 @@ async transcribeOnly(event) {
       this.processButtonTarget.disabled = false
       this.transcribeButtonTarget.disabled = false
     }
-}
-  
+  }
+
+  // Add a new method to format transcription with breaks
+  formatTranscriptionWithBreaks(text) {
+    if (!text) return '';
+    
+    // Split the text by speaker labels
+    const segments = text.split(/(?=Speaker [A-Z]:)/);
+    
+    // Process each segment
+    const formattedSegments = segments.map(segment => {
+      // Handle the [END] marker separately
+      if (segment.includes("[END]")) {
+        const parts = segment.split("[END]");
+        if (parts.length > 1) {
+          return `<p>${parts[0].trim()}</p><p>[END]</p>`;
+        }
+      }
+      return `<p>${segment.trim()}</p>`;
+    });
+    
+    // Join the segments
+    return formattedSegments.join('');
+  }
+
   startProgressSimulation() {
     this.progressBarTarget.style.width = "0%"
     this.progressBarTarget.classList.remove("hidden")

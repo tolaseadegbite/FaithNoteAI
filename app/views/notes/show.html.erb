@@ -67,7 +67,7 @@
             prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
             prose-a:text-green-600 dark:prose-a:text-green-400
             prose-strong:text-gray-800 dark:prose-strong:text-gray-200" data-controller="bible-verse-link">
-            <%= sanitize(process_bible_verses(@note.transcription)) %>
+            <%= sanitize(process_bible_verses(format_transcription_with_breaks(@note.transcription))) %>
           </div>
         <% else %>
           <div class="text-center text-gray-500 dark:text-gray-400 py-8">
@@ -75,6 +75,14 @@
           </div>
         <% end %>
       </div>
+      <!--<div class="text-xs text-gray-500 dark:text-gray-400 mt-2 mb-8">
+        <span class="inline-flex items-center px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Transcribed with Gemini 2.5 Pro
+        </span>
+      </div>-->
     <% when 'summary' %>
       <% if @note.summary.present? %>
         <div class="p-4 text-justify">

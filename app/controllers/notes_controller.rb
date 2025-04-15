@@ -63,14 +63,15 @@ class NotesController < ApplicationController
     end
   end
 
+  # In the process_audio method
   def process_audio
     if params[:audio_file].present?
       begin
         # Store the original audio file for later attachment
         audio_file = params[:audio_file]
         
-        # Transcribe the audio
-        transcription = ElevenlabsService.new.transcribe(audio_file)
+        # Transcribe the audio using Gemini 2.5 Pro
+        transcription = GeminiTranscriptionService.new.transcribe(audio_file)
         
         if transcription
           # Generate summary if requested

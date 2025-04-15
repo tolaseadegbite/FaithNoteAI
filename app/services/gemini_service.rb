@@ -6,7 +6,7 @@ class GeminiService
   BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
   
   def initialize
-    @api_key = Rails.application.credentials.gemini_api_key
+    @api_key = Rails.application.credentials.dig(:gemini, :api_key)
     @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, 
       autolink: true, 
       tables: true, 
