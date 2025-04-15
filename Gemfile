@@ -77,3 +77,4 @@ gem "csv", "~> 3.3"
 gem "pagy", "~> 9.3"
 gem 'httparty'
 gem 'rdoc', '6.13.1'
+gem 'ruby_llm'
