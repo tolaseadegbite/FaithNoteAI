@@ -48,14 +48,14 @@ class NotesController < ApplicationController
 
   def generate_summary
     transcription = params[:transcription]
-    
+
     if transcription.blank?
       render json: { error: "Transcription cannot be empty" }, status: :unprocessable_entity
       return
     end
-    
+
     summary = GeminiService.new.generate_summary(transcription)
-    
+
     if summary
       render json: { summary: summary }
     else
@@ -63,45 +63,31 @@ class NotesController < ApplicationController
     end
   end
 
-  # In the process_audio method
+  # POST /notes/process_audio
   def process_audio
-    if params[:audio_file].present?
-      begin
-        # Store the original audio file for later attachment
-        audio_file = params[:audio_file]
-        
-        # Transcribe the audio using Gemini 2.5 Pro
-        transcription = GeminiTranscriptionService.new.transcribe(audio_file)
-        
-        if transcription
-          # Generate summary if requested
-          summary = nil
-          if params[:generate_summary] == "true"
-            summary = GeminiService.new.generate_summary(transcription)
-          end
-          
-          # Return the transcription, summary, and the audio file
-          render json: { 
-            status: 'success',
-            transcription: transcription,
-            summary: summary.to_s,
-            audio_file: audio_file
-          }, status: :ok
-        else
-          render json: { errors: ['Failed to transcribe audio'], status: 'error' }, status: :unprocessable_entity
-        end
-      rescue => e
-        Rails.logger.error("Audio processing error: #{e.message}")
-        render json: { errors: ["Error processing audio: #{e.message}"], status: 'error' }, status: :unprocessable_entity
-      end
+    # Delegate audio processing logic to the service
+    result = AudioProcessingService.new(params).process
+
+    # Render the response based on the service result
+    if result[:error]
+      render json: { errors: [result[:error]] }, status: :unprocessable_entity
     else
-      render json: { errors: ['No audio file provided'], status: 'error' }, status: :unprocessable_entity
+      render json: { job_id: result[:job_id] }, status: :ok
     end
   end
-  
+
+  def check_transcription_status
+    # Delegate status checking logic to the service
+    result = TranscriptionStatusService.new(params).check
+
+    # Render the response provided by the service
+    render json: result[:body], status: result[:status]
+  end
+
   private
 
   def notes_param
+    # Ensure :audio_file is permitted if you intend to save it directly to the model later
     params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file)
   end
 

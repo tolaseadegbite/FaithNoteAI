@@ -8,6 +8,8 @@ gem "propshaft"
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
+
+gem "mission_control-jobs"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -77,4 +79,3 @@ gem "csv", "~> 3.3"
 gem "pagy", "~> 9.3"
 gem 'httparty'
 gem 'rdoc', '6.13.1'
-gem 'ruby_llm'

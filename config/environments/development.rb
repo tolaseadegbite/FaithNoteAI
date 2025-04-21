@@ -26,7 +26,25 @@ Rails.application.configure do
   end
 
   # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  # Change from memory_store to solid_cache_store
+  # config.cache_store = :memory_store
+  config.cache_store = :solid_cache_store
+
+  config.active_job.queue_adapter = :solid_queue
+  # Ensure both reading and writing point to the queue database if you have separate configs
+  # If you only have one database config, this might just be:
+  # config.solid_queue.connects_to = { database: { writing: :primary, reading: :primary } }
+  # Or remove connects_to if using the default primary database for Solid Queue.
+  # Check your config/database.yml if unsure.
+  config.solid_queue.connects_to = { database: { writing: :queue } } # Keep your existing setting if correct
+
+  # Explicitly set Rails logger to STDOUT for development
+  config.logger = ActiveSupport::Logger.new($stdout)
+  config.logger.formatter = config.log_formatter
+  config.log_level = :debug # Ensure log level is debug
+
+  # Keep Solid Queue logger pointing to STDOUT as well (redundant but harmless)
+  SolidQueue.logger = config.logger # Use the same logger instance
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local

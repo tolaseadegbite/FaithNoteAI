@@ -1,18 +1,40 @@
-default: &default
+# config/solid_queue.yml
+
+# Define common settings if desired
+# development: &development etc...
+
+default: &default_settings # Use a different anchor name if needed
   dispatchers:
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: "*"
-      threads: 3
+    # === Pool 1: Default Jobs ===
+    - queues: default # Only process the 'default' queue
+      threads: 3      # Allow 3 default jobs concurrently (adjust as needed)
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
 
+    # === Pool 2: Transcription Jobs (Rate Limited) ===
+    - queues: transcription # ONLY process the 'transcription' queue
+      threads: 1            # !!! CRITICAL: Run only ONE transcription job at a time !!!
+      processes: 1          # Usually 1 process is fine here unless you have huge volume AND a paid API plan
+      polling_interval: 1   # Check for new transcription jobs every second
+
 development:
-  <<: *default
+  <<: *default_settings # Inherit settings
 
 test:
-  <<: *default
+  <<: *default_settings
 
 production:
-  <<: *default
+  <<: *default_settings
+  # Maybe increase default threads in production if needed, but keep transcription threads low
+  # workers:
+  #   - queues: default
+  #     threads: 5 # Example
+  #     processes: <%= ENV.fetch("JOB_CONCURRENCY", 2) %> # Example
+  #     polling_interval: 0.1
+  #   - queues: transcription
+  #     threads: 1 # Keep low unless you have a paid API plan with high limits
+  #     processes: 1
+  #     polling_interval: 1
