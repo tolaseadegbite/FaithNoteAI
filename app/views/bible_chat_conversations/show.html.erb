@@ -1,6 +1,7 @@
 <% content_for :title, "Chat with Bible - #{@conversation.title}" %>
 
-<%= turbo_stream_from "bible_chat_#{current_user.id}" %>
+<%#= turbo_stream_from "bible_chat_#{current_user.id}" %>
+<%= turbo_stream_from @conversation %>
 
 <div class="h-[calc(100vh-7.2vh)] flex flex-col">
   <!-- Header with back button and title - mobile only -->

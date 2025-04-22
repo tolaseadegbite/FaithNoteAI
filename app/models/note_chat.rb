@@ -30,13 +30,17 @@ class NoteChat < ApplicationRecord
   
   scope :ordered, -> { order(created_at: :asc) }
   
-  # Add broadcast for create
+  # Add broadcast for create - explicitly specify the partial
   after_create_commit -> { 
-    broadcast_append_to note, target: "note_chat_messages"
+    broadcast_append_to note, 
+                        target: "note_chat_messages", 
+                        partial: "note_chats/note_chat" # Specify the partial to render
   }
   
-  # Add broadcast for update
-  after_update_commit -> {
-    broadcast_replace_to note
+  # Add broadcast for update - specify the target as the DOM ID of this chat
+  after_update_commit -> { 
+    broadcast_replace_to note, 
+                         target: self, # Target the specific DOM ID of this chat message
+                         partial: "note_chats/note_chat" # Specify the partial to render
   }
 end

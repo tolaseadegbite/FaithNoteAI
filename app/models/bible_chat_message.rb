@@ -32,17 +32,31 @@ class BibleChatMessage < ApplicationRecord
   
   scope :ordered, -> { order(created_at: :asc) }
   scope :for_conversation, ->(conversation_id) { where(bible_chat_conversation_id: conversation_id).ordered }
-  
+
   # Update the broadcast to specify the partial
-  after_create_commit -> { 
-    broadcast_append_to "bible_chat_#{user_id}", 
-                        target: "bible_chat_messages", 
-                        partial: "bible_chats/bible_chat_message"
+  after_create_commit -> {
+    broadcast_append_to bible_chat_conversation, # Broadcast to the conversation stream
+                        target: "bible_chat_messages", # Target the container div
+                        partial: "bible_chats/bible_chat_message" # Specify the partial
   }
-  
+
   # Update the broadcast to specify the partial
   after_update_commit -> {
-    broadcast_replace_to "bible_chat_#{user_id}",
-                         partial: "bible_chats/bible_chat_message"
+    broadcast_replace_to bible_chat_conversation, # Broadcast to the conversation stream
+                         target: self, # Target the specific message DOM ID
+                         partial: "bible_chats/bible_chat_message" # Specify the partial
   }
+  
+  # # Update the broadcast to specify the partial
+  # after_create_commit -> { 
+  #   broadcast_append_to "bible_chat_#{user_id}", 
+  #                       target: "bible_chat_messages", 
+  #                       partial: "bible_chats/bible_chat_message"
+  # }
+  
+  # # Update the broadcast to specify the partial
+  # after_update_commit -> {
+  #   broadcast_replace_to "bible_chat_#{user_id}",
+  #                        partial: "bible_chats/bible_chat_message"
+  # }
 end

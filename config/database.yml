@@ -59,6 +59,10 @@ development:
     <<: *primary_development # Inherit settings from primary_development
     database: faith_note_ai_development_cache # Use a separate DB name
     migrations_paths: db/cache_migrate # Specify migration path for this DB
+  cable:
+    <<: *primary_development # Inherit settings from primary_development
+    database: faith_note_ai_development_cable # Use a separate DB name
+    migrations_paths: db/cable_migrate # Specify migration path for this DB
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
