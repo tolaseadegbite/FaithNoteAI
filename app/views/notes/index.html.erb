@@ -13,7 +13,7 @@
 
   <% if @notes.any? %>
     <%= content_tag(:"turbo-frame", id: "notes", target: "_top", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-6") do %>
-      <%= render partial: "notes/components/note_card", collection: @notes, as: :note %>
+      <%= render partial: "notes/components/note_card", collection: @notes, as: :note, cached: true %>
     <% end %>
     
     <%= render_load_more(@pagy) %>

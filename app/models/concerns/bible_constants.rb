@@ -20,5 +20,5 @@ module BibleConstants
     "3 John", "Jude", "Revelation"
   ].freeze
 
-  TRANSLATIONS = ["KJV", "ASV", "BBE", "DARBY", "WEBSTER", "WEB", "YLT"].freeze
+  TRANSLATIONS = ["KJV", "ASV", "BBE", "DARBY", "WBT", "WEB", "YLT"].freeze
 end
