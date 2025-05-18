@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_18_145826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -92,6 +92,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
     t.index ["translation"], name: "index_bible_verses_on_translation"
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "notes_count"
+    t.index ["user_id"], name: "index_categories_on_user_id"
+  end
+
   create_table "note_chats", force: :cascade do |t|
     t.bigint "note_id", null: false
     t.bigint "user_id", null: false
@@ -112,6 +121,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "note_chats_count", default: 0, null: false
+    t.bigint "category_id"
+    t.index ["category_id"], name: "index_notes_on_category_id"
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
@@ -140,6 +151,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
     t.datetime "updated_at", null: false
     t.integer "bible_chat_conversations_count", default: 0, null: false
     t.integer "notes_count", default: 0, null: false
+    t.integer "categories_count"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
@@ -148,8 +160,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_173949) do
   add_foreign_key "bible_chat_conversations", "users"
   add_foreign_key "bible_chat_messages", "bible_chat_conversations"
   add_foreign_key "bible_chat_messages", "users"
+  add_foreign_key "categories", "users"
   add_foreign_key "note_chats", "notes"
   add_foreign_key "note_chats", "users"
+  add_foreign_key "notes", "categories"
   add_foreign_key "notes", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "summaries", "notes"

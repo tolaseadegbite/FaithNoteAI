@@ -4,6 +4,7 @@
 #
 #  id                             :bigint           not null, primary key
 #  bible_chat_conversations_count :integer          default(0), not null
+#  categories_count               :integer
 #  email_address                  :string           not null
 #  notes_count                    :integer          default(0), not null
 #  password_digest                :string           not null
@@ -31,4 +32,6 @@ class User < ApplicationRecord
   has_many :notes, dependent: :destroy
   has_many :bible_chat_messages, dependent: :destroy
   has_many :bible_chat_conversations, dependent: :destroy
+
+  has_many :categories, dependent: :destroy
 end

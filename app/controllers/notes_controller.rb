@@ -1,5 +1,6 @@
 class NotesController < ApplicationController
   before_action :find_note, only: [:show, :edit, :update, :destroy]
+  before_action :find_categories, only: [:new, :edit, :create, :update, :show]
 
   def index
     @pagy, @notes = pagy_keyset(current_user.notes.ordered, limit: 21)
@@ -26,7 +27,6 @@ class NotesController < ApplicationController
   end
 
   def edit
-    
   end
 
   def update
@@ -88,10 +88,14 @@ class NotesController < ApplicationController
 
   def notes_param
     # Ensure :audio_file is permitted if you intend to save it directly to the model later
-    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file)
+    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file, :category_id)
   end
 
   def find_note
     @note = Note.find(params[:id])
+  end
+
+  def find_categories
+    @categories = current_user.categories
   end
 end
