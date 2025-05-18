@@ -50,7 +50,8 @@
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
         <% @new_testament_books.each do |book| %>
           <%= link_to book, bible_chapter_path(book: book, chapter: 1, translation: @translation), 
-                      class: "block p-2 sm:p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors text-sm sm:text-base" %>
+                      class: "block p-2 sm:p-3 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/10 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-800 dark:text-white hover:text-green-600 dark:hover:text-green-500 transition-colors text-sm sm:text-base",
+                      cached: true %>
         <% end %>
       </div>
     </div>
