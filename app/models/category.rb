@@ -29,6 +29,6 @@ class Category < ApplicationRecord
   end
   
   def self.ransackable_associations(auth_object = nil)
-    ["inventory"]
+    ["user"]
   end
 end

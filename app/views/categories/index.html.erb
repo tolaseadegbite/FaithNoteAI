@@ -2,23 +2,34 @@
 <div class="">
   <div class="py-6 px-4 flex justify-between items-center">
     <h1 class="font-bold text-2xl text-gray-800 dark:text-white">Categories</h1>
-    
-    <%= link_to new_category_path, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800 rounded-lg px-4 py-2 font-medium transition-colors duration-200" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-      New category
-    <% end %>
+
+
+    <div class="flex gap-2 items-center">
+
+      <!-- search form -->
+      <div class="hidden md:block categories-search">
+          <%= render 'categories/components/categories_search_form', url: categories_path %>
+      </div>
+      
+      <%= link_to new_category_path, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800 rounded-lg px-4 py-2 font-medium transition-colors duration-200" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        New category
+      <% end %>
+    </div>
   </div>
 
-  <% if @categories.present? %>
-    <%= content_tag(:"turbo-frame", id: "categories", class: "grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-6") do %>
-      <%= render @categories %>
-    <% end %>
+  <%= turbo_frame_tag :results, data: { turbo_action: 'advance' } do %>
+    <% if @categories.present? %>
+      <%= content_tag(:"turbo-frame", id: "categories", class: "grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-6") do %>
+        <%= render @categories %>
+      <% end %>
 
-    <%= render_load_more(@pagy) %>
-  <% else %>
-      <p class="italic text-gray-600 mt-4 text-center">No categories!</p>
+      <%= render_load_more(@pagy) %>
+    <% else %>
+        <p class="italic text-gray-600 mt-4 text-center">No categories!</p>
+    <% end %>
   <% end %>
 
 </div>

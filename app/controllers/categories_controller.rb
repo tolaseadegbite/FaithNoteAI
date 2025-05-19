@@ -3,7 +3,8 @@ class CategoriesController < ApplicationController
 
     def index
       # @categories = current_user.categories.ordered
-      @pagy, @categories = pagy_keyset(current_user.categories.ordered, limit: 21)
+      @q = current_user.categories.ransack(params[:q])
+      @pagy, @categories = pagy_keyset(@q.result.includes(:user).ordered, limit: 21)
     end
 
     def show
