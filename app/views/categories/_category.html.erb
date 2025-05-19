@@ -2,7 +2,7 @@
     <div data-controller="note-click" class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-md transition-all duration-200 group cursor-pointer">
         <div class="p-5 flex justify-between" data-action="click->note-click#visit" data-note-click-url="<%= category_path(category) %>">
             <div class="text-gray-800">
-                <%= link_to category, class: "text-sm font-semibold", data: { turbo_frame: "_top" } do %>
+                <%= link_to category, class: "text-sm font-semibold dark:text-white", data: { turbo_frame: "_top" } do %>
                     <%= category.name %>
                     (<%= category.notes_count %>)
                 <% end %>

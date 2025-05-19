@@ -6,7 +6,8 @@ class CategoriesController < ApplicationController
     end
 
     def show
-      @notes = @category.notes.ordered
+      # @notes = @category.notes.ordered
+      @pagy, @notes = pagy_keyset(@category.notes.ordered, limit: 21)
     end
 
     def new

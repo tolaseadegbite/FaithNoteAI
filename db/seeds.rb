@@ -10,6 +10,22 @@ end
 
 puts "Created user: #{user.email_address}"
 
+# Create 30 categories for the user
+category_names = [
+  "Sermon Notes", "Bible Study", "Brothers' Meeting", "Prayer Meeting", "Worship Service",
+  "Youth Group", "Sunday School", "Small Group", "Conference Notes", "Retreat Notes",
+  "Devotional", "Quiet Time", "Journal Entries", "Book Notes", "Podcast Notes",
+  "Lecture Notes", "Seminar Notes", "Personal Reflections", "Theology", "Apologetics",
+  "Church History", "Missions", "Evangelism", "Discipleship", "Pastoral Care",
+  "Counseling Notes", "Ministry Planning", "Leadership Training", "Spiritual Warfare", "Christian Living"
+]
+
+categories = category_names.map do |name|
+  Category.find_or_create_by!(user: user, name: name)
+end
+
+puts "Created #{categories.count} categories for user: #{user.email_address}"
+
 # Sample titles for faith-based notes
 note_titles = [
   "The Power of Prayer in Daily Life",
@@ -60,8 +76,19 @@ puts "Creating 100 sample notes..."
   content_index = i % transcription_samples.length
   summary_index = i % summary_samples.length
   
+  # Assign category
+  if i < 50
+    # Assign first 50 notes to the first category
+    category = categories.first
+  else
+    # Distribute the rest evenly among the other categories
+    category_index = (i - 50) % (categories.count - 1) + 1
+    category = categories[category_index]
+  end
+
   note = Note.new(
     user: user,
+    category: category, # Assign the selected category
     title: "#{note_titles[title_index]} #{i+1}",
     language: ["en", "fr", "es"].sample,
     created_at: rand(1..365).days.ago
@@ -69,7 +96,7 @@ puts "Creating 100 sample notes..."
   
   # Add rich text content
   note.transcription = transcription_samples[content_index]
-  note.summary = summary_samples[summary_index]
+  note.summary = summary_samples[summary_samples.length > 1 ? summary_index : 0] # Ensure summary_index is valid
   
   note.save!
   
