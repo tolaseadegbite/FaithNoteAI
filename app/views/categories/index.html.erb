@@ -20,6 +20,12 @@
     </div>
   </div>
 
+  <!-- mobile search form -->
+  <div class="block md:hidden mb-5 px-4">
+    <%#= render 'categories/components/mobile_categories_search_form', url: inventory_categories_path(@inventory) %>
+    <%= render 'categories/components/categories_search_form', url: categories_path %>
+  </div>
+
   <%= turbo_frame_tag :results, data: { turbo_action: 'advance' } do %>
     <% if @categories.present? %>
       <%= content_tag(:"turbo-frame", id: "categories", class: "grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-6") do %>
