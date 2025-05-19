@@ -30,7 +30,7 @@ trix-toolbar {
   position: sticky;
   background-color: white;
   border-bottom: 1px solid #e5e7eb;
-  z-index: 10;
+  /* z-index: 10; */
 }
 
 .dark trix-toolbar {

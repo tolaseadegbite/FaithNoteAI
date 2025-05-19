@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   end
 
   resources :categories
+  resources :tags
 
   resources :bible_verses, only: [:index], path: 'bible' do
     collection do

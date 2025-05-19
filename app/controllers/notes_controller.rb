@@ -1,6 +1,7 @@
 class NotesController < ApplicationController
   before_action :find_note, only: [:show, :edit, :update, :destroy]
   before_action :find_categories, only: [:new, :edit, :create, :update, :show]
+  before_action :find_tags, only: [:new, :edit, :create, :update]
 
   def index
     @pagy, @notes = pagy_keyset(current_user.notes.ordered, limit: 21)
@@ -19,6 +20,7 @@ class NotesController < ApplicationController
   def create
     @note = current_user.notes.build(notes_param)
     if @note.save
+      @note.tag_ids = notes_param[:tag_ids] # Assign tags
       respond_to do |format|
         format.html { redirect_to @note, notice: "Note created successfully" }
       end
@@ -32,6 +34,7 @@ class NotesController < ApplicationController
 
   def update
     if @note.update(notes_param)
+      @note.tag_ids = notes_param[:tag_ids] # Assign tags
       respond_to do |format|
         format.html { redirect_to @note, notice: "Note updated successfully" }
       end
@@ -89,7 +92,7 @@ class NotesController < ApplicationController
 
   def notes_param
     # Ensure :audio_file is permitted if you intend to save it directly to the model later
-    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file, :category_id)
+    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file, :category_id, tag_ids: [])
   end
 
   def find_note
@@ -98,5 +101,9 @@ class NotesController < ApplicationController
 
   def find_categories
     @categories = current_user.categories
+  end
+
+  def find_tags
+    @tags = current_user.tags.ordered # Assuming you'll add an 'ordered' scope to Tag model
   end
 end

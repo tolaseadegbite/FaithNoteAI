@@ -9,6 +9,6 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "trix"
 pin "@rails/actiontext", to: "actiontext.esm.js"
 pin "lodash" # @4.17.21
-pin "tom-select" # @2.4.3
+pin "tom-select", to: "https://ga.jspm.io/npm:tom-select@2.4.3/dist/js/tom-select.complete.js"
 pin "@orchidjs/sifter", to: "@orchidjs--sifter.js" # @1.1.0
 pin "@orchidjs/unicode-variants", to: "@orchidjs--unicode-variants.js" # @1.1.2

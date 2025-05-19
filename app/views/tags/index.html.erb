@@ -1,0 +1,34 @@
+<% content_for :title, "Note Tags" %>
+<div class="">
+  <div class="py-6 px-4 flex justify-between items-center">
+    <h1 class="font-bold text-2xl text-gray-800 dark:text-white">Tags</h1>
+
+
+    <div class="flex gap-2 items-center">
+
+      <!-- search form -->
+      <div class="hidden md:block tags-search">
+          <%= render 'tags/components/tags_search_form', url: tags_path %>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile search form -->
+  <div class="block md:hidden mb-5 px-4">
+    <%#= render 'tags/components/mobile_tags_search_form', url: inventory_tags_path(@inventory) %>
+    <%= render 'tags/components/tags_search_form', url: tags_path %>
+  </div>
+
+  <%= turbo_frame_tag :results, data: { turbo_action: 'advance' } do %>
+    <% if @tags.present? %>
+      <%= content_tag(:"turbo-frame", id: "tags", class: "grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-6") do %>
+        <%= render @tags %>
+      <% end %>
+
+      <%= render_load_more(@pagy) %>
+    <% else %>
+        <p class="italic text-gray-600 mt-4 text-center">No tags!</p>
+    <% end %>
+  <% end %>
+
+</div>

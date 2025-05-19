@@ -1,0 +1,7 @@
+<%= turbo_stream.append "tags" do %>
+    <%= render partial: "tags/tag", collection: @tags, as: :tag %>
+<% end %>
+
+<%= turbo_stream.replace "load_more" do %>
+    <%= render_load_more(@pagy) %>
+<% end %>

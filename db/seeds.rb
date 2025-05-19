@@ -26,6 +26,33 @@ end
 
 puts "Created #{categories.count} categories for user: #{user.email_address}"
 
+# Create some tags for the user
+tag_names = [
+  "Prayer", "Faith", "Hope", "Love", "Grace",
+  "Bible", "Jesus", "God", "Spirit", "Worship",
+  "Sermon", "Study", "Meeting", "Community", "Growth",
+  "Healing", "Forgiveness", "Wisdom", "Evangelism", "Discipleship",
+  "Joy", "Peace", "Patience", "Kindness", "Goodness",
+  "Faithfulness", "Gentleness", "Self-Control", "Humility", "Service",
+  "Truth", "Justice", "Mercy", "Redemption", "Salvation",
+  "Sanctification", "Righteousness", "Holiness", "Obedience", "Sacrifice",
+  "Covenant", "Promise", "Blessing", "Calling", "Ministry",
+  "Leadership", "Stewardship", "Generosity", "Gratitude", "Thanksgiving",
+  "Praise", "Adoration", "Confession", "Repentance", "Restoration",
+  "Renewal", "Revival", "Awakening", "Transformation", "Deliverance",
+  "Freedom", "Liberty", "Hopefulness", "Encouragement", "Comfort",
+  "Strength", "Endurance", "Perseverance", "Resilience", "Victory",
+  "Triumph", "Glory", "Honor", "Power", "Authority",
+  "Kingdom", "Heaven", "Earth", "Creation", "Nature",
+  "Family", "Marriage", "Children", "Relationships", "Friendship"
+]
+
+tags = tag_names.map do |name|
+  Tag.find_or_create_by!(user: user, name: name)
+end
+
+puts "Created #{tags.count} tags for user: #{user.email_address}"
+
 # Sample titles for faith-based notes
 note_titles = [
   "The Power of Prayer in Daily Life",
@@ -99,6 +126,9 @@ puts "Creating 100 sample notes..."
   note.summary = summary_samples[summary_samples.length > 1 ? summary_index : 0] # Ensure summary_index is valid
   
   note.save!
+
+  # Assign random tags (between 0 and 3 tags)
+  note.tags << tags.sample(rand(0..3))
   
   # Create some note chats for each note (between 0-5 chats)
   rand(0..5).times do

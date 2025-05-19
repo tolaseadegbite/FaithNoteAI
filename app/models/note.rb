@@ -28,6 +28,8 @@ class Note < ApplicationRecord
   belongs_to :category, counter_cache: :notes_count, optional: true
   has_many :summaries, dependent: :destroy
   has_many :note_chats, dependent: :destroy
+  has_many :note_tags, dependent: :destroy
+  has_many :tags, through: :note_tags
 
   has_rich_text :transcription
   has_rich_text :summary

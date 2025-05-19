@@ -1,0 +1,42 @@
+<%= turbo_frame_tag tag do %>
+    <div data-controller="note-click" class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-md transition-all duration-200 group cursor-pointer">
+        <div class="p-5 flex justify-between" data-action="click->note-click#visit" data-note-click-url="<%= tag_path(tag) %>">
+            <div class="text-gray-800">
+                <%= link_to tag, class: "text-sm font-semibold dark:text-white", data: { turbo_frame: "_top" } do %>
+                    <%= tag.name %>
+                    (<%= tag.notes_count %>)
+                <% end %>
+
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <% if tag.updated_at > tag.created_at + 1.minute %>
+                        Updated <%= time_ago_in_words(tag.updated_at) %> ago
+                    <% else %>
+                        Created <%= time_ago_in_words(tag.created_at) %> ago
+                    <% end %>
+                </div>
+            </div>
+            
+            <% if current_user == tag.user %>
+                <div data-controller="dropdown" class="relative flex items-center">
+                    <button data-action="dropdown#toggle" data-dropdown-target="button" class="cursor-pointer flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div data-dropdown-target="menu" class="absolute right-0 top-full mt-1 z-50 hidden bg-white rounded-lg shadow-sm w-44 dark:bg-black border border-gray-500 dark:border-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                            <li>
+                                <%= link_to 'Edit', edit_tag_path(tag), data: { turbo_frame: "_top" }, class: "block px-4 py-2 text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500" %>
+                            </li>
+                            <li>
+                                <%= link_to 'Delete', tag_path(tag), data: { turbo_frame: "_top", turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this note?" }, class: "block px-4 py-2 text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-green-900/10 hover:text-green-600 dark:hover:text-green-500 border-t dark:border-gray-700" %>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
+<% end %>

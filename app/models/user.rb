@@ -34,4 +34,5 @@ class User < ApplicationRecord
   has_many :bible_chat_conversations, dependent: :destroy
 
   has_many :categories, dependent: :destroy
+  has_many :tags, dependent: :destroy
 end
