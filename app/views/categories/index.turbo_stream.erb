@@ -1,0 +1,7 @@
+<%= turbo_stream.append "categories" do %>
+    <%= render partial: "categories/category", collection: @categories, as: :category %>
+<% end %>
+
+<%= turbo_stream.replace "load_more" do %>
+    <%= render_load_more(@pagy) %>
+<% end %>

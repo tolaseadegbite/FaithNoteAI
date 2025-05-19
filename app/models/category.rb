@@ -23,4 +23,12 @@ class Category < ApplicationRecord
   has_many :notes, dependent: :destroy
 
   scope :ordered, -> { order(id: :desc) }
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["name"]
+  end
+  
+  def self.ransackable_associations(auth_object = nil)
+    ["inventory"]
+  end
 end

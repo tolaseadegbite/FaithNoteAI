@@ -2,7 +2,8 @@ class CategoriesController < ApplicationController
     before_action :find_category, only: [:show, :edit, :update, :destroy]
 
     def index
-      @categories = current_user.categories.ordered
+      # @categories = current_user.categories.ordered
+      @pagy, @categories = pagy_keyset(current_user.categories.ordered, limit: 21)
     end
 
     def show

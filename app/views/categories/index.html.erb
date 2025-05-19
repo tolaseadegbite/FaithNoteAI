@@ -15,6 +15,8 @@
     <%= content_tag(:"turbo-frame", id: "categories", class: "grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-6") do %>
       <%= render @categories %>
     <% end %>
+
+    <%= render_load_more(@pagy) %>
   <% else %>
       <p class="italic text-gray-600 mt-4 text-center">No categories!</p>
   <% end %>
