@@ -18,7 +18,7 @@
             <%= render partial: "notes/components/note_card", collection: @notes, as: :note, cached: true %>
         <% end %>
         
-        <%#= render_load_more(@pagy) %>
+        <%= render_load_more(@pagy) %>
         
     <% else %>
         <%= render "notes/components/empty_state" %>
