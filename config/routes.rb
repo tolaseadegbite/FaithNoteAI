@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :categories
+
   resources :bible_verses, only: [:index], path: 'bible' do
     collection do
       get 'search'

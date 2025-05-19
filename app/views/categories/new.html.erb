@@ -1,0 +1,20 @@
+<% content_for :title, "New category" %>
+
+<div class="bg-white text-gray-800 dark:bg-black dark:text-white">
+    <div class="">
+        <div class="flex items-center gap-3 mb-4 px-4 py-4">
+            <%= link_to categories_path, class: "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+            <% end %>
+            <h1 class="font-semibold text-xl">New category</h1>
+        </div>
+        
+        <div class="px-4 mb-6">
+            <div class="mt-4">
+                <%= render "form", category: @category %>
+            </div>
+        </div>
+    </div>
+</div>

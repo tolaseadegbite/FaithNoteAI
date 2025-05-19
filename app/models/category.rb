@@ -4,7 +4,7 @@
 #
 #  id          :bigint           not null, primary key
 #  name        :string
-#  notes_count :integer
+#  notes_count :integer          default(0)
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  user_id     :bigint           not null
@@ -21,4 +21,6 @@ class Category < ApplicationRecord
   validates :name, presence: true, length: { minimum: 2 }
   belongs_to :user, counter_cache: :categories_count
   has_many :notes, dependent: :destroy
+
+  scope :ordered, -> { order(id: :desc) }
 end

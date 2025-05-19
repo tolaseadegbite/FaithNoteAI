@@ -6,7 +6,7 @@
             </svg>
             <p class="text-sm">
                 <% if note.category.present? %>
-                    <%= note.category.name %>
+                    <%= link_to note.category.name, category, class: "text-green-600 hover:text-green-700" %>
                 <% else %>
                     Uncategorized
                 <% end %>

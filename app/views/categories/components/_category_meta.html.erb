@@ -1,0 +1,13 @@
+<div class="flex justify-between items-center">
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <% if category.updated_at > category.created_at + 1.minute %>
+            Updated <%= time_ago_in_words(category.updated_at) %> ago
+        <% else %>
+            Created <%= time_ago_in_words(category.created_at) %> ago
+        <% end %>
+    </div>
+
+    <div>
+        <%= render 'categories/components/edit_delete', category: category %>
+    </div>
+</div>

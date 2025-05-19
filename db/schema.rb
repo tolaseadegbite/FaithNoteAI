@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_145826) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "notes_count"
+    t.integer "notes_count", default: 0
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
@@ -151,7 +151,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_145826) do
     t.datetime "updated_at", null: false
     t.integer "bible_chat_conversations_count", default: 0, null: false
     t.integer "notes_count", default: 0, null: false
-    t.integer "categories_count"
+    t.integer "categories_count", default: 0
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

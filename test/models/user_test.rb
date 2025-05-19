@@ -4,7 +4,7 @@
 #
 #  id                             :bigint           not null, primary key
 #  bible_chat_conversations_count :integer          default(0), not null
-#  categories_count               :integer
+#  categories_count               :integer          default(0)
 #  email_address                  :string           not null
 #  notes_count                    :integer          default(0), not null
 #  password_digest                :string           not null

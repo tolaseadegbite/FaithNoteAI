@@ -9,6 +9,7 @@ class NotesController < ApplicationController
 
   def show
     @current_tab = params[:tab] || 'transcription'
+    @category = @note.category
   end
 
   def new
