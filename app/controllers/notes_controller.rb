@@ -92,7 +92,7 @@ class NotesController < ApplicationController
 
   def notes_param
     # Ensure :audio_file is permitted if you intend to save it directly to the model later
-    params.require(:note).permit(:title, :transcription, :language, :audio_url, :summary, :audio_file, :category_id, tag_ids: [])
+    params.require(:note).permit(:title, :transcription, :additional_notes, :language, :audio_url, :summary, :audio_file, :category_id, tag_ids: [])
   end
 
   def find_note

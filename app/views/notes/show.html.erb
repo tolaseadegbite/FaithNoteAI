@@ -47,6 +47,15 @@
           <span class="">Chat</span>
         <% end %>
       </li>
+      <li>
+        <%= link_to note_path(@note, tab: 'additional_notes'), 
+            class: "inline-flex items-center justify-center p-2 md:p-4 border-b-2 rounded-t-lg #{@current_tab == 'additional_notes' ? 'text-green-600 border-green-600 dark:text-green-500 dark:border-green-500' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'}" do %>
+          <svg class="w-4 h-4 mr-1 md:mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+          </svg>
+          <span class="">Add. notes</span>
+        <% end %>
+      </li>
     </ul>
   </div>
 
@@ -96,6 +105,23 @@
       <% end %>
     <% when 'chat' %>
       <%= render 'notes/components/note_chat', note: @note %>
+    <% when 'additional_notes' %>
+      <% if @note.summary.present? %>
+        <div class="p-4 text-justify">
+          <div class="prose dark:prose-invert max-w-none trix-content
+            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
+            prose-p:my-2 prose-ul:my-2 prose-li:my-1 
+            prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
+            prose-a:text-green-600 dark:prose-a:text-green-400
+            prose-strong:text-gray-800 dark:prose-strong:text-gray-200" data-controller="bible-verse-link">
+            <%= sanitize(process_bible_verses(@note.additional_notes)) %>
+          </div>
+        </div>
+      <% else %>
+        <div class="text-center py-10">
+          <p class="text-gray-500 dark:text-gray-400">No additional notes added.</p>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

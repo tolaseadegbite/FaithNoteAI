@@ -32,6 +32,7 @@ class Note < ApplicationRecord
   has_many :tags, through: :note_tags
 
   has_rich_text :transcription
+  has_rich_text :additional_notes
   has_rich_text :summary
 
   scope :ordered, -> { order(id: :desc) }
