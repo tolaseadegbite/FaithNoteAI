@@ -23,7 +23,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Note < ApplicationRecord
-  validates :title, :transcription, presence: true
+  validates :title, :transcription, presence: true, length: { minimum: 5 }
   belongs_to :user, counter_cache: :notes_count
   belongs_to :category, counter_cache: :notes_count, optional: true
   has_many :summaries, dependent: :destroy

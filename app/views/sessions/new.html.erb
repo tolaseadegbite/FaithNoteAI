@@ -14,7 +14,7 @@
 
   <%= form_with url: session_url, class: "contents", data: { turbo: false } do |form| %>
     <div class="mb-5">
-      <%= form.label :email_address, "Email address", class: "block text-sm font-semibold" %>
+      <%= form.label :email_address, "Email address", class: "block text-sm font-semibold dark:text-white" %>
       <%= form.email_field :email_address, 
           required: true, 
           autofocus: true, 
@@ -26,7 +26,7 @@
 
     <div class="mb-6">
       <div class="flex items-center justify-between mb-1">
-        <%= form.label :password, "Password", class: "block text-sm font-semibold" %>
+        <%= form.label :password, "Password", class: "block text-sm font-semibold dark:text-white" %>
         <%= link_to "Forgot password?", new_password_path, class: "mt-2 text-sm text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400" %>
       </div>
       <%= form.password_field :password, 
