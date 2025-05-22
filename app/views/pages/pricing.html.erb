@@ -1,1 +1,240 @@
-<h1>Pricing</h1>
+<% content_for :title, "Pricing Plans" %>
+
+<div class="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-gray-900 dark:text-white min-h-screen" data-controller="pricing-toggle">
+  <div class="text-center mb-16">
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 tracking-tight">
+      Find the Perfect Plan
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+      Simple, transparent pricing for everyone. No hidden fees, ever.
+      Choose monthly or save big with our annual plans.
+    </p>
+  </div>
+
+  <!-- Pricing Toggle -->
+  <div class="flex justify-center mb-12 sm:mb-16">
+    <div class="relative inline-flex items-center p-1 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs">
+      <button
+        class="relative px-6 py-2.5 text-sm font-semibold text-white bg-green-600 dark:bg-green-700 rounded-l-full shadow-sm cursor-pointer"
+        data-pricing-toggle-target="monthlyButton"
+        data-action="click->pricing-toggle#showMonthly">
+        Monthly
+      </button>
+      <button
+        class="relative px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-r-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+        data-pricing-toggle-target="yearlyButton"
+        data-action="click->pricing-toggle#showYearly">
+        Yearly
+      </button>
+      <span class="absolute -top-2 -right-4 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
+        SAVE ~20%
+      </span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+
+    <!-- Essentials Plan Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
+      <h2 class="text-2xl font-semibold mb-2">Essentials Plan</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Perfect for getting started and individuals.</p>
+      <div class="mb-8">
+        <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">$4.99</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+        <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-3xl font-bold">$<span class="annual-price">47.90</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            That's $<span class="effective-monthly">3.99</span>/month (Save 20%)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>5 hours transcription</span>
+        </li>
+        <li class="flex items-center">
+           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Overages: $0.18/hour</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat & Transcription Chat</span>
+        </li>
+      </ul>
+      <button class="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
+    </div>
+
+    <!-- Pro Plan Card (Most Popular) -->
+    <div class="bg-green-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 flex flex-col border-2 border-green-500 dark:border-green-600 relative transform md:scale-105 transition-all duration-300 ease-in-out hover:shadow-2xl">
+       <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">Most Popular</span>
+      <h2 class="text-2xl font-semibold mb-2 text-green-700 dark:text-green-400">Pro Plan</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">Ideal for power users and growing needs.</p>
+      <div class="mb-8">
+        <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">$14.99</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+         <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-3xl font-bold">$<span class="annual-price">143.90</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            That's $<span class="effective-monthly">11.99</span>/month (Save 20%)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>20 hours transcription</span>
+        </li>
+         <li class="flex items-center">
+           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Overages: $0.15/hour</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat & Transcription Chat</span>
+        </li>
+         <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Priority Support</span>
+        </li>
+      </ul>
+      <button class="mt-auto w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
+    </div>
+
+    <!-- Business Plan Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
+      <h2 class="text-2xl font-semibold mb-2">Business Plan</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">For organizations and scaling teams.</p>
+      <div class="mb-8">
+         <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">$29.99</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+         <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-3xl font-bold">$<span class="annual-price">287.90</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            That's $<span class="effective-monthly">23.99</span>/month (Save 20%)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>50 hours transcription</span>
+        </li>
+         <li class="flex items-center">
+           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Overages: $0.13/hour</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat & Transcription Chat</span>
+        </li>
+         <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Dedicated Support</span>
+        </li>
+         <li class="flex items-center">
+          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Higher concurrency</span>
+        </li>
+      </ul>
+      <button class="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="mt-20 max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>Can I change my plan later?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          Yes, you can upgrade or downgrade your plan at any time from your account dashboard. Prorated charges or credits will be applied automatically.
+        </p>
+      </details>
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>What payment methods do you accept?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          We accept all major credit cards, including Visa, Mastercard, American Express, and Discover. For enterprise plans, we can also support invoicing.
+        </p>
+      </details>
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>Is there a free trial?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          We don't currently offer a free trial, but our Essentials plan is a great way to get started with a low commitment. We also offer a 14-day money-back guarantee if you're not satisfied.
+        </p>
+      </details>
+       <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>What happens if I go over my transcription hours?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          If you exceed your plan's included transcription hours, overage charges will apply at the rate specified for your plan. You can monitor your usage in your account dashboard and upgrade your plan if needed.
+        </p>
+      </details>
+    </div>
+  </div>
+
+  <!-- Optional: Add a section for enterprise/custom plans or contact for specific needs -->
+  <div class="text-center mt-16 pt-10 border-t border-gray-200 dark:border-gray-700">
+      <h3 class="text-2xl font-semibold mb-3">Need a Custom Solution?</h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-lg mx-auto">
+        If your needs go beyond our standard plans, we're happy to discuss custom solutions or enterprise packages.
+      </p>
+      <a href="/contact" class="inline-block bg-gray-700 hover:bg-gray-800 text-white dark:bg-gray-600 dark:hover:bg-gray-500 font-medium rounded-lg px-8 py-3 transition-colors duration-200">
+        Contact Sales
+      </a>
+  </div>
+
+</div>
+
+<%
+# Add this to your tailwind.config.js for the fadeIn animation if you don't have it
+# theme: {
+#   extend: {
+#     keyframes: {
+#       fadeIn: {
+#         '0%': { opacity: 0, transform: 'translateY(-10px)' },
+#         '100%': { opacity: 1, transform: 'translateY(0)' },
+#       }
+#     },
+#     animation: {
+#       fadeIn: 'fadeIn 0.3s ease-out',
+#     }
+#   }
+# }
+%>

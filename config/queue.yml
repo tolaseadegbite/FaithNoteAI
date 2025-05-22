@@ -16,7 +16,7 @@ default: &default_settings # Use a different anchor name if needed
 
     # === Pool 2: Transcription Jobs (Rate Limited) ===
     - queues: transcription # ONLY process the 'transcription' queue
-      threads: 1            # !!! CRITICAL: Run only ONE transcription job at a time !!!
+      threads: 5            # Allows up to 5 concurrent transcriptions based on AssemblyAI free tier limit
       processes: 1          # Usually 1 process is fine here unless you have huge volume AND a paid API plan
       polling_interval: 1   # Check for new transcription jobs every second
 

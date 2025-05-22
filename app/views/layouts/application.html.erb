@@ -33,14 +33,15 @@
 
   <body class="bg-white dark:bg-black" data-controller="sidebar">
     <%= render 'layouts/navbar' %>
-    
+
     <% auth_pages = controller_name == 'sessions' || controller_name == 'passwords' %>
-    
-    <% unless auth_pages %>
+    <% show_sidebar = !(auth_pages || controller_name == 'pages') %>
+
+    <% if show_sidebar %>
       <%= render 'layouts/sidebar' %>
     <% end %>
-    
-    <div class="<%= auth_pages ? 'h-screen flex items-center justify-center' : 'sm:ml-64' %> bg-white dark:border-black dark:bg-black">
+
+    <div class="<%= auth_pages ? 'h-screen flex items-center justify-center' : (show_sidebar ? 'sm:ml-64' : '') %> bg-white dark:border-black dark:bg-black">
       <div class="<%= auth_pages ? 'w-full max-w-md px-4' : 'md:mt-14' %>">
         <%= yield %>
         <%= render partial: "layouts/flash" %>
