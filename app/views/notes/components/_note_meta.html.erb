@@ -66,9 +66,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
-    <% if note.updated_at > note.created_at + 1.minute %>
-        Updated <%= time_ago_in_words(note.updated_at) %> ago
-    <% else %>
-        Created <%= time_ago_in_words(note.created_at) %> ago
-    <% end %>
+    <span data-controller="time-ago" data-time-ago-target="time" data-timestamp="<%= [note.created_at, note.updated_at].max.to_i %>">
+        <!-- Time will be updated by JavaScript -->
+    </span>
 </div>

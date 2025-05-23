@@ -4,7 +4,7 @@ class NotesController < ApplicationController
   before_action :find_tags, only: [:new, :edit, :create, :update]
 
   def index
-    @pagy, @notes = pagy_keyset(current_user.notes.ordered, limit: 21)
+    @pagy, @notes = pagy_keyset(current_user.notes.includes(:category, :tags, :rich_text_summary, :rich_text_transcription).ordered, limit: 21)
     # @notes = current_user.notes.ordered
   end
 

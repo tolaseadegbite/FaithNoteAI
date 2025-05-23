@@ -10,7 +10,8 @@ namespace :bible_verses do
       "DARBY" => "darby_english_bible.csv",
       "WEBSTER" => "webster.csv",
       "WEB" => "world_english_bible.csv",
-      "YLT" => "young_literal_translation.csv"
+      "YLT" => "young_literal_translation.csv",
+      "KJV" => "kjv.csv"
     }
     
     puts "Starting import of additional Bible translations..."
@@ -28,7 +29,13 @@ namespace :bible_verses do
     
     puts "Import completed!"
   end
-  
+
+  desc "Clear entire Rails cache"
+  task clear_cache: :environment do
+    Rails.cache.clear
+    puts "Rails cache cleared."
+  end
+
   def import_translation(file_path, translation_code)
     count = 0
     errors = 0

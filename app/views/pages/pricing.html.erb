@@ -11,23 +11,64 @@
     </p>
   </div>
 
+  <% if !current_user %>
+    <!-- Free Trial Section -->
+    <div class="bg-green-50 dark:bg-gray-800/50 rounded-xl shadow-lg p-8 mb-20 text-center max-w-3xl mx-auto border border-green-200 dark:border-green-900">
+      <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Get started with your free trial today!</h2>
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
+        You'll receive:
+      </p>
+
+      <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto text-left">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span><strong>60 minutes</strong> of high-quality audio transcription.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Limited access to <strong>Transcription Summary</strong>.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Limited access to <strong>Chat with Transcription</strong>.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Limited access to <strong>Chat with Bible</strong>.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full access to the <strong>Bible with all 7 translations</strong> (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV).</span>
+        </li>
+      </ul>
+
+      <p class="text-md text-gray-600 dark:text-gray-400 mb-8 font-medium">
+        No credit card required to sign up.
+      </p>
+
+      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-green-800 dark:focus:ring-offset-2">
+        Start Your Free Trial
+      </a>
+    </div>
+  <% end %>
+
   <!-- Pricing Toggle -->
   <div class="flex justify-center mb-12 sm:mb-16">
-    <div class="relative inline-flex items-center p-1 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs">
+    <div class="relative inline-flex items-center p-1 rounded-full dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs">
       <button
-        class="relative px-6 py-2.5 text-sm font-semibold text-white bg-green-600 dark:bg-green-700 rounded-l-full shadow-sm cursor-pointer"
+        class="relative px-6 py-2 text-sm font-semibold text-white bg-green-600 dark:bg-green-700 rounded-full cursor-pointer"
         data-pricing-toggle-target="monthlyButton"
         data-action="click->pricing-toggle#showMonthly">
         Monthly
       </button>
       <button
-        class="relative px-6 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 rounded-r-full hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+        class="relative px-6 py-2 text-sm font-semibold text-gray-700 rounded-full cursor-pointer"
         data-pricing-toggle-target="yearlyButton"
         data-action="click->pricing-toggle#showYearly">
         Yearly
       </button>
       <span class="absolute -top-2 -right-4 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
-        SAVE ~20%
+        SAVE 40%
       </span>
     </div>
   </div>
@@ -41,30 +82,45 @@
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">$4.99</span>
+          <span class="text-4xl font-bold">$6.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
         <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-3xl font-bold">$<span class="annual-price">47.90</span></span>
-          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <span class="text-3xl font-bold">$<span class="annual-price">4.24</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as $50.90/year
+          </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            That's $<span class="effective-monthly">3.99</span>/month (Save 20%)
+            Save $33 with yearly pricing (40% off)
           </p>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>5 hours transcription</span>
+        <li class="flex items-start"> <!-- Changed to items-start for potentially multi-line items -->
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>8 hours transcription / month</span>
         </li>
-        <li class="flex items-center">
-           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Overages: $0.18/hour</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full Transcription Summary</span>
         </li>
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Unlimited Bible Chat & Transcription Chat</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Standard Support</span>
         </li>
       </ul>
       <button class="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
@@ -78,34 +134,49 @@
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">$14.99</span>
+          <span class="text-4xl font-bold">$19.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-3xl font-bold">$<span class="annual-price">143.90</span></span>
-          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <span class="text-3xl font-bold">$<span class="annual-price">11.99</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as $143.90/year
+          </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            That's $<span class="effective-monthly">11.99</span>/month (Save 20%)
+            Save $96 with yearly pricing (40% off)
           </p>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>20 hours transcription</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>30 hours transcription / month</span>
         </li>
-         <li class="flex items-center">
-           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Overages: $0.15/hour</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full Transcription Summary</span>
         </li>
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Unlimited Bible Chat & Transcription Chat</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
         </li>
-         <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
           <span>Priority Support</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Enhanced Processing Speed</span>
         </li>
       </ul>
       <button class="mt-auto w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
@@ -118,38 +189,53 @@
       <div class="mb-8">
          <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">$29.99</span>
+          <span class="text-4xl font-bold">$49.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-3xl font-bold">$<span class="annual-price">287.90</span></span>
-          <span class="text-gray-500 dark:text-gray-400">/year</span>
+          <span class="text-3xl font-bold">$<span class="annual-price">29.99</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as $359.90/year
+          </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            That's $<span class="effective-monthly">23.99</span>/month (Save 20%)
+            Save $240 with yearly pricing (40% off)
           </p>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>50 hours transcription</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>100 hours transcription / month</span>
         </li>
-         <li class="flex items-center">
-           <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Overages: $0.13/hour</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Advanced Transcription Summary</span>
         </li>
-        <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Unlimited Bible Chat & Transcription Chat</span>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
         </li>
-         <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
           <span>Dedicated Support</span>
         </li>
-         <li class="flex items-center">
-          <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
           <span>Higher concurrency</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Premium Processing Speed</span>
         </li>
       </ul>
       <button class="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer">Get Started</button>
@@ -192,18 +278,18 @@
           </span>
         </summary>
         <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
-          We don't currently offer a free trial, but our Essentials plan is a great way to get started with a low commitment. We also offer a 14-day money-back guarantee if you're not satisfied.
+          Yes! We offer a free trial with 60 minutes of transcription and limited access to Bible Chat & Transcription Chat. No credit card is required to get started.
         </p>
       </details>
        <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
-          <span>What happens if I go over my transcription hours?</span>
+          <span>What happens if I use all my transcription hours?</span>
           <span class="transition group-open:rotate-180">
             <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
           </span>
         </summary>
         <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
-          If you exceed your plan's included transcription hours, overage charges will apply at the rate specified for your plan. You can monitor your usage in your account dashboard and upgrade your plan if needed.
+          Each plan includes a set number of transcription hours per month. If you need more hours, you can upgrade to a higher plan at any time. Your usage resets at the beginning of each billing cycle.
         </p>
       </details>
     </div>
