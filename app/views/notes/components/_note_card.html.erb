@@ -4,10 +4,10 @@
       <h2 class="text-lg font-semibold mt-2 group-hover:text-green-600 dark:group-hover:text-green-500 line-clamp-1" title="<%= note.title %>">
         <%= note.title %>
       </h2>
+      <%= render 'notes/components/note_meta', note: note, category: @category %>
       <p class="text-sm mt-2 text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
         <%= sanitize(truncate(note.transcription.to_plain_text, length: 170)) %>
       </p>
     <% end %>
-    <%= render 'notes/components/note_meta', note: note, category: @category %>
   </div>
 </div>
