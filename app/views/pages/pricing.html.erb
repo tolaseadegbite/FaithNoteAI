@@ -11,8 +11,8 @@
     </p>
   </div>
 
+  <!-- Free Trial Section -->
   <% if !current_user %>
-    <!-- Free Trial Section -->
     <div class="bg-green-50 dark:bg-gray-800/50 rounded-xl shadow-lg p-8 mb-20 text-center max-w-3xl mx-auto border border-green-200 dark:border-green-900">
       <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Get started with your free trial today!</h2>
       <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
@@ -26,15 +26,11 @@
         </li>
         <li class="flex items-start">
           <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Limited access to <strong>Transcription Summary</strong>.</span>
+          <span>Up to <strong>5 Transcription Summaries</strong>.</span>
         </li>
         <li class="flex items-start">
           <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Limited access to <strong>Chat with Transcription</strong>.</span>
-        </li>
-        <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-          <span>Limited access to <strong>Chat with Bible</strong>.</span>
+          <span>Up to <strong>20 total Chat Queries</strong> (across Chat with Transcription and Chat with Bible).</span>
         </li>
         <li class="flex items-start">
           <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
@@ -46,7 +42,7 @@
         No credit card required to sign up.
       </p>
 
-      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-green-800 dark:focus:ring-offset-2">
+      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
         Start Your Free Trial
       </a>
     </div>
@@ -272,16 +268,24 @@
 
       <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
-          <span>Is there a free trial?</span>
+          <span>Is there a free trial? How does it work?</span>
           <span class="transition group-open:rotate-180">
             <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
           </span>
         </summary>
         <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
-          Yes! We offer a free trial with 60 minutes of transcription and limited access to Bible Chat & Transcription Chat. No credit card is required to get started.
+          Yes! We offer a free trial that includes:
+          <ul class="list-disc list-inside mt-2 space-y-1">
+            <li><strong>60 minutes</strong> of high-quality audio transcription.</li>
+            <li>Up to <strong>5 Transcription Summaries</strong>.</li>
+            <li>Up to <strong>20 total Chat Queries</strong> (usable across both Chat with Transcription and Chat with Bible).</li>
+            <li>Full access to the <strong>Bible with all 7 translations</strong> (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV).</li>
+          </ul>
+          The trial is usage-based, meaning it lasts until you've consumed your included transcription minutes or AI queries. There's no time limit. No credit card is required to get started.
         </p>
       </details>
-       <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
           <span>What happens if I use all my transcription hours?</span>
           <span class="transition group-open:rotate-180">
@@ -289,10 +293,11 @@
           </span>
         </summary>
         <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
-          Each plan includes a set number of transcription hours per month. If you need more hours, you can upgrade to a higher plan at any time. Your usage resets at the beginning of each billing cycle.
+          Each plan includes a set number of transcription hours per month. If you reach your limit, transcription will pause until your next billing cycle, or you can upgrade to a higher plan at any time to get more hours immediately. We do not have overage charges, ensuring your bill is always predictable. Your usage resets at the beginning of each billing cycle.
         </p>
       </details>
-    </div>
+
+      </div>
   </div>
 
   <!-- Optional: Add a section for enterprise/custom plans or contact for specific needs -->
