@@ -23,15 +23,15 @@ Rails.application.routes.draw do
   get "/donations", to: "pages#donations"
 
   resources :notes do
-    resources :note_chats, only: [:create]
-    
+    resources :note_chats, only: [ :create ]
+
     collection do
       post :process_audio
       post :generate_summary
       post :quick_record
       get :check_transcription_status
     end
-    
+
     member do
       post :generate_summary
     end
@@ -40,22 +40,32 @@ Rails.application.routes.draw do
   resources :categories
   resources :tags
 
-  resources :bible_verses, only: [:index], path: 'bible' do
+  resources :bible_verses, only: [ :index ], path: "bible" do
     collection do
-      get 'search'
+      get "search"
     end
   end
 
-  resources :bible_chat_conversations, path: 'bible/chat/conversations' do
-    resources :bible_chat_messages, only: [:create], controller: 'bible_chats'
+  resources :bible_chat_conversations, path: "bible/chat/conversations" do
+    resources :bible_chat_messages, only: [ :create ], controller: "bible_chats"
   end
-  
-  resources :bible_chats, path: 'bible/chat', only: [:index, :create] do
+
+  resources :bible_chats, path: "bible/chat", only: [ :index, :create ] do
     collection do
       patch :update_translation
     end
   end
-  
-  get 'bible/:book/:chapter/:verse', to: 'bible_verses#show', as: 'bible_verse'
-  get 'bible/:book/:chapter', to: 'bible_verses#chapter', as: 'bible_chapter'
+
+  get "bible/:book/:chapter/:verse", to: "bible_verses#show", as: "bible_verse"
+  get "bible/:book/:chapter", to: "bible_verses#chapter", as: "bible_chapter"
+
+  # Paystack subscription routes
+  resources :subscriptions, only: [:create] do
+    collection do
+      get :callback
+    end
+  end
+
+  # Paystack Webhooks
+  post '/paystack_events_webhook_endpoint', to: 'paystack_webhooks#create'
 end

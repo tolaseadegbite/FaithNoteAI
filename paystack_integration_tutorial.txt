@@ -1,0 +1,184 @@
+How to add payments to your Rails app with Paystack
+#
+paystack
+#
+rails
+#
+subscriptions
+This covers creating subscriptions.
+
+When a user clicks on 'Billing', we check if the customer exists and if not create one. Next is to initialize a transaction. From the response, we get a Paystack link to the page where users can add payment option details. The callback handles the verification of the transaction. On successful verification, a subscription is created.
+
+Docs
+https://paystack.com/docs/api
+
+Setup
+PAYSTACK_SECRET_KEY can be found on your Paystack profile page on the API Keys & Webhooks tab.
+
+Create a plan to get your PLAN_ID.
+
+I’ve used the httparty gem to make API calls. Add it with:
+
+$ bundle add httparty
+Routes
+
+get '/subscribe', to: 'subscriptions#handle_payments'
+get '/paystack_callback', to: 'subscriptions#paystack_callback'
+The view
+
+<%= link_to "Billing", subscribe_path %>
+Making API calls
+
+The Paystack service
+
+class PaystackService
+  include HTTParty
+  base_uri 'https://api.paystack.co'
+
+  def initialize(secret_key)
+    @headers = {
+      'Authorization' => "Bearer #{secret_key}",
+      'Content-Type' => 'application/json',
+      'Accept' => 'application/json'
+    }
+  end
+
+  def create_customer(user)
+    body = {
+      first_name: user.fname,
+      last_name: user.lname,
+      phone: user.phone_number,
+      email: user.email
+    }.to_json
+
+    self.class.post('/customer', headers: @headers, body:)
+  end
+
+  def initialize_transaction(user)
+    body = {
+      email: user.email,
+      amount: 605.49 * 100
+    }.to_json
+
+    self.class.post('/transaction/initialize', headers: @headers, body:)
+  end
+
+  def verify_transaction(transaction_reference)
+    self.class.get("/transaction/verify/#{transaction_reference}", headers: @headers)
+  end
+
+  def create_subscription(user, plan_id)
+    customer_code = fetch_customer_details(user)['data']['customer_code']
+    body = {
+      customer: customer_code,
+      plan: plan_id
+    }.to_json
+
+    self.class.post('/subscription', headers: @headers, body:)
+  end
+
+  def fetch_customer_details(user)
+    self.class.get("/customer/#{user.email}", headers: @headers)
+  end
+
+  def get_subscription_code(user)
+    fetch_customer_details(user)['data']['subscriptions'][0]['subscription_code']
+  end
+
+  def get_manage_subscription_link(user)
+    subscription_code = get_subscription_code(user)
+    response = self.class.get("/subscription/#{subscription_code}/manage/link", headers: @headers)
+    response['data']['link']
+  end
+end
+
+
+Making use of the PaystackService
+
+The subscriptions controller
+
+class SubscriptionsController < ApplicationController
+  before_action :initialize_paystack_service
+  rescue_from SocketError, with: :handle_offline
+
+  def handle_payments
+    if customer_exists
+      initialize_transaction
+    else
+      create_customer
+    end
+  end
+
+  def customer_exists
+    response = @paystack_service.fetch_customer_details(current_user)
+    response['status']
+  end
+
+  def create_customer
+    response = @paystack_service.create_customer(current_user)
+
+    return unless response['status']
+
+    initialize_transaction
+  end
+
+  def initialize_transaction
+    response = @paystack_service.initialize_transaction(current_user)
+
+    if response['status']
+      payment_link = response['data']['authorization_url']
+      redirect_to payment_link, allow_other_host: true
+    else
+      redirect_to user_path(current_user), alert: t('subscriptions.failed_to_initialize')
+    end
+  end
+
+  def paystack_callback
+    response = @paystack_service.verify_transaction(params[:reference])
+
+    if response['status']
+      create_subscription
+    else
+      redirect_to user_path(current_user), alert: t('subscriptions.failed_verification')
+    end
+  end
+
+  def create_subscription
+    response = @paystack_service.create_subscription(current_user, ENV.fetch('PLAN_ID', nil))
+
+    if response['status']
+      redirect_to user_path(current_user)
+    else
+      redirect_to user_path(current_user), alert: t('subscriptions.failed')
+    end
+  end
+
+  def manage_subscription
+    response = @paystack_service.get_manage_subscription_link(current_user)
+    session[:manage_subscription_link] = response
+    redirect_to user_path(current_user)
+  end
+
+  private
+
+  def initialize_paystack_service
+    @paystack_service = PaystackService.new(ENV.fetch('PAYSTACK_SECRET_KEY', nil))
+  end
+
+  def handle_offline
+    redirect_to user_path(current_user), alert: t('subscriptions.offline')
+  end
+end
+
+To test from localhost you can use localtunnel.
+
+$ npm install -g localtunnel
+$ lt --port 3000
+Set your callback URL as https://the-link-provided/paystack_callback
+
+Whitelist the URL by adding it in development.rb
+
+config.hosts << "the-link-provided.loca.lt"
+PaystackService gist
+
+SubscriptionsController gist

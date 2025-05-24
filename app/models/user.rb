@@ -6,14 +6,17 @@
 #  bible_chat_conversations_count :integer          default(0), not null
 #  categories_count               :integer          default(0)
 #  email_address                  :string           not null
+#  name                           :string
 #  notes_count                    :integer          default(0), not null
 #  password_digest                :string           not null
+#  paystack_customer_code         :string
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #
 # Indexes
 #
-#  index_users_on_email_address  (email_address) UNIQUE
+#  index_users_on_email_address           (email_address) UNIQUE
+#  index_users_on_paystack_customer_code  (paystack_customer_code)
 #
 class User < ApplicationRecord
   has_secure_password
@@ -35,4 +38,5 @@ class User < ApplicationRecord
 
   has_many :categories, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 end

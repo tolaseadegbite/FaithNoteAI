@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_19_194529) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_24_142931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -144,6 +144,36 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_19_194529) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "paystack_plan_code"
+    t.string "paystack_subscription_code"
+    t.string "status"
+    t.datetime "expires_at"
+    t.string "paystack_customer_code"
+    t.string "plan_name"
+    t.string "interval"
+    t.integer "amount"
+    t.string "currency"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "paystack_transaction_reference"
+    t.string "authorization_code"
+    t.string "card_type"
+    t.string "last_four_digits"
+    t.string "exp_month"
+    t.string "exp_year"
+    t.string "bank"
+    t.datetime "paid_at"
+    t.index ["authorization_code"], name: "index_subscriptions_on_authorization_code"
+    t.index ["paystack_customer_code"], name: "index_subscriptions_on_paystack_customer_code"
+    t.index ["paystack_subscription_code"], name: "index_subscriptions_on_paystack_subscription_code", unique: true
+    t.index ["paystack_transaction_reference"], name: "index_subscriptions_on_paystack_transaction_reference"
+    t.index ["status"], name: "index_subscriptions_on_status"
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'pending'::character varying, 'non_renewing'::character varying, 'expired'::character varying, 'incomplete'::character varying]::text[])", name: "status_check"
+  end
+
   create_table "summaries", force: :cascade do |t|
     t.bigint "note_id", null: false
     t.string "format", default: "bullet_point", null: false
@@ -170,7 +200,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_19_194529) do
     t.integer "bible_chat_conversations_count", default: 0, null: false
     t.integer "notes_count", default: 0, null: false
     t.integer "categories_count", default: 0
+    t.string "name"
+    t.string "paystack_customer_code"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["paystack_customer_code"], name: "index_users_on_paystack_customer_code"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -186,6 +219,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_19_194529) do
   add_foreign_key "notes", "categories"
   add_foreign_key "notes", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "subscriptions", "users"
   add_foreign_key "summaries", "notes"
   add_foreign_key "tags", "users"
 end

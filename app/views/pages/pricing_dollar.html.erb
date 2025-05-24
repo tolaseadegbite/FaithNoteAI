@@ -78,18 +78,18 @@
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦10,485</span>
+          <span class="text-4xl font-bold">$6.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
         <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">6,360</span></span>
+          <span class="text-4xl font-bold">$<span class="annual-price">4.24</span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦76,350/year
+            Billed as $50.90/year
           </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦49,500 with yearly pricing (40% off)
+            Save $33 with yearly pricing (40% off)
           </p>
         </div>
       </div>
@@ -119,14 +119,14 @@
           <span>Standard Support</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full" do |form| %>
         <%= form.hidden_field :plan_name, value: "Essentials Plan" %>
         <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "monthly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
         <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "yearly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
       <% end %>
@@ -140,18 +140,18 @@
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦29,985</span>
+          <span class="text-4xl font-bold">$19.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">17,985</span></span>
+          <span class="text-4xl font-bold">$<span class="annual-price">11.99</span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦215,850/year
+            Billed as $143.90/year
           </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦144,000 with yearly pricing (40% off)
+            Save $96 with yearly pricing (40% off)
           </p>
         </div>
       </div>
@@ -185,14 +185,14 @@
           <span>Enhanced Processing Speed</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full" do |form| %>
         <%= form.hidden_field :plan_name, value: "Pro Plan" %>
         <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "monthly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
         <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "yearly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
       <% end %>
@@ -205,18 +205,18 @@
       <div class="mb-8">
          <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦74,985</span>
+          <span class="text-4xl font-bold">$49.99</span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">44,985</span></span>
+          <span class="text-4xl font-bold">$<span class="annual-price">29.99</span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦539,850/year
+            Billed as $359.90/year
           </p>
           <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦360,000 with yearly pricing (40% off)
+            Save $240 with yearly pricing (40% off)
           </p>
         </div>
       </div>
@@ -254,14 +254,14 @@
           <span>Premium Processing Speed</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full" do |form| %>
         <%= form.hidden_field :plan_name, value: "Business Plan" %>
         <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "monthly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
         <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.hidden_field :interval, value: "yearly" %>
           <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
         </div>
       <% end %>

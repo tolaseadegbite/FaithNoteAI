@@ -1,0 +1,297 @@
+Paystack
+Build Status Gem Version
+
+A ruby gem for easy integration of Paystack.
+
+Installation
+Add this line to your application's Gemfile:
+
+gem 'paystack'
+And then execute:
+
+$ bundle
+Or install it yourself as:
+
+$ gem install paystack
+Basic Usage
+Instantiate Paystack Object
+    paystackObj = Paystack.new(public_key, secret_key)
+A secure way is to set your public and private keys as environmental variables PAYSTACK_PUBLIC_KEY and PAYSTACK_PRIVATE_KEY respectively. Then you instantiate without parameters
+
+	paystackObj =  Paystack.new
+It throws a PaystackBadKeyError when either of the keys are invalid or cannot be found as environment variables.
+
+Initialize transaction and get Authorization URL
+	transactions = PaystackTransactions.new(paystackObj)
+	result = transactions.initializeTransaction(
+		:reference => "blablablabla-YOUR-UNIQUE-REFERENCE-HERE",
+		:amount => 300000,
+		:email => "xxxxxx@gmail.com",
+		)
+	auth_url = result['data']['authorization_url']
+NOTE: Amount is in kobo i.e. 100000 = 100000 kobo = 1000 naira
+
+Charge using Authorization code for returning customers
+	result = transactions.chargeAuthorization(
+		"WwdkojpoAJo", 				# Authorization code
+		"xxxxxx@gmail.com", 		# Customer email
+		2000000, 					# Amount
+		:reference => "blablablabla-YOUR-UNIQUE-REFERENCE-HERE"
+		)
+Transactions
+List transactions
+	page_number = 1
+	transactions = PaystackTransactions.new(paystackObj)
+	result = transactions.list(page_number) 	#Optional `page_number` parameter
+Get a transaction
+	transaction_id = "123456778"
+	transactions = PaystackTransactions.new(paystackObj)
+	result = transactions.get(transaction_id)
+Verify a transaction
+	transaction_reference = "blablablabla-YOUR-VALID-UNIQUE-REFERENCE-HERE"
+	transactions = PaystackTransactions.new(paystackObj)
+	result = transactions.verify(transaction_reference)
+Get transaction totals
+	transactions = PaystackTransactions.new(paystackObj)
+	result = transactions.totals()
+Customers
+List Customers
+	page_number = 1
+	customers = PaystackCustomers.new(paystackObj)
+	result = customers.list(page_number) 	#Optional `page_number` parameter,  50 items per page
+	customers_list = result['data']
+Get a customer
+	customer_id = "123456778"
+	customers = PaystackCustomers.new(paystackObj)
+	result = customers.get(customer_id)
+	customer =  result['data']
+Create new customer
+	customers = PaystackCustomers.new(paystackObj)
+	result = customers.create(
+		:first_name => "Victor",
+		:last_name => "Ikoro",
+		:phone => "+234707666669"
+		:email => "xxxxx@gmail.com"
+	)
+Update customer details
+	customer_id = "123456778"
+	customers = PaystackCustomers.new(paystackObj)
+	# Updating last name and email of customer
+	result = customers.update(
+		customer_id,
+		:last_name => "Ikorodu",
+		:email => "xxxxx-modified@gmail.com"
+	)
+Plans
+List Plans
+	page_number = 1
+	plans = PaystackPlans.new(paystackObj)
+	result = plans.list(page_number) 	#Optional `page_number` parameter,  50 items per page
+	plans_list = result['data']
+Get plan detail
+	plan_id = "123456778"
+	plans = PaystackPlans.new(paystackObj)
+	result = plans.get(plan_id)
+	plan =  result['data']
+Create new plan
+	plans = PaystackPlans.new(paystackObj)
+	result = plans.create(
+
+				:name => "Test Plan",
+				:description => "Dev Test Plan",
+				:amount => 30000, #in KOBO
+				:interval => "monthly", #monthly, yearly, quarterly, weekly etc
+				:currency => "NGN"
+			)
+Update plan details
+	plan_id = "123456778"
+	plans = PaystackPlans.new(paystackObj)
+	result = plans.update(
+			plan_id,
+			:name => "Test Plan Updated",
+			:amount => 500000, #in KOBO
+			:interval => "weekly"
+			)
+Subscriptions
+Create new subscription
+	subscriptions = PaystackSubscriptions.new(paystackObj)
+	result = subscriptions.create(
+
+				:customer => "customer@email.com",
+				:plan => "123557", #plan id
+				:amount => 30000 #in KOBO
+			)
+Get subscription detail
+	subscription_id = "123456778"
+	subscriptions = PaystackSubscriptions.new(paystackObj)
+	result = subscriptions.get(subscription_id)
+	subscription =  result['data']
+Enable subscription
+	subscriptions = PaystackSubscriptions.new(paystackObj)
+	result = subscriptions.enable(
+				:code => "12328833",
+				:token => "EWFWKFJWE" #user email token
+			)
+Disable subscription
+	subscriptions = PaystackSubscriptions.new(paystackObj)
+	result = subscriptions.disable(
+				:code => "12328833",
+				:token => "EWFWKFJWE" #user email token
+			)
+Split Payments
+This Gem is also aware of the API calls that allow you to perform split payments on Paystack. The Paystack documentation on split payments can get you started. Below are some sample calls for subaccounts and banks.
+
+Banks
+List Banks
+	page_number = 1
+	banks = PaystackBanks.new(paystackObj)
+	result = banks.list(page_number) 	#Optional `page_number` parameter,  50 items per page
+	banks_list = result['data']
+Subaccounts
+List Subaccounts
+	page_number = 1
+	subaccounts = PaystackSubaccounts.new(paystackObj)
+	result = subaccounts.list(page_number) 	#Optional `page_number` parameter,  50 items per page
+	subaccounts_list = result['data']
+Get a subaccount
+	subaccount_id = "123456778"
+	subaccounts = PaystackSubaccounts.new(paystackObj)
+	result = subaccounts.get(subaccount_id)
+	subaccount =  result['data']
+Create new subaccount
+	subaccounts = PaystackSubaccounts.new(paystackObj)
+	result = subaccounts.create(
+		:business_name => "Madam Ikoro Holdings",
+		:settlement_bank => "Providus Bank",
+		:account_number => "1170766666",
+		:percentage_charge => 3.2
+	)
+Update subaccount details
+	subaccount_id = "123456778"
+	subaccounts = PaystackSubaccounts.new(paystackObj)
+	# Updating primary contact name and email of subaccount
+	result = subaccounts.update(
+		subaccount_id,
+		:primary_contact_name => "Victoria Ikorodu",
+		:primary_contact_email => "xxxxx-modified@gmail.com"
+	)
+Settlements
+Fetch settlements made to your bank accounts and the bank accounts for your subaccounts
+
+List settlements
+	settlements = PaystackSettlements.new(paystackObj)
+	results = settlements.list
+	settlements_list = result['data']
+Transfers
+The funds transfers feature enables you send money directly from your paystack balance to any Nigerian Bank account. The Paystack documentation on transfers can get you started.
+
+Balance
+Check Paystack Balance
+	balance = PaystackBalance.new(paystackObj)
+	result = balance.get
+	account_balance = result['data']
+Transfers
+Initialize a transfer
+	transfer = PaystackTransfers.new(paystackObj)
+	results = transfers.initializeTransfer(
+		:source => "balance", # Must be balance
+		:reason => "Your reason",
+		:amount => 30000, # Amount in kobo
+		:recipient =>  recipient_code, # Unique recipient code
+		)
+Bulk transfer
+	transfer = PaystackTransfers.new(paystackObj)
+	results = transfers.initializeBulkTransfer(
+		:source => "balance", # Must be balance
+		:transfer => [
+			{
+				:reason => "Your reason",
+				:amount => 30000, # Amount in kobo
+				:recipient =>  recipient_code, # Unique recipient code
+			},
+			{
+				:reason => "Your reason",
+				:amount => 30000, # Amount in kobo
+				:recipient =>  recipient_code, # Unique recipient code
+			},
+		]
+	)
+List transfers
+	page_number = 1
+	transfers = PaystackTransfers.new(paystackObj)
+	result = transfers.list(page_number) 	#Optional `page_number` parameter
+Get a transfer
+	transfer_code = "TRF_uniquecode"
+	transfer = PaystackTransfers.new(paystackObj)
+	result = transfer.get(transfer_code)
+Finalize a transfer
+	transfer = PaystackTransfers.new(paystackObj)
+	results = transfer.authorize(
+		:transfer_code => "TRF_blablabla", # Must be balance
+		:otp => "12350",
+		)
+Transfer Recipients
+Create new recipient
+	recipient = PaystackRecipients.new(paystackObj)
+	result = recipient.create(
+		:type => "nuban", #Must be nuban
+		:name => "Test Plan",
+		:description => "Bla-bla-bla",
+		:account_number => 0123456789, #10 digit account number
+		:bank_code => "044", #monthly, yearly, quarterly, weekly etc
+		:currency => "NGN",
+
+	)
+List transfer recipients
+	page_number = 1
+	recipients = PaystackRecipients.new(paystackObj)
+	result = recipients.list(page_number) #Optional `page_number` parameter,  50 items per page
+	recipients_list =  result['data']
+Transfer Control
+Resend OTP
+	transfer_code = "TRF_asdfghjkl"	#A unique Transfer code is generated when transfer is created
+	transfer = PaystackTransfers.new(paystackObj)
+	result = transfer.resendOtp(transfer_code)
+Disable OTP for transfers
+	transfer = PaystackTransfers.new(paystackObj)
+	result = transfer.disableOtp
+	#OTP is sent to the registered phone number of the account
+Confirm disabling of OTP for transfers
+	otp = "12345"
+	transfer = PaystackTransfers.new(paystackObj)
+	# Updating primary contact name and email of subaccount
+	result = transfer.confirmDisableOtp(
+		:otp => otp, #Must be valid OTP sent to the registered phone number
+	)
+Enable OTP for transfers
+	transfer = PaystackTransfers.new(paystackObj)
+	result = transfer.enableOtp
+Refunds
+Create a refund
+ refund = PaystackRefunds.new(paystackObj)
+
+ #full refund
+ transaction = {transaction: transaction_reference}
+ refund.createRefund(transaction) #must be a valid transaction reference or transaction id
+
+ #partial refund
+ transaction = {transaction: transaction_reference, amount: 5000} # minimum amount 50 NGN or 5000 kobos
+ refund.createRefund(transaction)
+List refunds
+	page_number = 1
+ 	refund = PaystackRefunds.new(paystackObj)
+	refund.list(page_number) # page_number is optional
+Fetch refund
+ 	refund = PaystackRefunds.new(paystackObj)
+	refund.get(refund_id) # returned at the time of creating a refund
+Static methods
+PaystackTransactions, PaystackCustomers, PaystackPlans, PaystackSubaccounts, PaystackRefunds, PaystackBanks , PaystackSubscriptions , PaystackSettlements, PaystackBalance, and PaystackTransfers methods can be called statically, You just need to pass the paystack object as the first parameter e.g. verify method in PaystackTransactions can be called like this
+
+	transaction_reference = "blablablabla-YOUR-VALID-UNIQUE-REFERENCE-HERE"
+	result = PaystackTransactions.verify(paystackObj, transaction_reference)
+	puts result['message']
+Contributing
+Bug reports and pull requests are welcome on GitHub at https://github.com/IkoroVictor/paystack-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the Contributor Covenant code of conduct.
+
+License
+The gem is available as open source under the terms of the MIT License.
