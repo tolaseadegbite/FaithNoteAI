@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   root "notes#index"
 
   get "/pricing", to: "pages#pricing"
+  get "/dashboard", to: "pages#dashboard"
   get "/home", to: "pages#home"
   get "/privacy", to: "pages#privacy"
   get "/documentation", to: "pages#documentation"

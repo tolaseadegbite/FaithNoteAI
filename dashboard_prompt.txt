@@ -1,0 +1,468 @@
+Build me a dashboard. Do not worry about the backend implementation, just put placeholder components e.g buttons, etc. Start from the body. Forget about headers, footers, etc.
+
+Objective:
+Develop a user-friendly and informative dashboard for registered FaithNoteAI users. The dashboard should provide a quick activity overview, easy access to key features, and personalized insights.
+Target User:
+Registered FaithNoteAI users.
+Core Dashboard Sections & Features:
+Welcome & Quick Stats:
+Display a personalized greeting (e.g., "Welcome back, [User Name]!").
+Show key statistics:
+Total Notes Created (from User.notes_count).
+Total Categories Used (from User.categories_count).
+Bible Chat Conversations (from User.bible_chat_conversations_count).
+Subscription Status (if applicable, based on User.subscriptions).
+Recent Activity Feed:
+Display the 5 most recently created/updated notes, showing:
+Note title (or snippet).
+Creation/update date.
+Associated category/tags.
+Action: Clicking a note navigates to its view/edit page (ref: note_click_controller.js functionality).
+Display the last 3 active Bible chat conversations, with links to each.
+Quick Actions / Create New:
+Provide prominent buttons/links for:
+"Create New Note" (to new_note_path).
+"Start New Bible Chat" (to new_bible_chat_conversation_path or bible_chats_path).
+"Manage Categories" (to categories_path).
+"Manage Tags" (to tags_path).
+Notes Overview:
+Section for browsing notes (e.g., list or card view), potentially with category and tag filters.
+Include a link to the main notes index page (notes_path).
+Bible Study Tools:
+Quick link to "Search Bible" (search_bible_verses_path).
+Link to "Bible Chat Conversations" (bible_chat_conversations_path).
+Transcription & Summaries (Conditional: If audio notes are a core feature):
+Display status of ongoing transcriptions (if any, ref: check_transcription_status logic from routes.rb).
+List recently summarized notes (notes with a Summary object), linking to them.
+Account & Settings:
+Link to "Settings" (ref: _navbar.html.erb).
+Link to manage "Subscription" (if applicable, to subscriptions_path).
+Design & UI Considerations:
+Responsive Design: Ensure full responsiveness for desktop and mobile devices (as per README.md).
+Dark Mode Support: Adhere to the existing dark mode theme (styles: application.css; logic: application.html.erb).
+Clear Navigation: Implement intuitive navigation with clear calls to action.
+Modals: Utilize modals for quick views or actions to avoid full page reloads where appropriate (e.g., quick summary, inspired by modal_controller.js).
+Layout: Consider a card-based or multi-column layout for effective information organization.
+Styling Consistency:
+Maintain consistency with the existing application's Tailwind CSS styling.
+Adhere to the app's established color schemes, including accent colors (e.g., green accents from _navbar.html.erb and note_type_selector_controller.js).
+Technical Implementation Notes:
+Controller/Route:
+Implement as a new controller action (e.g., DashboardsController#show).
+Define a route in routes.rb (e.g., get "dashboard", to: "dashboards#show").
+Data Fetching: Fetch necessary data in the controller (e.g., @recent_notes = current_user.notes.order(updated_at: :desc).limit(5)).
+Templating: Use ERB templates, leveraging partials for reusable components.
+Client-Side Interactivity: Utilize Stimulus controllers for any dynamic client-side interactions if needed.
+
+Use the color scheme in the files below
+
+file 1
+
+<% content_for :title, "Pricing Plans" %>
+
+<div class="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-gray-900 dark:text-white min-h-screen" data-controller="pricing-toggle">
+  <div class="text-center mb-16">
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 tracking-tight">
+      Find the Perfect Plan
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+      Simple, transparent pricing for everyone. No hidden fees, ever.
+      Choose monthly or save big with our annual plans.
+    </p>
+  </div>
+
+  <!-- Free Trial Section -->
+  <% if !current_user %>
+    <div class="bg-green-50 dark:bg-gray-800/50 rounded-xl shadow-lg p-8 mb-20 text-center max-w-3xl mx-auto border border-green-200 dark:border-green-900">
+      <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Get started with your free trial today!</h2>
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
+        You'll receive:
+      </p>
+
+      <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto text-left">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span><strong>60 minutes</strong> of high-quality audio transcription.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Up to <strong>5 Transcription Summaries</strong>.</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Up to <strong>20 total Chat Queries</strong> (across Chat with Transcription and Chat with Bible).</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full access to the <strong>Bible with all 7 translations</strong> (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV).</span>
+        </li>
+      </ul>
+
+      <p class="text-md text-gray-600 dark:text-gray-400 mb-8 font-medium">
+        No credit card required to sign up.
+      </p>
+
+      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+        Start Your Free Trial
+      </a>
+    </div>
+  <% end %>
+
+  <!-- Pricing Toggle -->
+  <div class="flex justify-center mb-12 sm:mb-16">
+    <div class="relative inline-flex items-center p-1 rounded-full dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs">
+      <button
+        class="relative px-6 py-2 text-sm font-semibold text-white bg-green-600 dark:bg-green-700 rounded-full cursor-pointer"
+        data-pricing-toggle-target="monthlyButton"
+        data-action="click->pricing-toggle#showMonthly">
+        Monthly
+      </button>
+      <button
+        class="relative px-6 py-2 text-sm font-semibold text-gray-700 rounded-full cursor-pointer"
+        data-pricing-toggle-target="yearlyButton"
+        data-action="click->pricing-toggle#showYearly">
+        Yearly
+      </button>
+      <span class="absolute -top-2 -right-4 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
+        SAVE 40%
+      </span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+
+    <!-- Essentials Plan Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
+      <h2 class="text-2xl font-semibold mb-2">Essentials Plan</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Perfect for getting started and individuals.</p>
+      <div class="mb-8">
+        <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">₦10,485</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+        <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-4xl font-bold">₦<span class="annual-price">6,360</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as ₦76,350/year
+          </p>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            Save ₦49,500 with yearly pricing (40% off)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-start"> <!-- Changed to items-start for potentially multi-line items -->
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>8 hours transcription / month</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full Transcription Summary</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Standard Support</span>
+        </li>
+      </ul>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+        <%= form.hidden_field :plan_name, value: "Essentials Plan" %>
+        <div data-pricing-toggle-target="monthlyButtonForm">
+          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
+          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Pro Plan Card (Most Popular) -->
+    <div class="bg-green-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 flex flex-col border-2 border-green-500 dark:border-green-600 relative transform md:scale-105 transition-all duration-300 ease-in-out hover:shadow-2xl">
+       <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">Most Popular</span>
+      <h2 class="text-2xl font-semibold mb-2 text-green-700 dark:text-green-400">Pro Plan</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">Ideal for power users and growing needs.</p>
+      <div class="mb-8">
+        <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">₦29,985</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+         <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-4xl font-bold">₦<span class="annual-price">17,985</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as ₦215,850/year
+          </p>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            Save ₦144,000 with yearly pricing (40% off)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>30 hours transcription / month</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Full Transcription Summary</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Priority Support</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Enhanced Processing Speed</span>
+        </li>
+      </ul>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+        <%= form.hidden_field :plan_name, value: "Pro Plan" %>
+        <div data-pricing-toggle-target="monthlyButtonForm">
+          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
+          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Business Plan Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
+      <h2 class="text-2xl font-semibold mb-2">Business Plan</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">For organizations and scaling teams.</p>
+      <div class="mb-8">
+         <!-- Monthly Price Display -->
+        <div data-pricing-toggle-target="monthlyPrice">
+          <span class="text-4xl font-bold">₦74,985</span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+        </div>
+         <!-- Annual Price Display -->
+        <div class="hidden" data-pricing-toggle-target="yearlyPrice">
+          <span class="text-4xl font-bold">₦<span class="annual-price">44,985</span></span>
+          <span class="text-gray-500 dark:text-gray-400">/month</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+            Billed as ₦539,850/year
+          </p>
+          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+            Save ₦360,000 with yearly pricing (40% off)
+          </p>
+        </div>
+      </div>
+      <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>100 hours transcription / month</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Advanced Transcription Summary</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Transcription Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Bible with 7 translations (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV)</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Unlimited Bible Chat</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Dedicated Support</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Higher concurrency</span>
+        </li>
+        <li class="flex items-start">
+          <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Premium Processing Speed</span>
+        </li>
+      </ul>
+      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
+        <%= form.hidden_field :plan_name, value: "Business Plan" %>
+        <div data-pricing-toggle-target="monthlyButtonForm">
+          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
+          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
+          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="mt-20 max-w-3xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>Can I change my plan later?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          Yes, you can upgrade or downgrade your plan at any time from your account dashboard. Prorated charges or credits will be applied automatically.
+        </p>
+      </details>
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>What payment methods do you accept?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          We accept all major credit cards, including Visa, Mastercard, American Express, and Discover. For enterprise plans, we can also support invoicing.
+        </p>
+      </details>
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>Is there a free trial? How does it work?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          Yes! We offer a free trial that includes:
+          <ul class="list-disc list-inside mt-2 space-y-1">
+            <li><strong>60 minutes</strong> of high-quality audio transcription.</li>
+            <li>Up to <strong>5 Transcription Summaries</strong>.</li>
+            <li>Up to <strong>20 total Chat Queries</strong> (usable across both Chat with Transcription and Chat with Bible).</li>
+            <li>Full access to the <strong>Bible with all 7 translations</strong> (KJV, YLT, WBT, BBE, WEBSTER, DARBY, ASV).</li>
+          </ul>
+          The trial is usage-based, meaning it lasts until you've consumed your included transcription minutes or AI queries. There's no time limit. No credit card is required to get started.
+        </p>
+      </details>
+
+      <details class="group bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none">
+          <span>What happens if I use all my transcription hours?</span>
+          <span class="transition group-open:rotate-180">
+            <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+          </span>
+        </summary>
+        <p class="text-gray-600 dark:text-gray-300 mt-3 group-open:animate-fadeIn">
+          Each plan includes a set number of transcription hours per month. If you reach your limit, transcription will pause until your next billing cycle, or you can upgrade to a higher plan at any time to get more hours immediately. We do not have overage charges, ensuring your bill is always predictable. Your usage resets at the beginning of each billing cycle.
+        </p>
+      </details>
+
+      </div>
+  </div>
+
+  <!-- Optional: Add a section for enterprise/custom plans or contact for specific needs -->
+  <div class="text-center mt-16 pt-10 border-t border-gray-200 dark:border-gray-700">
+      <h3 class="text-2xl font-semibold mb-3">Need a Custom Solution?</h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-lg mx-auto">
+        If your needs go beyond our standard plans, we're happy to discuss custom solutions or enterprise packages.
+      </p>
+      <a href="/contact" class="inline-block bg-gray-700 hover:bg-gray-800 text-white dark:bg-gray-600 dark:hover:bg-gray-500 font-medium rounded-lg px-8 py-3 transition-colors duration-200">
+        Contact Sales
+      </a>
+  </div>
+
+</div>
+
+<%
+# Add this to your tailwind.config.js for the fadeIn animation if you don't have it
+# theme: {
+#   extend: {
+#     keyframes: {
+#       fadeIn: {
+#         '0%': { opacity: 0, transform: 'translateY(-10px)' },
+#         '100%': { opacity: 1, transform: 'translateY(0)' },
+#       }
+#     },
+#     animation: {
+#       fadeIn: 'fadeIn 0.3s ease-out',
+#     }
+#   }
+# }
+%>
+
+file 2
+
+<% content_for :title, "Notes" %>
+<div class="">
+  <div class="py-6 px-4 flex justify-between items-center">
+    <h1 class="font-bold text-2xl text-gray-800 dark:text-white">Notes</h1>
+    
+    <%= link_to new_note_path, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800 rounded-lg px-4 py-2 font-medium transition-colors duration-200" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      New Note
+    <% end %>
+  </div>
+
+  <% if @notes.any? %>
+    <%= content_tag(:"turbo-frame", id: "notes", target: "_top", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-6") do %>
+      <%= render partial: "notes/components/note_card", collection: @notes, as: :note, cached: true %>
+    <% end %>
+    
+    <%= render_load_more(@pagy) %>
+    
+  <% else %>
+    <%= render "notes/components/empty_state" %>
+  <% end %>
+  
+  <div class="mb-14 md:mb-0">
+    <%= render 'layouts/mobile_nav' %>
+  </div>
+</div>
+
+<div data-controller="note-click" class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-md transition-all duration-200 group cursor-pointer">
+  <div class="p-5" data-action="click->note-click#visit" data-note-click-url="<%= note_path(note) %>">
+    <% cache note do %>
+      <h2 class="text-lg font-semibold mt-2 group-hover:text-green-600 dark:group-hover:text-green-500 line-clamp-1" title="<%= note.title %>">
+        <%= note.title %>
+      </h2>
+      <%= render 'notes/components/note_meta', note: note, category: @category %>
+      <p class="text-sm mt-2 text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
+        <%= sanitize(truncate(note.transcription.to_plain_text, length: 170)) %>
+      </p>
+    <% end %>
+  </div>
+</div>
+
+Tailwind 4
