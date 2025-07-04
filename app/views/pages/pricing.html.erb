@@ -42,7 +42,7 @@
         No credit card required to sign up.
       </p>
 
-      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+      <a href="/signup" class="inline-block bg-green-600 hover:bg-green-700 text-white rounded-lg px-8 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
         Start Your Free Trial
       </a>
     </div>
@@ -52,13 +52,13 @@
   <div class="flex justify-center mb-12 sm:mb-16">
     <div class="relative inline-flex items-center p-1 rounded-full dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs">
       <button
-        class="relative px-6 py-2 text-sm font-semibold text-white bg-green-600 dark:bg-green-700 rounded-full cursor-pointer"
+        class="relative px-6 py-2 text-sm font-semibold rounded-full cursor-pointer"
         data-pricing-toggle-target="monthlyButton"
         data-action="click->pricing-toggle#showMonthly">
         Monthly
       </button>
       <button
-        class="relative px-6 py-2 text-sm font-semibold text-gray-700 rounded-full cursor-pointer"
+        class="relative px-6 py-2 text-sm font-semibold rounded-full cursor-pointer"
         data-pricing-toggle-target="yearlyButton"
         data-action="click->pricing-toggle#showYearly">
         Yearly
@@ -71,30 +71,49 @@
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
 
-    <!-- Essentials Plan Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
-      <h2 class="text-2xl font-semibold mb-2">Essentials Plan</h2>
+    <%# Essentials Plan Card %>
+    <% 
+      active_sub = current_user&.active_subscription
+      is_current_monthly_essentials = active_sub&.plan_id == @monthly_essentials_plan&.id
+      is_current_yearly_essentials = active_sub&.plan_id == @yearly_essentials_plan&.id
+    %>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col 
+                border border-gray-200 dark:border-gray-700
+                transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]"
+         data-pricing-toggle-card
+         data-plan-name="essentials"
+         data-is-current-monthly="<%= is_current_monthly_essentials.to_s %>"
+         data-is-current-yearly="<%= is_current_yearly_essentials.to_s %>">
+      
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="monthly">Current Plan</span>
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="yearly">Current Plan</span>
+
+      <h2 class="text-2xl font-semibold mb-2">Essentials</h2>
       <p class="text-gray-500 dark:text-gray-400 mb-6">Perfect for getting started and individuals.</p>
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦10,485</span>
+          <span class="text-4xl font-bold">₦<%= number_to_currency(@monthly_essentials_plan&.amount.to_i / 100, unit: "", precision: 0) %></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
         <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">6,360</span></span>
+          <span class="text-4xl font-bold">₦<span class="annual-price"><%= number_to_currency(@yearly_essentials_plan&.amount.to_i / 100 / 12, unit: "", precision: 0) %></span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦76,350/year
+            Billed as ₦<%= number_to_currency(@yearly_essentials_plan&.amount.to_i / 100, unit: "", precision: 0) %>/year
           </p>
-          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦49,500 with yearly pricing (40% off)
-          </p>
+          <% if @monthly_essentials_plan && @yearly_essentials_plan %>
+            <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+              Save ₦<%= number_to_currency(((@monthly_essentials_plan.amount * 12) - @yearly_essentials_plan.amount) / 100, unit: "", precision: 0) %> with yearly pricing (40% off)
+            </p>
+          <% end %>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
-        <li class="flex items-start"> <!-- Changed to items-start for potentially multi-line items -->
+         <li class="flex items-start">
           <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
           <span>8 hours transcription / month</span>
         </li>
@@ -119,40 +138,86 @@
           <span>Standard Support</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
-        <%= form.hidden_field :plan_name, value: "Essentials Plan" %>
-        <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+      
+      <%# Monthly Button Logic for Essentials Plan %>
+      <% if @monthly_essentials_plan %>
+        <div class="mt-auto w-full" data-pricing-toggle-target="monthlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_monthly_essentials %>
+              <%= link_to "Manage Subscription", subscription_path(active_sub), class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @monthly_essentials_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @monthly_essentials_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
-        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+      <% end %>
+
+      <%# Yearly Button Logic for Essentials Plan %>
+      <% if @yearly_essentials_plan %>
+        <div class="mt-auto w-full hidden" data-pricing-toggle-target="yearlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_yearly_essentials %>
+              <%= link_to "Manage Subscription", subscription_path(active_sub), class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @yearly_essentials_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @yearly_essentials_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
       <% end %>
     </div>
 
-    <!-- Pro Plan Card (Most Popular) -->
-    <div class="bg-green-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 flex flex-col border-2 border-green-500 dark:border-green-600 relative transform md:scale-105 transition-all duration-300 ease-in-out hover:shadow-2xl">
-       <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">Most Popular</span>
-      <h2 class="text-2xl font-semibold mb-2 text-green-700 dark:text-green-400">Pro Plan</h2>
+    <%# Pro Plan Card (Most Popular) %>
+    <% 
+      is_current_monthly_pro = active_sub&.plan_id == @monthly_pro_plan&.id
+      is_current_yearly_pro = active_sub&.plan_id == @yearly_pro_plan&.id
+      is_pro_the_users_actual_subscription = is_current_monthly_pro || is_current_yearly_pro
+    %>
+    <div class="bg-green-50 dark:bg-gray-800 rounded-xl shadow-2xl p-6 md:p-8 flex flex-col relative transform md:scale-105 
+                border border-gray-200 dark:border-gray-700
+                transition-all duration-300 ease-in-out hover:shadow-2xl"
+         data-pricing-toggle-card
+         data-plan-name="pro"
+         data-is-current-monthly="<%= is_current_monthly_pro.to_s %>"
+         data-is-current-yearly="<%= is_current_yearly_pro.to_s %>"
+         data-is-pro-active-subscription="<%= is_pro_the_users_actual_subscription.to_s %>">
+
+       <span data-most-popular-badge class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md hidden">Most Popular</span>
+      
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="monthly">Current Plan</span>
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="yearly">Current Plan</span>
+            
+      <h2 class="text-2xl font-semibold mb-2">Pro</h2>
       <p class="text-gray-600 dark:text-gray-400 mb-6">Ideal for power users and growing needs.</p>
       <div class="mb-8">
         <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦29,985</span>
+          <span class="text-4xl font-bold">₦<%= number_to_currency(@monthly_pro_plan&.amount.to_i / 100, unit: "", precision: 0) %></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">17,985</span></span>
+          <span class="text-4xl font-bold">₦<span class="annual-price"><%= number_to_currency(@yearly_pro_plan&.amount.to_i / 100 / 12, unit: "", precision: 0) %></span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦215,850/year
+            Billed as ₦<%= number_to_currency(@yearly_pro_plan&.amount.to_i / 100, unit: "", precision: 0) %>/year
           </p>
-          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦144,000 with yearly pricing (40% off)
-          </p>
+          <% if @monthly_pro_plan && @yearly_pro_plan %>
+            <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+              Save ₦<%= number_to_currency(((@monthly_pro_plan.amount * 12) - @yearly_pro_plan.amount) / 100, unit: "", precision: 0) %> with yearly pricing (40% off)
+            </p>
+          <% end %>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
@@ -185,43 +250,86 @@
           <span>Enhanced Processing Speed</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
-        <%= form.hidden_field :plan_name, value: "Pro Plan" %>
-        <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+
+      <%# Monthly Button Logic for Pro Plan %>
+      <% if @monthly_pro_plan %>
+        <div class="mt-auto w-full" data-pricing-toggle-target="monthlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_monthly_pro %>
+              <%= link_to "Manage Subscription", subscription_path, class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @monthly_pro_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @monthly_pro_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
-        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+      <% end %>
+
+      <%# Yearly Button Logic for Pro Plan %>
+      <% if @yearly_pro_plan %>
+        <div class="mt-auto w-full hidden" data-pricing-toggle-target="yearlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_yearly_pro %>
+              <%= link_to "Manage Subscription", subscription_path, class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @yearly_pro_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @yearly_pro_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-700 hover:bg-green-800 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
       <% end %>
     </div>
 
-    <!-- Business Plan Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col border border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]">
-      <h2 class="text-2xl font-semibold mb-2">Business Plan</h2>
+    <%# Business Plan Card %>
+    <% 
+      is_current_monthly_business = active_sub&.plan_id == @monthly_business_plan&.id
+      is_current_yearly_business = active_sub&.plan_id == @yearly_business_plan&.id
+    %>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 flex flex-col 
+                border border-gray-200 dark:border-gray-700
+                transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02]"
+         data-pricing-toggle-card
+         data-plan-name="business"
+         data-is-current-monthly="<%= is_current_monthly_business.to_s %>"
+         data-is-current-yearly="<%= is_current_yearly_business.to_s %>">
+      
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="monthly">Current Plan</span>
+      <span class="absolute top-0 right-0 -mt-3 mr-3 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-md hidden" 
+            data-pricing-badge="yearly">Current Plan</span>
+      
+      <h2 class="text-2xl font-semibold mb-2">Business</h2>
       <p class="text-gray-500 dark:text-gray-400 mb-6">For organizations and scaling teams.</p>
       <div class="mb-8">
          <!-- Monthly Price Display -->
         <div data-pricing-toggle-target="monthlyPrice">
-          <span class="text-4xl font-bold">₦74,985</span>
+          <span class="text-4xl font-bold">₦<%= number_to_currency(@monthly_business_plan&.amount.to_i / 100, unit: "", precision: 0) %></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
         </div>
          <!-- Annual Price Display -->
         <div class="hidden" data-pricing-toggle-target="yearlyPrice">
-          <span class="text-4xl font-bold">₦<span class="annual-price">44,985</span></span>
+          <span class="text-4xl font-bold">₦<span class="annual-price"><%= number_to_currency(@yearly_business_plan&.amount.to_i / 100 / 12, unit: "", precision: 0) %></span></span>
           <span class="text-gray-500 dark:text-gray-400">/month</span>
           <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Billed as ₦539,850/year
+            Billed as ₦<%= number_to_currency(@yearly_business_plan&.amount.to_i / 100, unit: "", precision: 0) %>/year
           </p>
-          <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
-            Save ₦360,000 with yearly pricing (40% off)
-          </p>
+          <% if @monthly_business_plan && @yearly_business_plan %>
+            <p class="text-sm text-green-600 dark:text-green-500 font-medium mt-1">
+              Save ₦<%= number_to_currency(((@monthly_business_plan.amount * 12) - @yearly_business_plan.amount) / 100, unit: "", precision: 0) %> with yearly pricing (40% off)
+            </p>
+          <% end %>
         </div>
       </div>
       <ul class="mb-10 space-y-4 text-gray-700 dark:text-gray-300 flex-grow">
-        <li class="flex items-start">
+         <li class="flex items-start">
           <svg class="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
           <span>100 hours transcription / month</span>
         </li>
@@ -254,15 +362,40 @@
           <span>Premium Processing Speed</span>
         </li>
       </ul>
-      <%= form_with url: subscriptions_path, method: :post, local: true, class: "mt-auto w-full", data: { turbo: false } do |form| %>
-        <%= form.hidden_field :plan_name, value: "Business Plan" %>
-        <div data-pricing-toggle-target="monthlyButtonForm">
-          <%= form.hidden_field :interval, value: "monthly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+
+      <%# Monthly Button Logic for Business Plan %>
+      <% if @monthly_business_plan %>
+        <div class="mt-auto w-full" data-pricing-toggle-target="monthlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_monthly_business %>
+              <%= link_to "Manage Subscription", subscription_path, class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @monthly_business_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @monthly_business_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
-        <div data-pricing-toggle-target="yearlyButtonForm" class="hidden">
-          <%= form.hidden_field :interval, value: "yearly", data: { pricing_toggle_target: "intervalInput" } %>
-          <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+      <% end %>
+
+      <%# Yearly Button Logic for Business Plan %>
+      <% if @yearly_business_plan %>
+        <div class="mt-auto w-full hidden" data-pricing-toggle-target="yearlyButtonForm">
+          <% if active_sub %>
+            <% if is_current_yearly_business %>
+              <%= link_to "Manage Subscription", subscription_path, class: "block w-full text-center bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200" %>
+            <% else %>
+              <%= link_to "Switch to this Plan", edit_subscription_path(active_sub, plan_id: @yearly_business_plan.id), class: "block w-full text-center bg-green-500 hover:bg-green-600 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800" %>
+            <% end %>
+          <% else %>
+            <%= form_with url: subscriptions_path, method: :post, local: true, class: "w-full", data: { turbo: false } do |form| %>
+              <%= form.hidden_field :plan_id, value: @yearly_business_plan.id %>
+              <%= form.submit "Get Started", class: "w-full bg-green-600 hover:bg-green-700 text-white rounded-lg px-6 py-3 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer" %>
+            <% end %>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -342,20 +475,3 @@
   </div>
 
 </div>
-
-<%
-# Add this to your tailwind.config.js for the fadeIn animation if you don't have it
-# theme: {
-#   extend: {
-#     keyframes: {
-#       fadeIn: {
-#         '0%': { opacity: 0, transform: 'translateY(-10px)' },
-#         '100%': { opacity: 1, transform: 'translateY(0)' },
-#       }
-#     },
-#     animation: {
-#       fadeIn: 'fadeIn 0.3s ease-out',
-#     }
-#   }
-# }
-%>

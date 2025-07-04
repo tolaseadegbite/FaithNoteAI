@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_24_142931) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_28_184704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -135,6 +135,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_24_142931) do
     t.index ["user_id"], name: "index_notes_on_user_id"
   end
 
+  create_table "plans", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description", null: false
+    t.string "paystack_plan_code", null: false
+    t.integer "amount", null: false
+    t.string "interval", null: false
+    t.string "currency", null: false
+    t.boolean "active", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_plans_on_active"
+    t.index ["paystack_plan_code"], name: "index_plans_on_paystack_plan_code", unique: true
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -165,10 +179,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_24_142931) do
     t.string "exp_year"
     t.string "bank"
     t.datetime "paid_at"
+    t.datetime "next_payment_date"
+    t.bigint "plan_id", null: false
+    t.integer "pending_plan_id"
+    t.string "pending_plan_change_type"
+    t.datetime "pending_plan_change_at"
     t.index ["authorization_code"], name: "index_subscriptions_on_authorization_code"
     t.index ["paystack_customer_code"], name: "index_subscriptions_on_paystack_customer_code"
     t.index ["paystack_subscription_code"], name: "index_subscriptions_on_paystack_subscription_code", unique: true
     t.index ["paystack_transaction_reference"], name: "index_subscriptions_on_paystack_transaction_reference"
+    t.index ["pending_plan_id"], name: "index_subscriptions_on_pending_plan_id"
+    t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
     t.index ["status"], name: "index_subscriptions_on_status"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'pending'::character varying, 'non_renewing'::character varying, 'expired'::character varying, 'incomplete'::character varying]::text[])", name: "status_check"
@@ -219,6 +240,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_24_142931) do
   add_foreign_key "notes", "categories"
   add_foreign_key "notes", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "subscriptions", "plans"
   add_foreign_key "subscriptions", "users"
   add_foreign_key "summaries", "notes"
   add_foreign_key "tags", "users"

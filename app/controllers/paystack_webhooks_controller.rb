@@ -15,12 +15,10 @@ class PaystackWebhooksController < ApplicationController
     end
 
     begin
-      # The hash should be generated from the request body using your secret key
       hash = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha512'), paystack_secret_key, request_body)
-      
       unless Rack::Utils.secure_compare(hash, signature)
         Rails.logger.warn "Paystack Webhook: Invalid signature. Expected #{hash}, got #{signature}"
-        head :unauthorized # Or :bad_request, depending on how strict you want to be
+        head :unauthorized
         return
       end
     rescue => e
@@ -29,251 +27,380 @@ class PaystackWebhooksController < ApplicationController
       return
     end
 
-    # Parse the event payload
     event_payload = JSON.parse(request_body)
     event_type = event_payload['event']
+    event_data = event_payload['data'] # Consistently use event_data for the payload's 'data' object
 
-    Rails.logger.info "Paystack Webhook Received: Event Type - #{event_type}, Payload - #{event_payload.inspect}"
+    Rails.logger.info "Paystack Webhook Received: Event Type - #{event_type}, Payload Data: #{event_data.inspect}"
 
-    # Handle the event based on its type
-    case event_type
-    when 'subscription.create'
-      handle_subscription_create(event_payload['data'])
-    when 'subscription.disable'
-      handle_subscription_disable(event_payload['data'])
-    when 'subscription.enable'
-      handle_subscription_enable(event_payload['data'])
-    when 'subscription.not_renew' # Added this event handler
-      handle_subscription_not_renew(event_payload['data'])
-    when 'charge.success'
-      # This event is for successful one-time payments or subscription renewals.
-      # For subscriptions, 'invoice.payment_failed' or 'invoice.update' might be more relevant for status changes.
-      handle_charge_success(event_payload['data'])
-    when 'invoice.create'
-      # An invoice has been created, often before a payment attempt for a subscription renewal.
-      handle_invoice_create(event_payload['data'])
-    when 'invoice.update'
-      # An invoice has been updated, e.g., payment successful or failed.
-      handle_invoice_update(event_payload['data'])
-    when 'invoice.payment_failed'
-      handle_invoice_payment_failed(event_payload['data'])
-    # Add more event handlers as needed, e.g.:
-    # when 'customeridentification.failed'
-    # when 'customeridentification.success'
-    else
-      Rails.logger.info "Paystack Webhook: Unhandled event type '#{event_type}'"
+    # Ensure critical data is present
+    subscription_code = event_data['subscription']&.is_a?(Hash) ? event_data['subscription']['subscription_code'] : event_data['subscription_code']
+    customer_code = event_data['customer']&.is_a?(Hash) ? event_data['customer']['customer_code'] : event_data['customer_code'] 
+    # For charge.success, subscription code might be nested differently or within authorization
+    if event_type == 'charge.success'
+      # Attempt to get subscription_code from authorization if it's a recurring charge
+      if event_data['authorization'] && event_data['authorization']['reusable'] && event_data['plan_object']
+        # This looks like a subscription payment. We need to find our subscription via customer and plan, or ideally, if Paystack includes a subscription_code.
+        # Paystack's charge.success for subscriptions often lacks a direct subscription_code in event_data top level.
+        # It might be in event_data['plan_object']['subscriptions'] (array) or we might need to rely on customer and plan.
+        # For simplicity, we'll assume we can find the subscription via customer and that the charge pertains to an active subscription.
+        # A more robust solution might involve looking up the subscription by authorization_code if that's stored and linked.
+        # For now, let's assume customer_code is reliable for finding the user.
+      elsif event_data['subscription'] && event_data['subscription']['subscription_code'] # Direct subscription object in charge.success
+        subscription_code = event_data['subscription']['subscription_code']
+      end
     end
 
-    head :ok # Respond to Paystack quickly with a 200 OK
+    user = User.find_by(paystack_customer_code: customer_code)
+    subscription = user&.subscriptions&.find_by(paystack_subscription_code: subscription_code) if user && subscription_code.present?
+
+    # If subscription not found by code, try to find an active one for the user if it's a charge.success for a known plan
+    if subscription.nil? && user && event_type == 'charge.success' && event_data['plan'] # plan is plan_code here
+      plan = Plan.find_by(paystack_plan_code: event_data['plan'])
+      subscription = user.subscriptions.active.find_by(plan_id: plan.id) if plan
+    end
+
+    # Fallback for invoice.payment_success or invoice.update if subscription_code is in invoice items or top level
+    if subscription.nil? && user && (event_type == 'invoice.payment_success' || event_type == 'invoice.update')
+      # Try to find subscription_code within invoice details if available
+      # This part is highly dependent on Paystack's invoice structure for subscriptions
+      if event_data['subscription'] && event_data['subscription']['subscription_code']
+        subscription_code = event_data['subscription']['subscription_code']
+        subscription = user.subscriptions.find_by(paystack_subscription_code: subscription_code)
+      elsif event_data['lines']&.first&.[]('subscription_code') # Check invoice lines
+        subscription_code = event_data['lines'].first['subscription_code']
+        subscription = user.subscriptions.find_by(paystack_subscription_code: subscription_code)
+      end
+    end
+
+    unless user
+      Rails.logger.warn "Paystack Webhook: User not found for customer_code: #{customer_code}. Event: #{event_type}"
+      head :not_found
+      return
+    end
+
+    # Process based on event type
+    case event_type
+    when 'subscription.create'
+      handle_subscription_create(event_data, user)
+    when 'subscription.disable'
+      handle_subscription_disable(event_data, subscription)
+    when 'subscription.not_renew' # Or subscription.expiring, subscription.cancelled
+      handle_subscription_not_renew(event_data, subscription)
+    when 'charge.success'
+      handle_charge_success(event_data, user, subscription) # Pass user as well for safety
+    when 'invoice.update', 'invoice.payment_success' # invoice.create might also be relevant for dates
+      handle_invoice_update(event_data, user, subscription)
+    else
+      Rails.logger.info "Paystack Webhook: Unhandled event type: #{event_type}"
+    end
+
+    head :ok
+  rescue JSON::ParserError => e
+    Rails.logger.error "Paystack Webhook: Invalid JSON payload: #{e.message}"
+    head :bad_request
+  rescue => e
+    Rails.logger.error "Paystack Webhook: Error processing webhook: #{e.message}\n#{e.backtrace.join("\n")}"
+    head :internal_server_error
   end
 
   private
 
-  def handle_subscription_create(data)
-    # Logic to handle a new subscription created via Paystack (e.g., after the first payment on a plan)
-    # This is where you'd typically get the definitive paystack_subscription_code and customer_code
-    # and update your local Subscription record.
-    Rails.logger.info "Handling 'subscription.create': #{data.inspect}"
-    # Example: Find user by customer_code, then find or create subscription by subscription_code
-    customer_code = data['customer']['customer_code']
-    subscription_code = data['subscription_code']
-    plan_code = data['plan']['plan_code']
-    status = data['status'] # e.g., 'active'
-
-    user = User.find_by(paystack_customer_code: customer_code)
-    unless user
-      Rails.logger.warn "Paystack Webhook (subscription.create): User not found for customer_code #{customer_code}"
+  def handle_subscription_create(data, user)
+    # This might be redundant if subscription is created/updated in callback_subscriptions_controller
+    # but good for reconciliation.
+    # Ensure plan_id is set based on data['plan']['plan_code']
+    plan = Plan.find_by(paystack_plan_code: data.dig('plan', 'plan_code'))
+    unless plan
+      Rails.logger.error "Paystack Webhook (subscription.create): Plan not found for code #{data.dig('plan', 'plan_code')}"
       return
     end
 
-    plan_details = find_plan_by_paystack_code(plan_code) # You might need to make this method accessible or duplicate logic
-    unless plan_details
-        Rails.logger.warn "Paystack Webhook (subscription.create): Plan details not found for plan_code #{plan_code}"
-        return
-    end
-
-    subscription = user.subscriptions.find_or_initialize_by(paystack_subscription_code: subscription_code)
+    subscription = user.subscriptions.find_or_initialize_by(paystack_subscription_code: data['subscription_code'])
     subscription.assign_attributes(
-      paystack_plan_code: plan_code,
-      status: status.to_sym, # Ensure status from Paystack is converted to symbol for enum
-      paystack_customer_code: customer_code,
-      plan_name: plan_details[:name],
-      interval: plan_details[:interval],
-      amount: data['amount'].to_i, # Amount for this subscription instance
-      currency: data['plan']['currency'], # Or data['currency'] if available directly
-      # Potentially update expires_at based on data['next_payment_date'] or similar
-      # expires_at: data['next_payment_date'] ? Time.parse(data['next_payment_date']) : nil
-      # authorization_code: data['authorization']['authorization_code'] # if available and relevant
+      plan_id: plan.id,
+      paystack_plan_code: plan.paystack_plan_code, # Store the plan code from the plan model
+      paystack_customer_code: data.dig('customer', 'customer_code'),
+      amount: data.dig('amount'), # Amount from the subscription event
+      currency: data.dig('plan', 'currency'), # Currency from the plan within subscription
+      status: data['status'], # e.g., active, non-renewing, complete
+      authorization_code: data.dig('authorization', 'authorization_code'),
+      next_payment_date: data['next_payment_date'] ? Time.parse(data['next_payment_date']) : nil,
+      expires_at: calculate_expires_at(data['next_payment_date'], plan.interval, data['most_recent_invoice']&.dig('period_end')),
+      # If 'cron_expression' and 'start_date' are available, they can also determine billing cycle.
+      # For fixed cycle, 'expires_at' might be more aligned with 'next_payment_date' or invoice period end.
+      bank: data.dig('authorization', 'bank'),
+      card_type: data.dig('authorization', 'card_type'),
+      last_four_digits: data.dig('authorization', 'last4'),
+      exp_month: data.dig('authorization', 'exp_month'),
+      exp_year: data.dig('authorization', 'exp_year'),
+      plan_name: data.dig('plan', 'name'),
+      interval: data.dig('plan', 'interval')
     )
     if subscription.save
-        Rails.logger.info "Paystack Webhook (subscription.create): Subscription #{subscription_code} for user #{user.id} saved/updated."
+      Rails.logger.info "Paystack Webhook: Subscription #{data['status']} for user #{user.id}, subscription_code: #{data['subscription_code']}."
     else
-        Rails.logger.error "Paystack Webhook (subscription.create): Failed to save subscription #{subscription_code} for user #{user.id}. Errors: #{subscription.errors.full_messages.join(', ')}"
+      Rails.logger.error "Paystack Webhook: Failed to save subscription for user #{user.id}: #{subscription.errors.full_messages.join(', ')}"
     end
   end
 
-  def handle_subscription_disable(data)
-    Rails.logger.info "Handling 'subscription.disable': #{data.inspect}"
-    subscription_code = data['subscription_code']
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
+  def handle_subscription_disable(data, subscription)
     if subscription
-      subscription.update(status: :inactive) # Using enum, assuming 'inactive' is your desired state for disabled
-      Rails.logger.info "Paystack Webhook (subscription.disable): Subscription #{subscription_code} marked as inactive."
+      subscription.update(status: 'cancelled', expires_at: Time.current) # Or use a date from Paystack if available
+      Rails.logger.info "Paystack Webhook: Subscription disabled for subscription_code: #{data['subscription_code']}."
     else
-      Rails.logger.warn "Paystack Webhook (subscription.disable): Subscription #{subscription_code} not found."
+      Rails.logger.warn "Paystack Webhook (subscription.disable): Subscription not found for code #{data['subscription_code']}"
     end
   end
 
-  def handle_subscription_enable(data)
-    Rails.logger.info "Handling 'subscription.enable': #{data.inspect}"
-    subscription_code = data['subscription_code']
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
+  def handle_subscription_not_renew(data, subscription)
     if subscription
-      subscription.update(status: :active) # Using enum
-      Rails.logger.info "Paystack Webhook (subscription.enable): Subscription #{subscription_code} marked as active."
+      # 'subscription.not_renew' means it will expire at the end of the current period.
+      # 'expires_at' should already reflect this from the last successful charge or invoice update.
+      # We just update the status to reflect it's not renewing.
+      subscription.update(status: 'non-renewing') # Or 'cancelled' if that's your preferred status
+      Rails.logger.info "Paystack Webhook: Subscription set to not renew for code: #{data['subscription_code']}. Will expire on #{subscription.expires_at}."
     else
-      Rails.logger.warn "Paystack Webhook (subscription.enable): Subscription #{subscription_code} not found."
+      Rails.logger.warn "Paystack Webhook (subscription.not_renew): Subscription not found for code #{data['subscription_code']}"
     end
   end
 
-  def handle_subscription_not_renew(data)
-    Rails.logger.info "Handling 'subscription.not_renew': #{data.inspect}"
-    subscription_code = data['subscription_code']
-    # The 'status' in the payload for not_renew might still be 'active' 
-    # but it means it won't renew. You might want a specific status in your system.
-    # Or, you might set a flag like `renews_at = nil` or `auto_renew = false`.
-    # The `next_payment_date` might be null or in the past.
+  def handle_charge_success(data, user, subscription)
+    # This event is crucial. It confirms a payment was made.
+    # If this charge is for a subscription, update its dates and status.
 
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
-    if subscription
-      # Example: Update status to 'non_renewing' or 'cancelled_at_end_of_period'
-      # Also consider storing data['cancelled_at'] if provided and relevant.
-      subscription.update(status: :non_renewing) # Using enum
-      Rails.logger.info "Paystack Webhook (subscription.not_renew): Subscription #{subscription_code} marked as non-renewing."
-    else
-      Rails.logger.warn "Paystack Webhook (subscription.not_renew): Subscription #{subscription_code} not found."
-    end
-  end
-
-  def handle_charge_success(data)
-    # This event confirms a payment was successful.
-    # If it's related to a subscription, you might update the subscription's `paid_at` or `expires_at`.
-    Rails.logger.info "Handling 'charge.success': #{data.inspect}"
-    # Check if it's a subscription payment (e.g., by looking at metadata or if 'subscription' object exists in data)
-    if data['metadata'] && data['metadata']['subscription_code']
-      subscription_code = data['metadata']['subscription_code']
-      # Or if data['subscription'] && data['subscription']['subscription_code']
-    elsif data.dig('subscription', 'subscription_code')
-      subscription_code = data.dig('subscription', 'subscription_code')
-    elsif data.dig('plan_object', 'plan_code') && data.dig('customer', 'customer_code')
-      # Fallback for first payment if subscription_code isn't directly in charge.success
-      # We might need to find the subscription via plan_code and customer_code
-      # This scenario is better handled by 'subscription.create' or 'invoice.update'
-      Rails.logger.info "Paystack Webhook (charge.success): Likely first payment, relying on subscription.create or invoice.update for subscription record."
-      return
-    else
-      Rails.logger.info "Paystack Webhook (charge.success): Not clearly linked to a subscription or subscription_code missing."
-      return
+    # If subscription is nil, try to find it via authorization if it's a recurring payment
+    if subscription.nil? && data.dig('authorization', 'authorization_code') && user
+      subscription = user.subscriptions.find_by(authorization_code: data.dig('authorization', 'authorization_code'), status: ['active', 'non-renewing'])
     end
 
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
-    if subscription
-      # Update relevant fields, e.g., extend expiry, log payment
-      # Paystack's `invoice.update` event is often better for managing subscription renewals.
-      subscription.update(
-        status: :active, # Using enum
-        paid_at: Time.parse(data['paid_at']),
-        # Potentially update expires_at based on the new billing cycle from Paystack if available
-        # For example, if the invoice related to this charge has a next_payment_date
-      )
-      Rails.logger.info "Paystack Webhook (charge.success): Payment recorded for subscription #{subscription_code}."
-    else
-      Rails.logger.warn "Paystack Webhook (charge.success): Subscription #{subscription_code} not found."
-    end
-  end
-
-  def handle_invoice_create(data)
-    Rails.logger.info "Handling 'invoice.create': #{data.inspect}"
-    # Useful for knowing a renewal attempt is upcoming.
-    # You might log this or prepare for a potential payment.
-  end
-
-  def handle_invoice_update(data)
-    Rails.logger.info "Handling 'invoice.update': #{data.inspect}"
-    # This event is crucial for subscription lifecycle management.
-    # It tells you if a renewal payment was successful or failed.
-    subscription_code = data.dig('subscription', 'subscription_code')
-    status = data['status'] # e.g., 'success', 'failed', 'pending'
-    paid_at = data['paid_at'] ? Time.parse(data['paid_at']) : nil
-    # next_payment_date = data.dig('subscription', 'next_payment_date') ? Time.parse(data.dig('subscription', 'next_payment_date')) : nil
-    # amount = data['amount'] # Amount paid for this invoice
-
-    unless subscription_code
-      Rails.logger.warn "Paystack Webhook (invoice.update): Missing subscription_code in payload: #{data.inspect}"
-      return
+    # If still nil, and it's a plan payment, try to find by plan and user
+    if subscription.nil? && data.dig('plan', 'plan_code') && user
+      plan = Plan.find_by(paystack_plan_code: data.dig('plan', 'plan_code'))
+      if plan
+        subscription = user.subscriptions.active_or_non_renewing.find_by(plan_id: plan.id)
+      end
     end
 
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
     unless subscription
-      Rails.logger.warn "Paystack Webhook (invoice.update): Subscription #{subscription_code} not found."
+      Rails.logger.warn "Paystack Webhook (charge.success): Subscription not found. Customer: #{data.dig('customer','email')}, Plan: #{data.dig('plan','name')}, Amount: #{data['amount']}. This might be a one-time payment or an unlinked subscription."
+      # If it's a first payment for a new subscription not yet in your DB via subscription.create, this might be an issue.
+      # The SubscriptionsController callback should ideally create the subscription record first.
       return
     end
 
-    case status
-    when 'success', 'paid' # Paystack might use 'paid' or 'success'
-      new_status = :active
-      subscription.paid_at = paid_at if paid_at
-      # subscription.expires_at = next_payment_date if next_payment_date # Update expiry based on Paystack's info
-      Rails.logger.info "Paystack Webhook (invoice.update): Subscription #{subscription_code} payment successful. Status: active."
-    when 'failed'
-      new_status = :inactive # Or a more specific status like 'payment_failed' or 'past_due' if you have one
-      Rails.logger.info "Paystack Webhook (invoice.update): Subscription #{subscription_code} payment failed. Status: inactive."
-    else
-      Rails.logger.info "Paystack Webhook (invoice.update): Invoice for subscription #{subscription_code} has status '#{status}'. No specific status change implemented for this."
-      return # Or handle other statuses like 'pending'
+    # If a plan change is pending and this charge signifies the start of the new period
+    if subscription.pending_plan_id? && (subscription.pending_plan_change_at.nil? || Time.current >= subscription.pending_plan_change_at || Time.current >= subscription.expires_at)
+      new_plan = Plan.find_by(id: subscription.pending_plan_id)
+      if new_plan
+        Rails.logger.info "Paystack Webhook (charge.success): Applying pending plan change for subscription #{subscription.id} to plan #{new_plan.name}."
+        subscription.plan_id = new_plan.id
+        subscription.paystack_plan_code = new_plan.paystack_plan_code
+        subscription.amount = new_plan.amount # Update amount to new plan's amount
+        subscription.interval = new_plan.interval
+        subscription.plan_name = new_plan.name
+        
+        subscription.pending_plan_id = nil
+        subscription.pending_plan_change_type = nil
+        subscription.pending_plan_change_at = nil
+      else
+        Rails.logger.error "Paystack Webhook (charge.success): Pending plan ID #{subscription.pending_plan_id} not found for subscription #{subscription.id}."
+      end
     end
 
-    if subscription.update(status: new_status)
-      Rails.logger.info "Paystack Webhook (invoice.update): Subscription #{subscription_code} status updated to #{new_status}."
+    # Update subscription details based on the charge
+    # next_payment_date and expires_at should ideally come from an invoice.update or subscription.update event
+    # For charge.success, we confirm payment and rely on other events for future dates if possible.
+    # However, if Paystack provides `next_payment_date` in `plan_object` or `subscription` sub-object, use it.
+    # This part needs careful checking against actual Paystack payload for charge.success on subscriptions.
+
+    paid_at_time = data['paid_at'] ? Time.parse(data['paid_at']) : Time.current
+    current_plan = subscription.plan # This is now the potentially new plan
+
+    # Attempt to get next_payment_date from various possible locations in payload
+    next_payment_date_str = data.dig('subscription', 'next_payment_date') || data.dig('plan_object', 'next_payment_date')
+    next_payment_date_val = next_payment_date_str ? Time.parse(next_payment_date_str) : nil
+
+    # If next_payment_date is not directly in charge.success, calculate it based on current plan
+    # This is a fallback and might be less accurate than Paystack's own date.
+    next_payment_date_val ||= calculate_next_payment_from_current(paid_at_time, current_plan.interval)
+    
+    new_expires_at = calculate_expires_at(next_payment_date_val.to_s, current_plan.interval) 
+
+    update_attrs = {
+      status: 'active', # A successful charge usually means the subscription is active
+      paid_at: paid_at_time,
+      next_payment_date: next_payment_date_val,
+      expires_at: new_expires_at,
+      # Update card details if they've changed and are provided
+      authorization_code: data.dig('authorization', 'authorization_code') || subscription.authorization_code,
+      bank: data.dig('authorization', 'bank') || subscription.bank,
+      card_type: data.dig('authorization', 'card_type') || subscription.card_type,
+      last_four_digits: data.dig('authorization', 'last4') || subscription.last_four_digits,
+      exp_month: data.dig('authorization', 'exp_month') || subscription.exp_month,
+      exp_year: data.dig('authorization', 'exp_year') || subscription.exp_year
+    }
+
+    if subscription.update(update_attrs)
+      Rails.logger.info "Paystack Webhook: charge.success processed for subscription #{subscription.id}. Next payment: #{subscription.next_payment_date}, Expires: #{subscription.expires_at}."
     else
-      Rails.logger.error "Paystack Webhook (invoice.update): Failed to update subscription #{subscription_code} to status #{new_status}. Errors: #{subscription.errors.full_messages.join(', ')}"
+      Rails.logger.error "Paystack Webhook (charge.success): Failed to update subscription #{subscription.id}: #{subscription.errors.full_messages.join(', ')}"
     end
   end
 
-  def handle_invoice_payment_failed(data)
-    Rails.logger.info "Handling 'invoice.payment_failed': #{data.inspect}"
-    subscription_code = data.dig('subscription', 'subscription_code')
+  def handle_invoice_update(data, user, subscription)
+    # invoice.update can signal many things. We're interested if it finalizes a period or provides new dates.
+    # Particularly, if an invoice is paid ('status' == 'success') or if it provides 'next_payment_date'.
 
-    unless subscription_code
-      Rails.logger.warn "Paystack Webhook (invoice.payment_failed): Missing subscription_code in payload: #{data.inspect}"
+    # Try to find subscription if not passed directly (e.g. if webhook is just for an invoice not directly linked in initial lookup)
+    if subscription.nil? && data.dig('subscription', 'subscription_code') && user
+      subscription = user.subscriptions.find_by(paystack_subscription_code: data.dig('subscription', 'subscription_code'))
+    end
+    
+    # If invoice is for a specific subscription not found by the generic lookup
+    if subscription.nil? && data.dig('subscription_code') && user # some payloads might have subscription_code at top level of data
+        subscription = user.subscriptions.find_by(paystack_subscription_code: data['subscription_code'])
+    end
+
+    unless subscription
+      Rails.logger.warn "Paystack Webhook (invoice.update/payment_success): Subscription not found. Invoice ID: #{data['invoice_code']}. Customer: #{data.dig('customer','email')}."
       return
     end
 
-    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
-    if subscription
-      # Mark as inactive, or a specific status like 'payment_failed' or 'past_due'
-      # Consider if multiple failures should lead to 'cancelled' or 'disabled'
-      if subscription.update(status: :inactive) # Using enum
-        Rails.logger.info "Paystack Webhook (invoice.payment_failed): Subscription #{subscription_code} marked as inactive due to payment failure."
-      else 
-        Rails.logger.error "Paystack Webhook (invoice.payment_failed): Failed to update subscription #{subscription_code}. Errors: #{subscription.errors.full_messages.join(', ')}"
+    # If a plan change is pending and this invoice update signifies the start of the new period
+    # This condition might be similar to charge.success, depends on when Paystack sends invoice.update vs charge.success for renewals
+    # We check if the invoice period start aligns with when the change should occur
+    invoice_period_start = data.dig('period', 'start') ? Time.at(data.dig('period', 'start')).to_datetime : nil
+    
+    if subscription.pending_plan_id? && 
+       ( (subscription.pending_plan_change_at && invoice_period_start && invoice_period_start >= subscription.pending_plan_change_at.beginning_of_day) || 
+         (subscription.expires_at && invoice_period_start && invoice_period_start >= subscription.expires_at.beginning_of_day) )
+      
+      new_plan = Plan.find_by(id: subscription.pending_plan_id)
+      if new_plan
+        Rails.logger.info "Paystack Webhook (invoice.update): Applying pending plan change for subscription #{subscription.id} to plan #{new_plan.name}."
+        subscription.plan_id = new_plan.id
+        subscription.paystack_plan_code = new_plan.paystack_plan_code
+        subscription.amount = new_plan.amount
+        subscription.interval = new_plan.interval
+        subscription.plan_name = new_plan.name
+
+        subscription.pending_plan_id = nil
+        subscription.pending_plan_change_type = nil
+        subscription.pending_plan_change_at = nil
+      else
+        Rails.logger.error "Paystack Webhook (invoice.update): Pending plan ID #{subscription.pending_plan_id} not found for subscription #{subscription.id}."
+      end
+    end
+
+    # Update dates if the invoice is paid and provides them
+    # The 'paid_at', 'next_payment_date', 'period_start', 'period_end' fields are key here.
+    if data['paid'] == true || data['status'] == 'success' # Check if invoice is marked as paid
+      current_plan = subscription.plan # This is now the potentially new plan
+      paid_at_time = data['paid_at'] ? Time.parse(data['paid_at']) : (data['date'] ? Time.parse(data['date']) : Time.current)
+      
+      # Paystack's invoice object for subscriptions often has 'subscription_data' which contains 'next_invoice_date'
+      # or the main subscription object within the invoice payload might have 'next_payment_date'
+      next_payment_date_str = data.dig('subscription', 'next_payment_date') || data.dig('subscription_data', 'next_invoice_date')
+      next_payment_date_val = next_payment_date_str ? Time.parse(next_payment_date_str) : nil
+      
+      # If not found, try to calculate from period_end or paid_at + interval
+      period_end_str = data.dig('period', 'end') ? Time.at(data.dig('period', 'end')).to_datetime.iso8601 : nil
+      expires_at_val = period_end_str ? Time.parse(period_end_str) : calculate_expires_at(next_payment_date_val.to_s, current_plan.interval, nil)
+      next_payment_date_val ||= calculate_next_payment_from_current(paid_at_time, current_plan.interval, expires_at_val)
+      
+      update_attrs = {
+        status: 'active',
+        paid_at: paid_at_time,
+        next_payment_date: next_payment_date_val,
+        expires_at: expires_at_val,
+        # Update other relevant fields if present in invoice data (e.g. amount if it changed)
+        amount: data.dig('amount') || subscription.amount # Amount from invoice if available
+      }
+
+      if subscription.update(update_attrs)
+        Rails.logger.info "Paystack Webhook: invoice.update/payment_success processed for subscription #{subscription.id}. Next payment: #{subscription.next_payment_date}, Expires: #{subscription.expires_at}."
+      else
+        Rails.logger.error "Paystack Webhook (invoice.update): Failed to update subscription #{subscription.id}: #{subscription.errors.full_messages.join(', ')}"
+      end
+    elsif data['next_payment_date'] # Even if not paid, if it updates next_payment_date
+      next_payment_date_val = Time.parse(data['next_payment_date'])
+      current_plan = subscription.plan
+      expires_at_val = calculate_expires_at(data['next_payment_date'], current_plan.interval, data.dig('period', 'end') ? Time.at(data.dig('period', 'end')).to_datetime.iso8601 : nil)
+      if subscription.update(next_payment_date: next_payment_date_val, expires_at: expires_at_val)
+         Rails.logger.info "Paystack Webhook: invoice.update updated next_payment_date for subscription #{subscription.id} to #{next_payment_date_val}."
+      else
+        Rails.logger.error "Paystack Webhook (invoice.update): Failed to update next_payment_date for subscription #{subscription.id}: #{subscription.errors.full_messages.join(', ')}"
       end
     else
-      Rails.logger.warn "Paystack Webhook (invoice.payment_failed): Subscription #{subscription_code} not found."
+      Rails.logger.info "Paystack Webhook: invoice.update event for subscription #{subscription.id} did not result in changes. Status: #{data['status']}, Paid: #{data['paid']}."
     end
   end
 
-  # Helper method to find plan details (similar to SubscriptionsController)
-  # This might be better placed in a concern or a service object if used in multiple controllers.
-  def find_plan_by_paystack_code(plan_code)
-    all_plans = {
-      "PLN_8i7mnqh3btsuyh5" => { name: "Essentials Plan Monthly", amount: 1048500, interval: "monthly", currency: "NGN", paystack_plan_code: "PLN_8i7mnqh3btsuyh5" },
-      "PLN_numptgjwr6es0tq" => { name: "Essentials Plan Yearly", amount: 7635000, interval: "yearly", currency: "NGN", paystack_plan_code: "PLN_numptgjwr6es0tq" },
-      "PLN_6n89u8qk8xnn9js" => { name: "Pro Plan Monthly", amount: 2998500, interval: "monthly", currency: "NGN", paystack_plan_code: "PLN_6n89u8qk8xnn9js" },
-      "PLN_frc05l69ls4te7e" => { name: "Pro Plan Yearly", amount: 21585000, interval: "yearly", currency: "NGN", paystack_plan_code: "PLN_frc05l69ls4te7e" },
-      "PLN_ecxokau9m49554x" => { name: "Business Plan Monthly", amount: 7498500, interval: "monthly", currency: "NGN", paystack_plan_code: "PLN_ecxokau9m49554x" },
-      "PLN_pjq5jij5zm0pe6j" => { name: "Business Plan Yearly", amount: 53985000, interval: "yearly", currency: "NGN", paystack_plan_code: "PLN_pjq5jij5zm0pe6j" }
-    }
-    all_plans[plan_code]
+  def calculate_expires_at(next_payment_date_str, interval, period_end_str = nil)
+    # If period_end is provided by Paystack (e.g. from an invoice), prefer that as expires_at.
+    if period_end_str
+      begin
+        return Time.parse(period_end_str)
+      rescue ArgumentError, TypeError
+        Rails.logger.warn "Paystack Webhook: Could not parse period_end_str: #{period_end_str}"
+      end
+    end 
+    
+    # Otherwise, expires_at is typically the same as next_payment_date for non-prorated fixed cycles.
+    if next_payment_date_str
+      begin
+        return Time.parse(next_payment_date_str)
+      rescue ArgumentError, TypeError
+        Rails.logger.warn "Paystack Webhook: Could not parse next_payment_date_str for expires_at: #{next_payment_date_str}"
+      end
+    end
+    
+    # Fallback: if next_payment_date is also nil, calculate from now + interval (less ideal)
+    base_time = Time.current
+    case interval.downcase
+    when 'monthly'
+      base_time + 1.month
+    when 'yearly', 'annually'
+      base_time + 1.year
+    # Add other intervals as needed: 'daily', 'weekly', 'quarterly', 'biannually'
+    when 'daily'
+      base_time + 1.day
+    when 'weekly'
+      base_time + 1.week
+    when 'quarterly'
+      base_time + 3.months
+    when 'biannually'
+      base_time + 6.months
+    else
+      Rails.logger.warn "Paystack Webhook: Unknown interval '#{interval}' for calculating expires_at."
+      base_time + 1.month # Default fallback
+    end
   end
+
+  def calculate_next_payment_from_current(current_time, interval, known_expires_at = nil)
+    # If we have a known expires_at (which might be the new period_end from an invoice),
+    # that IS the next_payment_date for a fixed cycle that just renewed.
+    return known_expires_at if known_expires_at
+
+    # Otherwise, calculate from current_time + interval
+    case interval.downcase
+    when 'monthly'
+      current_time + 1.month
+    when 'yearly', 'annually'
+      current_time + 1.year
+    when 'daily'
+      current_time + 1.day
+    when 'weekly'
+      current_time + 1.week
+    when 'quarterly'
+      current_time + 3.months
+    when 'biannually'
+      current_time + 6.months
+    else
+      Rails.logger.warn "Paystack Webhook: Unknown interval '#{interval}' for calculating next_payment_date."
+      current_time + 1.month # Default fallback
+    end
+  end
+
 end

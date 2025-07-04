@@ -39,4 +39,18 @@ class User < ApplicationRecord
   has_many :categories, dependent: :destroy
   has_many :tags, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+
+  def active_subscription
+    subscriptions.find_by(status: 'active')
+  end
+
+  def active_subscription?
+    active_subscription.present? && 
+    (active_subscription.expires_at.nil? || active_subscription.expires_at > Time.current) &&
+    (active_subscription.next_payment_date.nil? || active_subscription.next_payment_date > Time.current)
+  end
+
+  def current_plan
+    active_subscription&.plan
+  end
 end

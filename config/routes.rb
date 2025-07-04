@@ -60,8 +60,7 @@ Rails.application.routes.draw do
   get "bible/:book/:chapter/:verse", to: "bible_verses#show", as: "bible_verse"
   get "bible/:book/:chapter", to: "bible_verses#chapter", as: "bible_chapter"
 
-  # Paystack subscription routes
-  resources :subscriptions, only: [:create] do
+  resources :subscriptions, only: [:create, :show, :edit, :update] do # Added :show, :edit, :update
     collection do
       get :callback
     end

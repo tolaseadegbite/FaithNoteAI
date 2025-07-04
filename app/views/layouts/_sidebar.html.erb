@@ -94,25 +94,72 @@
       
       <!-- Subscription Plan Placeholder -->
       <div class="mt-auto pt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-        <div class="flex items-center justify-between mb-2">
-          <h5 class="text-sm font-medium text-gray-900 dark:text-white">Your Plan</h5>
-          <%= link_to pricing_path, class: "text-xs text-green-600 dark:text-green-400 hover:underline" do %>
-            Upgrade
+        <% if current_user&.active_subscription? %>
+          <%# User has an active subscription %>
+          <% subscription = current_user.subscriptions.find_by(status: 'active') %>
+          <% if subscription && subscription.plan %>
+            <div class="flex items-center justify-between mb-2">
+              <h5 class="text-sm font-medium text-gray-900 dark:text-white">Your Plan</h5>
+              <%# Link to manage subscription - to be implemented later %>
+              <%= link_to "Manage", subscription_path(current_user.active_subscription), class: "text-xs text-green-600 dark:text-green-400 hover:underline" %>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-green-600 dark:text-green-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white"><%= subscription.plan.name %></p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <% if subscription.expires_at? %>
+                    Expires: <%= subscription.expires_at.strftime("%b %d, %Y") %>
+                  <% else %>
+                    Active
+                  <% end %>
+                </p>
+              </div>
+            </div>
+          <% else %>
+            <%# Fallback if subscription or plan data is missing, though unlikely with active_subscription? %>
+            <div class="flex items-center justify-between mb-2">
+              <h5 class="text-sm font-medium text-gray-900 dark:text-white">Your Plan</h5>
+              <%= link_to pricing_path, class: "text-xs text-green-600 dark:text-green-400 hover:underline" do %>
+                Upgrade
+              <% end %>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-yellow-600 dark:text-yellow-400">
+                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">Plan Info Missing</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Please check your account.</p>
+              </div>
+            </div>
           <% end %>
-        </div>
-        
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-green-600 dark:text-green-400">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
+        <% else %>
+          <%# User is on Free Plan or not subscribed %>
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-sm font-medium text-gray-900 dark:text-white">Your Plan</h5>
+            <%= link_to pricing_path, class: "text-xs text-green-600 dark:text-green-400 hover:underline" do %>
+              Upgrade
+            <% end %>
           </div>
-          
-          <div>
-            <p class="text-sm font-medium text-gray-900 dark:text-white">Free Plan</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Basic features</p>
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500 dark:text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">Free Plan</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Basic features</p>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
    </div>
 </aside>
